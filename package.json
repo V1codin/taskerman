@@ -1,6 +1,6 @@
 {
   "name": "task-manager",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -14,9 +14,21 @@
     "@types/react-dom": "18.0.11",
     "eslint": "8.36.0",
     "eslint-config-next": "13.2.4",
+    "jotai": "^2.0.3",
+    "mongodb": "^5.1.0",
     "next": "13.2.4",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "typescript": "4.9.5"
+    "react-is": "^18.2.0",
+    "styled-components": "^5.3.9",
+    "typescript": "4.9.5",
+    "zod": "^3.21.4"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.21.3",
+    "@svgr/webpack": "^6.5.1",
+    "@types/styled-components": "^5.1.26",
+    "babel-plugin-inline-react-svg": "^2.0.2",
+    "babel-plugin-styled-components": "^2.0.7"
   }
 }

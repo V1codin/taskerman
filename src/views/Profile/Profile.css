@@ -1,0 +1,82 @@
+.profile {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 auto;
+  background-color: unset;
+}
+
+.board__card {
+  position: relative;
+  margin: 10px 0 0 15px;
+  overflow: auto;
+
+  cursor: pointer;
+  width: 225px;
+  height: 150px;
+}
+
+.card__error {
+  left: 50%;
+  top: -3%;
+}
+
+.board__card:hover {
+  box-shadow: 0 0 15px var(--blue);
+}
+
+.board__card:active {
+  background-color: red;
+}
+
+.card__btn {
+  position: absolute;
+  bottom: 0;
+  margin: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 43px;
+  overflow: auto;
+}
+
+.close__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+
+  top: 10px;
+  right: 10px;
+}
+
+.close__btn:hover,
+.popup__btn:hover {
+  transform: scale(1.09);
+  box-shadow: 0 0 15px var(--blue);
+  border-radius: 7px;
+}
+.close__btn:active,
+.popup__btn:active {
+  background-color: var(--aqua-active);
+}
+
+.board__ico {
+  width: inherit;
+  height: inherit;
+  transform: rotate(45deg);
+}
+
+.btn_static {
+  position: static;
+}
+
+.btn_ml10 {
+  margin-left: 10px;
+}
+
+.close__btn:hover {
+  box-shadow: none;
+}
+.close__btn:hover img {
+  transform: rotate(45deg) scale(1.1);
+}

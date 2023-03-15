@@ -1,0 +1,43 @@
+.add,
+.account {
+  min-width: 300px;
+}
+.note {
+  width: 450px;
+  height: 300px;
+
+  overflow: auto;
+}
+
+.note > header {
+  position: sticky;
+  top: 0;
+  background-color: var(--monokai);
+  z-index: 500;
+}
+
+.info__image {
+  width: 350px;
+  height: 200px;
+}
+.account__el {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  margin-left: 15px;
+}
+
+.body_row {
+  display: flex;
+  align-items: center;
+}
+
+.ta_center {
+  text-align: center;
+}
+
+button:focus {
+  border: 1px dashed var(--pale-blue) !important;
+  box-shadow: none;
+}
