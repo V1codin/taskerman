@@ -2,7 +2,7 @@ import styled from 'styled-components';
 
 export const StyledFormContainer = styled.div`
   max-width: 330px;
-  margin: 30px auto;
+  margin: 0 auto;
 `;
 
 export const StyledForm = styled.form`
@@ -33,6 +33,17 @@ export const StyledForm = styled.form`
     border: unset;
     border-bottom: 1px solid var(--yellow);
     outline: none;
+
+    &:focus,
+    &:hover {
+      &::placeholder {
+        color: var(--yellow);
+      }
+    }
+
+    &:invalid {
+      border-color: red;
+    }
   }
 
   & button {
@@ -45,6 +56,10 @@ export const StyledForm = styled.form`
     font-size: 1em;
     font-weight: 700;
     transition: 0.2s ease;
+  }
+
+  .form__heading {
+    color: var(--bright-green);
   }
 
   & a {

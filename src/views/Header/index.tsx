@@ -1,11 +1,11 @@
 import DefaultHeader from './default';
 import ActiveLink from '@/modules/activeLink/ActiveLink';
 import Toast from '@/modules/toast/Toast';
+import LoggedHeader from './logged/LoggedHeader';
 
 import { useAtomValue } from 'jotai';
 import { StyledHeader } from './styledHeader';
 import { getSetToastState, isAuthenticatedAtom } from '@/context/stateManager';
-import LoggedHeader from './logged/LoggedHeader';
 
 export default function Header() {
   const currentToast = useAtomValue(getSetToastState);

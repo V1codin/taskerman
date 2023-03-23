@@ -14,9 +14,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { AUTH_URL } from '@/utils/constants';
 import { ToastProps, TOAuth } from '../../../types/helpers';
 import { TUserLogin } from '../../../types/state';
-import { TUserDataClient } from '../../../types/db';
 import { useDebounce, useLogin, useToast } from '@/hooks/hooks';
-import { useFetch } from '@/hooks/hooks';
 import { useState } from 'react';
 import { useAtom } from 'jotai';
 import { isAuthenticatedAtom } from '@/context/stateManager';
@@ -31,6 +29,7 @@ const LoginForm: React.FC<LoginFormProps> = () => {
     setFocus,
     formState: { errors },
   } = useForm<TUserLogin>({
+    shouldUseNativeValidation: true,
     resolver: zodResolver(userLoginSchema),
   });
   const debouncedInputChange = useDebounce(
@@ -46,28 +45,6 @@ const LoginForm: React.FC<LoginFormProps> = () => {
   const [loader, setLoader] = useState(false);
 
   const { setToast } = useToast();
-  /*
-  const { loader, exec } = useFetch<TUserDataClient, TUserLogin>(
-    async (userData) => {
-      const response = await fetch(AUTH_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(userData),
-      });
-
-      const data = await response.json();
-
-      if (response.status !== 200) {
-        throw new ServerResponseError({
-          responseCode: response.status,
-          message: data?.message,
-        });
-      }
-
-      return data;
-    },
-  );
-*/
 
   useEffect(() => {
     setFocus('username', { shouldSelect: true });
@@ -89,10 +66,8 @@ const LoginForm: React.FC<LoginFormProps> = () => {
         },
       );
       setAuth(true);
+      // TODO set user data to storage
       console.log('data: ', data);
-      /*
-      const data = await exec(userToSubmit);
-      */
     } catch (e) {
       const newToast: ToastProps = {
         typeClass: 'conflict',

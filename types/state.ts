@@ -40,7 +40,17 @@ export const userLoginSchema = z.object({
   }),
 });
 
+export const userSignUpSchema = z.object({
+  username: z.string().regex(masks.username, {
+    message: warns.username,
+  }),
+  password: z.string().regex(masks.password, {
+    message: warns.password,
+  }),
+});
+
 export type TUserLogin = z.infer<typeof userLoginSchema>;
+export type TUserSignUp = z.infer<typeof userSignUpSchema>;
 
 export type NoteType = 'info' | 'invite';
 export interface Note {
@@ -59,8 +69,12 @@ export interface State {
   userInfo: TUserDataClient;
 }
 
-export type TModalView = 'login' | 'signup' | 'resetPassword';
-export interface AuthModal {
-  isOpen: boolean;
-  view: TModalView;
+export type TAuthTypes = 'google';
+
+export type TAuthForms = 'login' | 'signup' | 'resetPassword';
+
+export type TModalView<T extends boolean> = T extends true ? TAuthForms : '';
+export interface AuthModal<T extends boolean> {
+  isOpen: T;
+  view: TModalView<T>;
 }

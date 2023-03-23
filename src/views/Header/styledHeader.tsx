@@ -72,11 +72,9 @@ export const StyledHeader = styled.header`
     background-color: #4343ff;
   }
 
-  *:focus {
-    border-bottom: 1px dashed var(--pale-blue);
-    box-shadow: none;
-  }
   button:focus {
+    border: 1px solid var(--pale-blue);
+    box-shadow: none;
     border-radius: 7px;
   }
 

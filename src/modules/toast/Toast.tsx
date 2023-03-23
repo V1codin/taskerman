@@ -25,7 +25,7 @@ const StyledContainer = styled.div`
   animation-fill-mode: forwards;
 
   text-align: center;
-  background-color: var(--black-aqua_op);
+  background-color: var(--black-aqua);
   box-shadow: 0 0 5px var(--pink);
 `;
 

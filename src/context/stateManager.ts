@@ -1,4 +1,4 @@
-import { atom } from 'jotai';
+import { atom, WritableAtom } from 'jotai';
 import { focusAtom } from 'jotai-optics';
 import { ToastProps } from '../../types/helpers';
 import { EMPTY_TOAST } from '@/utils/constants';
@@ -37,15 +37,19 @@ export const getSetAuthenticated = atom(
   },
 );
 
-const defaultAuthModalState: AuthModal = {
+const defaultAuthModalState: AuthModal<false> = {
   isOpen: false,
-  view: 'login',
+  view: '',
 };
 
-export const authModalAtom = atom(defaultAuthModalState);
-export const getSetAuthModal = atom(
+export const authModalAtom = atom<AuthModal<boolean>>(defaultAuthModalState);
+export const getSetAuthModal: WritableAtom<
+  AuthModal<boolean>,
+  [update: AuthModal<true> | AuthModal<false>],
+  void
+> = atom(
   (get) => get(authModalAtom),
-  (_, set, update: AuthModal) => {
+  (_, set, update) => {
     set(authModalAtom, update);
   },
 );

@@ -25,40 +25,13 @@ const useToast = (timerToRemoveToast: number = 2000) => {
 
     return () => {
       clearTimeout(time);
+      resetToast();
     };
   }, [setToast, toast.message, timerToRemoveToast]);
 
   return {
     toast,
     setToast,
-  };
-};
-
-const useFetch = <TResponse extends unknown, K>(
-  asyncFunction: (props: K) => Promise<TResponse>,
-) => {
-  const [loader, setLoader] = useState(false);
-  const [data, setData] = useState<TResponse>();
-
-  const exec = async (props: K) => {
-    try {
-      setLoader(true);
-      const data = await asyncFunction(props);
-      setData(data);
-
-      return data;
-    } catch (e) {
-      throw e;
-    } finally {
-      setLoader(false);
-    }
-  };
-
-  return {
-    data,
-    loader,
-    setLoader,
-    exec,
   };
 };
 
@@ -102,9 +75,37 @@ const useLogin = ({ redirectTo = '', redirectIfFound = false } = {}) => {
   return { user, mutateUser, error };
 };
 
-export { useToast, useFetch, useDebounce, useLogin };
+export { useToast, useDebounce, useLogin };
 
 /*
+const useFetch = <TResponse extends unknown, K>(
+  asyncFunction: (props: K) => Promise<TResponse>,
+) => {
+  const [loader, setLoader] = useState(false);
+  const [data, setData] = useState<TResponse>();
+
+  const exec = async (props: K) => {
+    try {
+      setLoader(true);
+      const data = await asyncFunction(props);
+      setData(data);
+
+      return data;
+    } catch (e) {
+      throw e;
+    } finally {
+      setLoader(false);
+    }
+  };
+
+  return {
+    data,
+    loader,
+    setLoader,
+    exec,
+  };
+};
+
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
 import useConstant from 'use-constant';
 
