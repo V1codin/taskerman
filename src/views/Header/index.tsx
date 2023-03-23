@@ -1,22 +1,28 @@
-import ActiveLink from '@/modules/activeLink/ActiveLink';
 import DefaultHeader from './default';
+import ActiveLink from '@/modules/activeLink/ActiveLink';
+import Toast from '@/modules/toast/Toast';
 
 import { useAtomValue } from 'jotai';
-import { readAuthenticated } from '@/context/stateManager';
-
 import { StyledHeader } from './styledHeader';
+import { getSetToastState, isAuthenticatedAtom } from '@/context/stateManager';
+import LoggedHeader from './logged/LoggedHeader';
 
 export default function Header() {
-  // const isLogged = useAtomValue(readAuthenticated);
-  const isLogged = false;
+  const currentToast = useAtomValue(getSetToastState);
+  const isLogged = useAtomValue(isAuthenticatedAtom);
 
   return (
     <StyledHeader className="unselectable">
+      {currentToast.message && (
+        <Toast
+          message={currentToast.message}
+          typeClass={currentToast.typeClass}
+        />
+      )}
       <ActiveLink href="/" className="header__link" activeClassName="">
         <h1>TrelloF</h1>
       </ActiveLink>
-      {/* <LoggedHeader /> */}
-      {isLogged ? <p>Logged</p> : <DefaultHeader />}
+      {isLogged ? <LoggedHeader /> : <DefaultHeader />}
     </StyledHeader>
   );
 }

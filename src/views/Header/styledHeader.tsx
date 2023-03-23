@@ -9,6 +9,7 @@ export const StyledHeader = styled.header`
   align-items: center;
   width: 100%;
   padding: 15px;
+  position: relative;
 
   .header__link {
     margin-left: 15px;

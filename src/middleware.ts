@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { setThemeCookie } from './utils/setThemeCookieMiddleware';
+import { setThemeCookie } from './utils/setThemeCookie.middleware';
 
 export default async function middleware(
   req: NextRequest,

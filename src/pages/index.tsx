@@ -1,28 +1,15 @@
 import HeaderLayout from '@/layouts/HeaderLayout';
 
-import { dbProvider } from '@/db/dbProvider';
+import { useLogin } from '@/hooks/hooks';
 
-export default function Home({ isConnected }: { isConnected: boolean }) {
+export default function Home() {
+  useLogin({
+    redirectTo: '/login',
+  });
+
   return (
     <HeaderLayout>
-      <main></main>
+      <></>
     </HeaderLayout>
   );
-}
-
-export async function getServerSideProps() {
-  try {
-    await dbProvider.connect({
-      uri: process.env['MONGO_DB_URI']!,
-    });
-
-    return {
-      props: { isConnected: true },
-    };
-  } catch (e) {
-    console.error(e);
-    return {
-      props: { isConnected: false },
-    };
-  }
 }

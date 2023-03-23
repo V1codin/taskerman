@@ -1,6 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   webpack(config) {
+    config.experiments = { ...config.experiments, topLevelAwait: true };
+
     const fileLoaderRule = config.module.rules.find((rule) =>
       rule.test?.test?.('.svg'),
     );
@@ -23,22 +25,8 @@ const nextConfig = {
 
     return config;
   },
-  babel: {
-    plugins: [
-      [
-        'babel-plugin-inline-react-svg',
-        {
-          svgo: {
-            plugins: [{ removeViewBox: false }],
-          },
-        },
-      ],
-    ],
-  },
+
   reactStrictMode: true,
-  compiler: {
-    styledComponents: true,
-  },
 };
 
 module.exports = nextConfig;

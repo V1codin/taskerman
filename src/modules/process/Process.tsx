@@ -5,6 +5,8 @@ import Loader from '@/assets/pulse.svg';
 
 type ContainerProps = {
   isBordered?: boolean;
+  width?: string;
+  height?: string;
 };
 
 const StyledProcessContainer = styled.div<React.CSSProperties & ContainerProps>`
@@ -14,9 +16,15 @@ const StyledProcessContainer = styled.div<React.CSSProperties & ContainerProps>`
   align-items: center;
   border: ${({ isBordered }) =>
     isBordered ? '1px solid var(--pale-green)' : '1px solid transparent'};
+
   border-radius: 50%;
-  width: 50px;
-  height: 50px;
+  width: ${({ width }) => width || '50px'};
+  height: ${({ height }) => height || 'inherit'};
+
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, 0);
 
   .wrapper_centered {
     margin: 10% auto;
@@ -50,12 +58,25 @@ const StyledSpinner = styled.div`
 `;
 
 type Props = {
-  isShown: boolean;
+  isShown?: boolean;
   styles?: React.CSSProperties;
 } & ContainerProps;
 
-function Process({ isShown, styles, isBordered }: Props) {
+const Process: React.FC<Props> = ({ isShown, styles, isBordered }) => {
   const wrapperStyles = styles || {};
+
+  if (!isShown) {
+    return (
+      <StyledProcessContainer
+        isBordered={isBordered}
+        style={{ ...wrapperStyles }}
+      >
+        <StyledSpinner>
+          <Loader />
+        </StyledSpinner>
+      </StyledProcessContainer>
+    );
+  }
 
   return isShown === true ? (
     <StyledProcessContainer
@@ -67,6 +88,6 @@ function Process({ isShown, styles, isBordered }: Props) {
       </StyledSpinner>
     </StyledProcessContainer>
   ) : null;
-}
+};
 
 export { Process };

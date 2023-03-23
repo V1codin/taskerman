@@ -29,6 +29,18 @@ body {
 	animation-fill-mode: forwards;
 }
 
+.conflict {
+	color: var(--pink);
+}
+
+.warning {
+	color: var(--pale-yellow);
+}
+
+.notification {
+	color: var(--bright-green);
+}
+
 `;
 
 export default GlobalStyle;

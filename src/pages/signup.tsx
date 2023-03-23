@@ -3,7 +3,7 @@ import HeaderLayout from '@/layouts/HeaderLayout';
 import GoogleIcon from '@/assets/google_icon.svg?url';
 import Image from 'next/image';
 
-import { Form } from '@/modules/formWrapper';
+import { FormWrapper } from '@/modules/formWrapper/FormWrapper';
 import { useState } from 'react';
 
 export default function SignUp() {
@@ -13,7 +13,6 @@ export default function SignUp() {
     confirmPassword: '',
     displayName: '',
     email: '',
-    className: '',
   };
 
   const [form, setForm] = useState(formDefault);
@@ -30,7 +29,7 @@ export default function SignUp() {
   };
   return (
     <HeaderLayout>
-      <Form>
+      <FormWrapper submit={submit}>
         <>
           <h3 className="form__heading">Sign up for your account</h3>
           <input
@@ -117,7 +116,7 @@ export default function SignUp() {
             Continue with Google
           </button>
         </>
-      </Form>
+      </FormWrapper>
     </HeaderLayout>
   );
 }

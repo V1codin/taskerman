@@ -41,7 +41,6 @@ export const StyledForm = styled.form`
     padding: 10px;
     width: 100%;
     background-color: var(--pale-green);
-    border: none;
     color: var(--yellow);
     font-size: 1em;
     font-weight: 700;
@@ -106,6 +105,7 @@ export const StyledForm = styled.form`
   .form__btn:hover {
     background-color: #71c74f;
   }
+
   .form__btn:active {
     background-color: var(--yellow);
     color: var(--pale-green);

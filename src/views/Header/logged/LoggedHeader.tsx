@@ -1,3 +1,13 @@
+import React from 'react';
+
+type LoggedHeaderProps = {};
+
+const LoggedHeader: React.FC<LoggedHeaderProps> = () => {
+  return <p>Logged</p>;
+};
+export default LoggedHeader;
+
+/*
 import { createContext, useRef } from 'react';
 
 import { Menu } from './components/menu';
@@ -18,3 +28,5 @@ function LoggedHeader() {
 }
 
 export { LoggedHeader, ParentRefContext };
+
+*/

@@ -5,26 +5,16 @@ export interface IMasks {
   email: RegExp;
 }
 
-export interface IWarns {
-  username: string;
-  password: string;
-  displayName: string;
-  confirmPassword: string;
-  email: string;
-}
-
-export interface IValidationResult {
-  message: string;
-  isValidated: boolean;
-  name: keyof IMasks | '';
-}
-
-export interface ILoginForm {
-  username: string;
-  password: string;
-  confirmPassword: string;
-  displayName: string;
-  email: string;
-}
-
 export type TOAuth = ['google'];
+
+export type TToasts = 'conflict' | 'warning' | 'notification';
+
+export type ToastComponentProps = {
+  message: string;
+  typeClass?: TToasts;
+};
+export type ToastProps = {
+  timeout?: number;
+} & ToastComponentProps;
+
+export type TToast = ToastProps[];

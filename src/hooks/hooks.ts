@@ -1,32 +1,32 @@
-import { useEffect, useState } from 'react';
-import { ErrorToastProps, TToasts } from '../../types/helpers';
+import Router from 'next/router';
+import useSWR from 'swr';
 
-const useToast = (
-  type: TToasts = 'notification',
-  timerToRemoveToast: number = 2000,
-) => {
-  const [toast, setToast] = useState<ErrorToastProps>({
-    message: '',
-    typeClass: type,
-  });
+import { getSetToastState } from '@/context/stateManager';
+import { useAtom } from 'jotai';
+import { useEffect, useState } from 'react';
+import { AUTH_URL } from '@/utils/constants';
+import { TResponseLoginData } from '@/pages/api/auth/login';
+
+const useToast = (timerToRemoveToast: number = 2000) => {
+  const [toast, setToast] = useAtom(getSetToastState);
 
   useEffect(() => {
     if (!toast.message) {
       return;
     }
 
-    const time = setTimeout(() => {
+    const resetToast = () => {
       setToast({
         message: '',
-        typeClass: type,
       });
-    }, timerToRemoveToast);
+    };
+
+    const time = setTimeout(resetToast, timerToRemoveToast);
 
     return () => {
       clearTimeout(time);
     };
-    // eslint-disable-next-line
-  }, [toast.message, timerToRemoveToast]);
+  }, [setToast, toast.message, timerToRemoveToast]);
 
   return {
     toast,
@@ -48,10 +48,6 @@ const useFetch = <TResponse extends unknown, K>(
 
       return data;
     } catch (e) {
-      if (e instanceof Error) {
-        throw new Error(e?.message || 'Fetch data error');
-      }
-
       throw e;
     } finally {
       setLoader(false);
@@ -66,7 +62,47 @@ const useFetch = <TResponse extends unknown, K>(
   };
 };
 
-export { useToast, useFetch };
+const useDebounce = (
+  callback: (...args: any[]) => Promise<any>,
+  timeOut: number = 800,
+) => {
+  let timer: NodeJS.Timeout;
+
+  return (...args: any[]) => {
+    if (timer) {
+      clearTimeout(timer);
+    }
+
+    timer = setTimeout(async () => {
+      await callback(...args);
+    }, timeOut);
+  };
+};
+
+const useLogin = ({ redirectTo = '', redirectIfFound = false } = {}) => {
+  const {
+    data: user,
+    mutate: mutateUser,
+    error,
+  } = useSWR<TResponseLoginData<boolean>, { code: number; message: string }>(
+    AUTH_URL,
+  );
+
+  useEffect(() => {
+    if (!redirectTo || !user) return;
+
+    if (
+      (redirectTo && !redirectIfFound && !user?.isLoggedIn) ||
+      (redirectIfFound && user?.isLoggedIn)
+    ) {
+      Router.push(redirectTo);
+    }
+  }, [user, redirectIfFound, redirectTo]);
+
+  return { user, mutateUser, error };
+};
+
+export { useToast, useFetch, useDebounce, useLogin };
 
 /*
 import AwesomeDebouncePromise from 'awesome-debounce-promise';

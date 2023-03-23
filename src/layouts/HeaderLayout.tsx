@@ -10,7 +10,7 @@ export default function HeaderLayout({ children }: Props) {
     <>
       <CustomHead />
       <Header />
-      {children}
+      <main>{children}</main>
     </>
   );
 }
