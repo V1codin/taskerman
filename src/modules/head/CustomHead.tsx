@@ -1,10 +1,10 @@
 import Head from 'next/head';
 
-type Props = {
+type CustomHeadProps = {
   title?: string;
 };
 
-export default function CustomHead({ title = 'Task Manager' }: Props) {
+const CustomHead: React.FC<CustomHeadProps> = ({ title = 'Task Manager' }) => {
   return (
     <Head>
       <title>{title}</title>
@@ -13,4 +13,5 @@ export default function CustomHead({ title = 'Task Manager' }: Props) {
       <link rel="icon" href="/favicon.ico" />
     </Head>
   );
-}
+};
+export default CustomHead;

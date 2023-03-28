@@ -1,17 +1,19 @@
-import mongoose, { Schema, Document, Model } from 'mongoose';
+import mongoose from 'mongoose';
 
-export interface IUser extends Document {
+import { Types, Model } from 'mongoose';
+
+export interface IUser extends mongoose.Document {
   username: string;
   password: string;
   displayName?: string;
   externalLogin: string;
   email: string;
-  subs: mongoose.Types.ObjectId[];
+  subs: Types.ObjectId[];
   imageURL?: string;
   nameAlias: string;
 }
 
-const UserScheme = new Schema<IUser, Model<IUser>>(
+const UserScheme = new mongoose.Schema<IUser, Model<IUser>>(
   {
     username: { type: String, unique: true, require: false },
     password: { type: String, required: false },
@@ -21,7 +23,7 @@ const UserScheme = new Schema<IUser, Model<IUser>>(
     },
     externalLogin: { type: String, require: false, default: 'local' },
     email: { type: String, unique: true, require: true },
-    subs: [{ type: mongoose.Types.ObjectId, ref: 'boards' }],
+    subs: [{ type: Types.ObjectId, ref: 'boards' }],
     imageURL: {
       type: String,
       default: '',

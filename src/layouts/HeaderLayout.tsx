@@ -1,11 +1,11 @@
-import CustomHead from '@/modules/head/Head';
-import Header from '@/views/Header';
+import CustomHead from '@/modules/head/CustomHead';
+import Header from '@/views/Header/Header';
 
-type Props = {
+type HeaderLayoutProps = {
   children: React.ReactNode;
 };
 
-export default function HeaderLayout({ children }: Props) {
+const HeaderLayout: React.FC<HeaderLayoutProps> = ({ children }) => {
   return (
     <>
       <CustomHead />
@@ -13,4 +13,5 @@ export default function HeaderLayout({ children }: Props) {
       <main>{children}</main>
     </>
   );
-}
+};
+export default HeaderLayout;

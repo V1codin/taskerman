@@ -1,6 +1,6 @@
 import { ServerResponseError } from './error.service';
 
-export default async function fetcher<JSON = unknown>(
+export default async function fetcher<JSON extends unknown>(
   input: RequestInfo,
   init?: RequestInit,
 ): Promise<JSON> {
@@ -13,7 +13,7 @@ export default async function fetcher<JSON = unknown>(
   }
 
   throw new ServerResponseError({
-    message: data.error.message || response.statusText,
-    code: response.status,
+    message: data.message || response.statusText,
+    code: data.code || response.status,
   });
 }

@@ -1,6 +1,6 @@
-import React from 'react';
-import { Process } from '../process/Process';
 import Button from './Button';
+
+import { Process } from '../process/Process';
 
 type ButtonWithLoaderProps = {
   isLoading: boolean;

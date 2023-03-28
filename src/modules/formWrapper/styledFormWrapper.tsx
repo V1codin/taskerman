@@ -69,6 +69,7 @@ export const StyledForm = styled.form`
   }
 
   .form__warning {
+    font-weight: 600;
     margin-top: 5px;
     color: var(--pink);
   }

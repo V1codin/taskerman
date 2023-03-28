@@ -1,18 +1,3 @@
-class AuthError extends Error {
-  code?: number;
-
-  constructor({ message, code }: { message?: string; code?: number }) {
-    super(message);
-
-    if (Error.captureStackTrace) {
-      Error.captureStackTrace(this, AuthError);
-    }
-
-    this.name = 'AuthError';
-    this.code = code;
-  }
-}
-
 export class ServerResponseError extends Error {
   code: number;
 
@@ -34,8 +19,12 @@ export class ServerResponseError extends Error {
         return this.message || 'Error: Server does not response';
       }
 
-      case 401: {
+      case 403: {
         return this.message || 'Error: Unauthorized';
+      }
+
+      case 404: {
+        return this.message || 'Error: Document was not found';
       }
 
       default: {

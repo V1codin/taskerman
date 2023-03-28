@@ -10,15 +10,15 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^2.9.11",
+    "@next-auth/mongodb-adapter": "^1.1.1",
     "bcrypt": "^5.1.0",
     "cookies-next": "^2.1.1",
-    "eslint": "8.36.0",
-    "eslint-config-next": "13.2.4",
     "jotai": "^2.0.3",
     "jotai-optics": "^0.3.0",
-    "jsonwebtoken": "^9.0.0",
-    "mongoose": "^7.0.2",
+    "mongodb": "4.1.1",
+    "mongoose": "^7.0.3",
     "next": "13.2.4",
+    "next-auth": "^4.20.1",
     "optics-ts": "^2.4.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
@@ -26,7 +26,6 @@
     "react-is": "^18.2.0",
     "styled-components": "^5.3.9",
     "swr": "^2.1.0",
-    "typescript": "4.9.5",
     "ws": "^8.13.0",
     "yup": "^1.0.2",
     "zod": "^3.21.4"
@@ -41,6 +40,9 @@
     "@types/react-dom": "18.0.11",
     "@types/styled-components": "^5.1.26",
     "babel-plugin-inline-react-svg": "^2.0.2",
-    "babel-plugin-styled-components": "^2.0.7"
+    "babel-plugin-styled-components": "^2.0.7",
+    "eslint": "8.36.0",
+    "eslint-config-next": "13.2.4",
+    "typescript": "4.9.5"
   }
 }

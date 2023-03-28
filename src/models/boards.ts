@@ -13,8 +13,6 @@ const BoardScheme = new Schema<IBoard, Model<IBoard>>(
     title: { type: String, required: true },
     bg: { type: String, required: true },
     ownerId: { type: Schema.Types.ObjectId, ref: 'users' },
-    // ? prev
-    // ? memberIds: [{ type: Schema.Types.ObjectId, ref: "users" }],
     memberIds: [{ type: String }],
 
     // ! send board invite -> invited client's ID put to pending.

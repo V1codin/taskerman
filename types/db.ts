@@ -1,22 +1,20 @@
-import { IUser } from '@/libs/db/schemas/users';
-
-export type TMongoConnectOptions = {
-  uri: string;
-};
+import { IUser } from '@/models/users';
 
 export interface IDbCollections {
   users: IUser;
 }
 
 export type TBoard = {
-  members: OmitedSafeUser[];
-  pendingMembers: OmitedSafeUser[];
+  members: OmitedSafeBoardMemebers[];
+  pendingMembers: OmitedSafeBoardMemebers[];
   bg: string;
   title: string;
-  owner: OmitedSafeUser | null;
+  owner: OmitedSafeBoardMemebers | null;
+  _id: string;
 };
 
 export type TUser = {
+  _id: string;
   username: string;
   password: string;
   displayName?: string;
@@ -42,6 +40,17 @@ export type OmitedSafeUser = TOmitedGeneric<
   TUserDataClient,
   'externalLogin' | 'nameAlias'
 >;
+
+export type OmitedSafeBoardMemebers = TOmitedGeneric<OmitedSafeUser, 'subs'>;
+
+export type SessionUser = {
+  _id: string;
+  subs: string[];
+  displayName?: string;
+  imageURL?: string;
+  email: string;
+  username: string;
+};
 
 /*
   | 'cards'

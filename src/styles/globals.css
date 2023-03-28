@@ -209,6 +209,39 @@ button {
   justify-content: space-between;
 }
 
+.close__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+
+  top: 10px;
+  right: 10px;
+}
+
+.close__btn:hover,
+.popup__btn:hover {
+  transform: scale(1.09);
+  box-shadow: 0 0 15px var(--blue);
+  border-radius: 7px;
+}
+.close__btn:active {
+  background-color: var(--aqua-active);
+}
+
+.close__btn:hover {
+  box-shadow: none;
+}
+.close__btn:hover img {
+  transform: rotate(45deg) scale(1.1);
+}
+
+.close__btn > img {
+  width: inherit;
+  height: inherit;
+  transform: rotate(45deg);
+}
+
 button:disabled {
   cursor: not-allowed;
   color: #ffffff49;

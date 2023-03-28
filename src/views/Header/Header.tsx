@@ -1,15 +1,15 @@
-import DefaultHeader from './default';
+import UserMenu from './UserMenu';
 import ActiveLink from '@/modules/activeLink/ActiveLink';
 import Toast from '@/modules/toast/Toast';
-import LoggedHeader from './logged/LoggedHeader';
 
 import { useAtomValue } from 'jotai';
 import { StyledHeader } from './styledHeader';
-import { getSetToastState, isAuthenticatedAtom } from '@/context/stateManager';
+import { getSetToastState } from '@/context/stateManager';
 
-export default function Header() {
+type HeaderProps = {};
+
+const Header: React.FC<HeaderProps> = () => {
   const currentToast = useAtomValue(getSetToastState);
-  const isLogged = useAtomValue(isAuthenticatedAtom);
 
   return (
     <StyledHeader className="unselectable">
@@ -22,7 +22,9 @@ export default function Header() {
       <ActiveLink href="/" className="header__link" activeClassName="">
         <h1>TrelloF</h1>
       </ActiveLink>
-      {isLogged ? <LoggedHeader /> : <DefaultHeader />}
+      <UserMenu />
     </StyledHeader>
   );
-}
+};
+
+export default Header;

@@ -1,11 +1,8 @@
-import Router from 'next/router';
-import useSWR from 'swr';
-
 import { getSetToastState } from '@/context/stateManager';
+import { BG_IMAGE, getBodyRef } from '@/utils/constants';
+import { isLink } from '@/utils/helpers';
 import { useAtom } from 'jotai';
-import { useEffect, useState } from 'react';
-import { AUTH_URL } from '@/utils/constants';
-import { TResponseLoginData } from '@/pages/api/auth/login';
+import { useEffect } from 'react';
 
 const useToast = (timerToRemoveToast: number = 2000) => {
   const [toast, setToast] = useAtom(getSetToastState);
@@ -37,7 +34,7 @@ const useToast = (timerToRemoveToast: number = 2000) => {
 
 const useDebounce = (
   callback: (...args: any[]) => Promise<any>,
-  timeOut: number = 800,
+  timeOut: number = 600,
 ) => {
   let timer: NodeJS.Timeout;
 
@@ -52,30 +49,48 @@ const useDebounce = (
   };
 };
 
-const useLogin = ({ redirectTo = '', redirectIfFound = false } = {}) => {
-  const {
-    data: user,
-    mutate: mutateUser,
-    error,
-  } = useSWR<TResponseLoginData<boolean>, { code: number; message: string }>(
-    AUTH_URL,
-  );
+const useBodyColor = (background = BG_IMAGE) => {
+  const bodyRef = getBodyRef()!;
+  const linkChecker = isLink(background);
 
   useEffect(() => {
-    if (!redirectTo || !user) return;
-
-    if (
-      (redirectTo && !redirectIfFound && !user?.isLoggedIn) ||
-      (redirectIfFound && user?.isLoggedIn)
-    ) {
-      Router.push(redirectTo);
+    if (!linkChecker) {
+      bodyRef.style.backgroundImage = 'none';
+      bodyRef.style.background = background;
+    } else {
+      bodyRef.style.background = '';
+      bodyRef.style.backgroundRepeat = 'no-repeat';
+      bodyRef.style.backgroundSize = 'cover';
+      bodyRef.style.backgroundImage = `url(${background})`;
     }
-  }, [user, redirectIfFound, redirectTo]);
 
-  return { user, mutateUser, error };
+    return () => {
+      bodyRef.style.background = '';
+      bodyRef.style.backgroundRepeat = 'no-repeat';
+      bodyRef.style.backgroundSize = 'cover';
+      bodyRef.style.backgroundImage = '';
+    };
+  }, [background, linkChecker, bodyRef]);
 };
 
-export { useToast, useDebounce, useLogin };
+const useEscapeCallback = (
+  callback: <TArgs extends KeyboardEvent>(arg: TArgs) => void,
+) => {
+  useEffect(() => {
+    const keyDown = (e: KeyboardEvent) => {
+      if (e.code === 'Escape') {
+        callback(e);
+      }
+    };
+    window.addEventListener('keydown', keyDown);
+
+    return () => {
+      window.removeEventListener('keydown', keyDown);
+    };
+  });
+};
+
+export { useToast, useDebounce, useBodyColor, useEscapeCallback };
 
 /*
 const useFetch = <TResponse extends unknown, K>(

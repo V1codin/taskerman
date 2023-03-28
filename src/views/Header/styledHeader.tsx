@@ -37,25 +37,6 @@ export const StyledHeader = styled.header`
     }
   }
 
-  .header__log {
-    display: flex;
-    margin-right: 20px;
-  }
-  .log__btn {
-    font-size: 1em;
-    font-weight: 700;
-    color: var(--yellow);
-    padding: 10px;
-    margin-right: 5px;
-  }
-  .log__btn_sign {
-    color: #ffffff;
-    margin-right: 0;
-    border-radius: 7px;
-    border: 1px dashed transparent;
-    transition: 0.3s;
-  }
-
   .userSection {
     display: flex;
     align-items: center;
@@ -64,18 +45,9 @@ export const StyledHeader = styled.header`
     z-index: 7000;
   }
 
-  .log__btn:hover {
-    text-decoration: underline;
-  }
-  .log__btn_sign:hover {
-    text-decoration: none;
-    background-color: #4343ff;
-  }
-
   button:focus {
     border: 1px solid var(--pale-blue);
     box-shadow: none;
-    border-radius: 7px;
   }
 
   .active {

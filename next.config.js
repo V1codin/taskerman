@@ -1,5 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  redirects: async () => {
+    return [
+      {
+        destination: '/',
+        source: '/api/auth/\\*{1,}',
+        permanent: true,
+      },
+    ];
+  },
   webpack(config) {
     config.experiments = { ...config.experiments, topLevelAwait: true };
 
@@ -25,8 +34,20 @@ const nextConfig = {
 
     return config;
   },
-
+  compiler: {
+    styledComponents: true,
+  },
   reactStrictMode: true,
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+        port: '',
+        pathname: '/**',
+      },
+    ],
+  },
 };
 
 module.exports = nextConfig;

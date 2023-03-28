@@ -1,6 +1,8 @@
 import bcrypt from 'bcrypt';
 
-import { EncrypOptions } from '../../types/services';
+type EncrypOptions = {
+  saltRounds: number;
+};
 
 export class EncryptService {
   private config: EncrypOptions;
@@ -19,7 +21,7 @@ export class EncryptService {
     return this.salt;
   }
 
-  set setConfig(newConfig: any) {
+  set setConfig(newConfig: EncrypOptions) {
     this.config = newConfig;
   }
   get getConfig() {
@@ -46,3 +48,9 @@ export class EncryptService {
     return bcrypt.compare(password, toCompare);
   }
 }
+
+const encrypt = new EncryptService({
+  saltRounds: Number(process.env['SALT_ROUNDS']),
+});
+
+export default encrypt;

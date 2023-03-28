@@ -1,6 +1,7 @@
 export interface IMasks {
   username: RegExp;
   password: RegExp;
+  confirmPassword: RegExp;
   displayName: RegExp;
   email: RegExp;
 }

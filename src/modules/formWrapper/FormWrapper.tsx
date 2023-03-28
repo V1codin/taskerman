@@ -1,5 +1,5 @@
 import { FormEventHandler, memo } from 'react';
-import { StyledForm, StyledFormContainer } from './styled';
+import { StyledForm, StyledFormContainer } from './styledFormWrapper';
 
 type Props = {
   children: React.ReactNode;
