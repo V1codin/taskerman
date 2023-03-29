@@ -22,6 +22,12 @@ export const StyledNav = styled.nav`
     border: 1px dashed transparent;
   }
 
+  .active {
+    background-color: var(--aqua-active);
+    box-shadow: none;
+    border: 1px solid var(--pale-blue);
+  }
+
   .badges {
     position: absolute;
 

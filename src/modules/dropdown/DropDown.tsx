@@ -5,6 +5,7 @@ import ImageModule from '../image/Image';
 import { StyledDropDown } from './styledDropDown';
 import { useEscapeCallback } from '@/hooks/hooks';
 import { MouseEvent, SyntheticEvent } from 'react';
+import { TDropDownMinWidth } from '../../../types/helpers';
 
 type DropDownProps = {
   heading?: string;
@@ -15,6 +16,7 @@ type DropDownProps = {
   ) => void;
   children?: React.ReactNode;
   dropDownType?: string;
+  minWidth?: TDropDownMinWidth;
 };
 
 const DropDown: React.FC<DropDownProps> = ({
@@ -22,11 +24,12 @@ const DropDown: React.FC<DropDownProps> = ({
   close,
   children,
   dropDownType,
+  minWidth,
 }) => {
   useEscapeCallback(close);
 
   return (
-    <StyledDropDown className="colored">
+    <StyledDropDown className="colored" minWidth={minWidth}>
       <header className="popup__header">
         <h4 className="popup__article unselectable">{heading || 'List'}</h4>
         <button

@@ -1,6 +1,10 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 TODO.md
+/src/_api
+/src/utils/_
+/src/views/_Profile
+
 
 # dependencies
 /node_modules

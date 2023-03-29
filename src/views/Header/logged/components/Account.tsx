@@ -38,6 +38,7 @@ const Account: React.FC<AccountProps> = ({
       className="avatar_btn colored"
       name="account"
       onClick={onToggle}
+      data-drop-type="account"
     >
       {imageURL ? (
         <ImageModule src={imageURL} width={45} height={45} alt="User avarar" />

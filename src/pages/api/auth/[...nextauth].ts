@@ -7,17 +7,25 @@ import encrypt from '@/libs/encrypt.service';
 import { dbConnect, clientPromise } from '@/libs/db/connect';
 import { NextAuthOptions } from 'next-auth';
 import { MongoDBAdapter } from '@next-auth/mongodb-adapter';
-import { isDev, MONGO_DB_NAME } from '@/utils/constants';
+import {
+  isDev,
+  JWT_MAX_AGE_DAYS,
+  MONGO_DB_NAME,
+  SESSION_MAX_AGE_DAYS,
+} from '@/utils/constants';
+import { SessionUser } from '../../../../types/db';
+import { getAgeInSec } from '@/utils/helpers';
 
 export const authOptions: NextAuthOptions = {
   session: {
     strategy: 'jwt',
-    maxAge: Number(process.env['JWT_OPT_EXPIRE_SECONDS']),
+    maxAge: getAgeInSec({ days: SESSION_MAX_AGE_DAYS }),
   },
   jwt: {
-    maxAge: Number(process.env['JWT_OPT_EXPIRE_SECONDS']),
+    maxAge: getAgeInSec({ days: JWT_MAX_AGE_DAYS }),
     secret: process.env['NEXTAUTH_JWT_SECRET'],
   },
+
   secret: process.env['NEXTAUTH_SECRET'],
   pages: {
     signIn: '/',
@@ -27,22 +35,14 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        for (const item in user) {
-          token[item] = user[item as keyof typeof user];
-        }
+        token['user'] = user as SessionUser;
       }
       return token;
     },
 
     async session({ session, token }) {
-      if (token) {
-        // ? line 108. email is required in db Schema
-        session.user['email'] = token['email']!;
-        session.user['_id'] = token['_id'];
-        session.user['subs'] = token['subs'];
-        session.user['username'] = token['username'];
-        session.user['displayName'] = token['displayName'] || '';
-        session.user['imageURL'] = token['imageURL'] || '';
+      if (token['user']) {
+        session.user = token.user;
       }
 
       return session;
@@ -74,6 +74,7 @@ export const authOptions: NextAuthOptions = {
         username: { label: 'Username', type: 'text' },
         password: { label: 'Password', type: 'password' },
       },
+
       async authorize(credentials) {
         // You need to provide your own logic here that takes the credentials
         // submitted and returns either a object representing a user or value
@@ -101,7 +102,7 @@ export const authOptions: NextAuthOptions = {
           const user = await mongoProvider.getSafeUser(userFromBD);
 
           return {
-            _id: user._id,
+            id: user.id,
             subs: user.subs,
             displayName: user.displayName,
             imageURL: user.imageURL,

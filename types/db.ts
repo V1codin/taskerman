@@ -14,7 +14,7 @@ export type TBoard = {
 };
 
 export type TUser = {
-  _id: string;
+  id: string;
   username: string;
   password: string;
   displayName?: string;
@@ -44,7 +44,7 @@ export type OmitedSafeUser = TOmitedGeneric<
 export type OmitedSafeBoardMemebers = TOmitedGeneric<OmitedSafeUser, 'subs'>;
 
 export type SessionUser = {
-  _id: string;
+  id: string;
   subs: string[];
   displayName?: string;
   imageURL?: string;

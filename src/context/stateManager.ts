@@ -1,7 +1,7 @@
 import { atom, WritableAtom } from 'jotai';
 import { ToastProps } from '../../types/helpers';
 import { EMPTY_TOAST } from '@/utils/constants';
-import { AuthModal } from '../../types/state';
+import { IModal, TModalUpdates } from '../../types/state';
 
 export const toastStateAtom = atom<ToastProps>(EMPTY_TOAST);
 export const getSetToastState = atom(
@@ -11,19 +11,20 @@ export const getSetToastState = atom(
   },
 );
 
-const defaultAuthModalState: AuthModal<false> = {
+const defaultModalState: IModal<false> = {
   isOpen: false,
-  view: '',
+  type: null,
+  view: null,
 };
 
-export const authModalAtom = atom<AuthModal<boolean>>(defaultAuthModalState);
-export const getSetAuthModal: WritableAtom<
-  AuthModal<boolean>,
-  [update: AuthModal<true> | AuthModal<false>],
+export const modalAtom = atom<IModal<boolean>>(defaultModalState);
+export const getSetModal: WritableAtom<
+  IModal<boolean>,
+  [update: TModalUpdates],
   void
 > = atom(
-  (get) => get(authModalAtom),
+  (get) => get(modalAtom),
   (_, set, update) => {
-    set(authModalAtom, update);
+    set(modalAtom, update);
   },
 );

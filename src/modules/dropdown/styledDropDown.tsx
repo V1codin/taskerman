@@ -1,12 +1,17 @@
 import styled from 'styled-components';
 
-export const StyledDropDown = styled.div`
+import { TDropDownMinWidth } from '../../../types/helpers';
+
+type DropDownProps = {
+  minWidth?: TDropDownMinWidth;
+};
+export const StyledDropDown = styled.div<DropDownProps>`
   position: absolute;
   z-index: 8000;
   padding-bottom: 5px;
   top: 60px;
   right: 10px;
-  min-width: 200px;
+  min-width: ${({ minWidth }) => minWidth || '200px'};
 
   .popup__header {
     position: relative;
@@ -28,7 +33,6 @@ export const StyledDropDown = styled.div`
   }
 
   .body_shape {
-    list-style-type: none;
     padding: 5px;
   }
 
@@ -56,10 +60,6 @@ export const StyledDropDown = styled.div`
     }
   }
 
-  .list__body_mt5 {
-    margin-top: 5px;
-  }
-
   .el__span {
     font-size: 1.1em;
     font-weight: 700;
@@ -67,6 +67,30 @@ export const StyledDropDown = styled.div`
 
     text-align: inherit;
   }
+
+  .text_center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+
+  .text_start {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    text-align: start;
+  }
+
+  .column {
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .list__body_mt5 {
+    margin-top: 5px;
+  }
+
   .el__article {
     margin-top: 3px;
   }
@@ -77,10 +101,6 @@ export const StyledDropDown = styled.div`
 
   .popup__body__el:active {
     background-color: var(--aqua-active);
-  }
-
-  .list__body_mt5 * {
-    text-align: start;
   }
 
   .add,

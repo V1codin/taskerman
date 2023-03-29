@@ -1,10 +1,7 @@
 import styled from 'styled-components';
-import Modal from '@/modules/modal/Modal';
-import AuthForms from '@/modules/authForms/AuthForms';
 
 import { useAtom } from 'jotai';
-import { getSetAuthModal } from '@/context/stateManager';
-import { useDisclosure } from '@/hooks/useDisclosure/useDisclosure';
+import { getSetModal } from '@/context/stateManager';
 import { TAuthForms } from '../../../../types/state';
 
 type DefaultHeaderProps = {};
@@ -39,32 +36,22 @@ const StyledContainer = styled.div`
 `;
 
 const DefaultHeader: React.FC<DefaultHeaderProps> = () => {
-  const [authState, setAuthState] = useAtom(getSetAuthModal);
+  const [, setAuthState] = useAtom(getSetModal);
 
-  const { isOpen, onOpen, onClose } = useDisclosure({
-    onOpen: (e: React.MouseEvent<HTMLButtonElement>) => {
-      setAuthState({
-        isOpen: true,
-        view: e.currentTarget.name as TAuthForms,
-      });
-    },
-    onClose: () => {
-      setAuthState({
-        isOpen: false,
-        view: '',
-      });
-    },
-  });
+  const openModal = (e: React.MouseEvent<HTMLButtonElement>) => {
+    setAuthState({
+      isOpen: true,
+      view: e.currentTarget.name as TAuthForms,
+      type: 'auth',
+    });
+  };
 
   return (
     <StyledContainer>
-      <Modal isOpen={isOpen} close={onClose}>
-        <AuthForms type={authState.view} />
-      </Modal>
-      <button onClick={onOpen} name="login">
+      <button onClick={openModal} name="login">
         Log in
       </button>
-      <button className="sign" onClick={onOpen} name="signup">
+      <button className="sign" onClick={openModal} name="signup">
         Sign up
       </button>
     </StyledContainer>

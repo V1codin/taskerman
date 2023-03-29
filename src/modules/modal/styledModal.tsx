@@ -4,6 +4,7 @@ export const StyledModalContainer = styled.section`
   position: absolute;
   top: 0;
   left: 0;
+  z-index: 8000;
 `;
 
 export const StyledModalOverlay = styled.div`

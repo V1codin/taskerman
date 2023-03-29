@@ -6,9 +6,13 @@ import { useSession } from 'next-auth/react';
 type UserMenuProps = {};
 
 const UserMenu: React.FC<UserMenuProps> = () => {
-  const { data: session } = useSession();
+  const { data, status } = useSession();
 
-  return session ? <LoggedHeader userData={session.user} /> : <DefaultHeader />;
+  return status === 'authenticated' && data.user ? (
+    <LoggedHeader userData={data.user} />
+  ) : (
+    <DefaultHeader />
+  );
 };
 
 export default UserMenu;

@@ -50,10 +50,6 @@ export const StyledHeader = styled.header`
     box-shadow: none;
   }
 
-  .active {
-    background-color: unset !important;
-  }
-
   .active button {
     color: #21e421 !important;
   }

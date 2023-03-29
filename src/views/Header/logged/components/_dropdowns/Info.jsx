@@ -1,3 +1,4 @@
+/*
 import { useContext, useState } from 'react';
 import { ParentRefContext } from '../../';
 
@@ -61,3 +62,4 @@ function InfoBoardDrop(props) {
 }
 
 export { InfoBoardDrop };
+*/

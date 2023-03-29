@@ -1,15 +1,26 @@
 import UserMenu from './UserMenu';
 import ActiveLink from '@/modules/activeLink/ActiveLink';
 import Toast from '@/modules/toast/Toast';
+import Modal from '@/modules/modal/Modal';
+import ModalForms from '@/modules/modalForms/ModalForms';
 
-import { useAtomValue } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 import { StyledHeader } from './styledHeader';
-import { getSetToastState } from '@/context/stateManager';
+import { getSetModal, getSetToastState } from '@/context/stateManager';
 
 type HeaderProps = {};
 
 const Header: React.FC<HeaderProps> = () => {
   const currentToast = useAtomValue(getSetToastState);
+  const [authState, setAuthState] = useAtom(getSetModal);
+
+  const close = () => {
+    setAuthState({
+      isOpen: false,
+      view: null,
+      type: null,
+    });
+  };
 
   return (
     <StyledHeader className="unselectable">
@@ -19,8 +30,11 @@ const Header: React.FC<HeaderProps> = () => {
           typeClass={currentToast.typeClass}
         />
       )}
+      <Modal isOpen={authState.isOpen} close={close}>
+        <ModalForms view={authState.view} type={authState.type} />
+      </Modal>
       <ActiveLink href="/" className="header__link" activeClassName="">
-        <h1>TrelloF</h1>
+        <h1>TaskerMan</h1>
       </ActiveLink>
       <UserMenu />
     </StyledHeader>

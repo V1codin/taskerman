@@ -2,7 +2,7 @@ import { getSetToastState } from '@/context/stateManager';
 import { BG_IMAGE, getBodyRef } from '@/utils/constants';
 import { isLink } from '@/utils/helpers';
 import { useAtom } from 'jotai';
-import { useEffect } from 'react';
+import { MutableRefObject, useCallback, useEffect } from 'react';
 
 const useToast = (timerToRemoveToast: number = 2000) => {
   const [toast, setToast] = useAtom(getSetToastState);
@@ -73,9 +73,7 @@ const useBodyColor = (background = BG_IMAGE) => {
   }, [background, linkChecker, bodyRef]);
 };
 
-const useEscapeCallback = (
-  callback: <TArgs extends KeyboardEvent>(arg: TArgs) => void,
-) => {
+const useEscapeCallback = (callback: (arg: KeyboardEvent) => void) => {
   useEffect(() => {
     const keyDown = (e: KeyboardEvent) => {
       if (e.code === 'Escape') {
@@ -90,7 +88,40 @@ const useEscapeCallback = (
   });
 };
 
-export { useToast, useDebounce, useBodyColor, useEscapeCallback };
+const useOuterCLick = (
+  parentRef: MutableRefObject<HTMLElement | null>,
+  callback: (event: MouseEvent) => void,
+) => {
+  const click = useCallback(
+    (e: MouseEvent) => {
+      if (
+        e.type === 'click' &&
+        !parentRef.current?.contains(e.target as Node)
+      ) {
+        callback(e);
+      }
+    },
+
+    [parentRef, callback],
+  );
+
+  useEffect(() => {
+    document.addEventListener('click', click, { capture: true });
+
+    return () => {
+      document.removeEventListener('click', click, { capture: true });
+    };
+    // eslint-disable-next-line
+  }, []);
+};
+
+export {
+  useToast,
+  useDebounce,
+  useBodyColor,
+  useEscapeCallback,
+  useOuterCLick,
+};
 
 /*
 const useFetch = <TResponse extends unknown, K>(

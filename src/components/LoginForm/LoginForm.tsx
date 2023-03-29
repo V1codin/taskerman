@@ -14,8 +14,9 @@ import { TUserLogin } from '../../../types/state';
 import { useDebounce, useToast } from '@/hooks/hooks';
 import { useState } from 'react';
 import { useAtom } from 'jotai';
-import { getSetAuthModal } from '@/context/stateManager';
+import { getSetModal } from '@/context/stateManager';
 import { signIn } from 'next-auth/react';
+import Router from 'next/router';
 
 type LoginFormProps = {};
 
@@ -34,7 +35,7 @@ const LoginForm: React.FC<LoginFormProps> = () => {
       trigger(e.target.name as keyof TUserLogin),
   );
 
-  const [, setAuthState] = useAtom(getSetAuthModal);
+  const [, setAuthState] = useAtom(getSetModal);
 
   const [loader, setLoader] = useState(false);
 
@@ -52,13 +53,19 @@ const LoginForm: React.FC<LoginFormProps> = () => {
       const result = await signIn('credentials', {
         username: userToSubmit.username,
         password: userToSubmit.password,
-        redirect: true,
-        callbackUrl: '/',
+        redirect: false,
       });
 
-      if (result?.error) {
+      if (result?.error || !result) {
         throw new Error('Wrong username or password');
       }
+
+      setAuthState({
+        isOpen: false,
+        view: null,
+        type: null,
+      });
+      Router.push('/');
     } catch (e) {
       setLoader(false);
       const newToast: ToastProps = {
@@ -79,6 +86,7 @@ const LoginForm: React.FC<LoginFormProps> = () => {
     setAuthState({
       isOpen: true,
       view: 'signup',
+      type: 'auth',
     });
   };
 

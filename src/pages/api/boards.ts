@@ -1,7 +1,7 @@
 import mongoProvider from '@/libs/db/mongo';
 
+import { dbConnect } from '@/libs/db/connect';
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { TBoardDataClient } from '../../../types/db';
 import { TError } from '../../../types/state';
 
 export default async function handler(
@@ -15,11 +15,11 @@ export default async function handler(
 ) {
   const body = req.body as {
     userId: string;
-    subs: TBoardDataClient[];
+    subs: string[];
   };
 
-
   try {
+    await dbConnect();
     const boards = await mongoProvider.getUserBoards(body.userId);
 
     res.status(200).json({

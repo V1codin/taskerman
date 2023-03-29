@@ -90,12 +90,43 @@ export type TError = {
 
 export type TAuthTypes = 'google';
 
+export type TMenuModalNames = 'create_board';
 export type TAuthForms = 'login' | 'signup' | 'resetPassword';
+export type TModalForms = TAuthForms | TMenuModalNames;
+export type TModalTypes = 'auth' | 'create';
 
-export type TModalView<T extends boolean> = T extends true ? TAuthForms : '';
-export interface AuthModal<T extends boolean> {
+type ModalsReducer = {
+  [K in TModalTypes]: K extends 'auth'
+    ? TAuthForms
+    : K extends 'create'
+    ? TMenuModalNames
+    : never;
+};
+
+export type TModalView<T extends boolean, K extends unknown> = T extends true
+  ? K extends TModalTypes
+    ? ModalsReducer[K]
+    : null
+  : null;
+
+export interface IModal<T extends boolean, K = TModalTypes> {
   isOpen: T;
-  view: TModalView<T>;
+  type: T extends true ? K : null;
+  view: TModalView<T, K>;
 }
+
+export interface IAuthModal {
+  isOpen: true;
+  type: 'auth';
+  view: TAuthForms;
+}
+
+export interface ICreateBoardModal {
+  isOpen: true;
+  type: 'create';
+  view: TMenuModalNames;
+}
+
+export type TModalUpdates = IAuthModal | ICreateBoardModal | IModal<false>;
 
 export type TUserHeaderProps = Omit<OmitedSafeUser, 'subs'>;

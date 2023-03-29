@@ -33,8 +33,15 @@ const authFormTypeLogin = 'login';
 const authFormTypeSignup = 'signup';
 
 const isDev = () => process.env.NODE_ENV === 'development';
+
 const BASE_URL = isDev() ? 'http://localhost:3000' : process.env['BASE_URL'];
+
 const MONGO_DB_NAME = isDev() ? 'Local_Trello' : process.env['DB_NAME'];
+
+const SESSION_MAX_AGE_DAYS = isDev()
+  ? 30
+  : Number(process.env['JWT_OPT_EXPIRE_DAYS']);
+const JWT_MAX_AGE_DAYS = SESSION_MAX_AGE_DAYS;
 
 const UNSAFE_USER_PROPS = ['password'];
 
@@ -48,6 +55,8 @@ const EMPTY_TOAST: ToastProps = {
 const API_BOARDS_URL = '/api/boards';
 
 export {
+  SESSION_MAX_AGE_DAYS,
+  JWT_MAX_AGE_DAYS,
   API_BOARDS_URL,
   DEFAULT_TOAST_TIMEOUT,
   EMPTY_TOAST,

@@ -26,7 +26,6 @@ export default function Home({ boards }: Props) {
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const session = await getServerSession(context.req, context.res, authOptions);
-  console.log('session: ', session);
 
   if (session) {
     try {
@@ -38,7 +37,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
             'Content-type': 'application/json',
           },
           body: JSON.stringify({
-            userId: session.user._id,
+            userId: session.user.id,
             subs: session.user.subs,
           }),
         },

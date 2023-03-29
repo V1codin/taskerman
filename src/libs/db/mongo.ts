@@ -110,7 +110,7 @@ export class MongoDataBaseProvider {
       : user.subs.map((item) => String(item));
 
     const result = {
-      _id: user._id,
+      id: user._id,
       email: user.email,
       username: user.username,
       displayName: user.displayName,

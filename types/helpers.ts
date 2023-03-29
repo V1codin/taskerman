@@ -19,3 +19,11 @@ export type ToastProps = {
 } & ToastComponentProps;
 
 export type TToast = ToastProps[];
+
+export type TCSSMeasurementValue =
+  | `${number}px`
+  | `${number}em`
+  | `${number}%`
+  | `${number}rem`;
+
+export type TDropDownMinWidth = TCSSMeasurementValue;
