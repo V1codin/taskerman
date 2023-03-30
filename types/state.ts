@@ -93,14 +93,17 @@ export type TAuthTypes = 'google';
 export type TMenuModalNames = 'create_board';
 export type TAuthForms = 'login' | 'signup' | 'resetPassword';
 export type TModalForms = TAuthForms | TMenuModalNames;
-export type TModalTypes = 'auth' | 'create';
+
+export type TModalAuth = 'auth';
+export type TModalCreate = 'create';
+export type TModalTypes = TModalAuth | TModalCreate;
 export type IModalWindow =
   | {
-      type: 'auth';
+      type: TModalAuth;
       view: TAuthForms;
     }
   | {
-      type: 'create';
+      type: TModalCreate;
       view: TMenuModalNames;
     };
 

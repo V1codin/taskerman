@@ -1,10 +1,8 @@
 import CredentialsProvider from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
 import NextAuth from 'next-auth';
-import mongoProvider from '@/libs/db/mongo';
-import encrypt from '@/libs/encrypt.service';
 
-import { dbConnect, clientPromise } from '@/libs/db/connect';
+import { clientPromise } from '@/libs/db/connect';
 import { NextAuthOptions } from 'next-auth';
 import { MongoDBAdapter } from '@next-auth/mongodb-adapter';
 import {
@@ -15,6 +13,7 @@ import {
 } from '@/utils/constants';
 import { SessionUser } from '../../../../types/db';
 import { getAgeInSec } from '@/utils/helpers';
+import { authService } from '@/libs/auth.service';
 
 export const authOptions: NextAuthOptions = {
   session: {
@@ -23,9 +22,7 @@ export const authOptions: NextAuthOptions = {
   },
   jwt: {
     maxAge: getAgeInSec({ days: JWT_MAX_AGE_DAYS }),
-    secret: process.env['NEXTAUTH_JWT_SECRET'],
   },
-
   secret: process.env['NEXTAUTH_SECRET'],
   pages: {
     signIn: '/',
@@ -48,6 +45,7 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
   },
+
   useSecureCookies: !isDev(),
   adapter: MongoDBAdapter(clientPromise, {
     databaseName: MONGO_DB_NAME,
@@ -83,32 +81,13 @@ export const authOptions: NextAuthOptions = {
         // You can also use the `req` object to obtain additional parameters
         // (i.e., the request IP address)
         try {
-          await dbConnect();
-
-          const userFromBD = await mongoProvider.getUserByUserName(
-            credentials?.username!,
-          );
-
-          if (!userFromBD) {
-            throw new Error('Wrong username or password');
+          if (!credentials || !credentials.username || !credentials.password) {
+            return null;
           }
 
-          const pw = userFromBD.password;
-          const isValidPw = await encrypt.compare(credentials?.password!, pw);
+          const user = await authService.authorizeWithCredentials(credentials!);
 
-          if (!isValidPw) {
-            throw new Error('Wrong password');
-          }
-          const user = await mongoProvider.getSafeUser(userFromBD);
-
-          return {
-            id: user.id,
-            subs: user.subs,
-            displayName: user.displayName,
-            imageURL: user.imageURL,
-            email: user.email,
-            username: user.username,
-          };
+          return user;
         } catch (e) {
           return null;
         }

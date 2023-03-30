@@ -35,8 +35,13 @@ const authFormTypeSignup = 'signup';
 const isDev = () => process.env.NODE_ENV === 'development';
 
 const BASE_URL = isDev() ? 'http://localhost:3000' : process.env['BASE_URL'];
+const DOMAIN = isDev() ? '.localhost' : process.env['DOMAIN'];
 
 const MONGO_DB_NAME = isDev() ? 'Local_Trello' : process.env['DB_NAME'];
+
+const AUTH_TOKEN_COOKIE_NAME = isDev()
+  ? 'next-auth.session-token'
+  : process.env['AUTH_TOKEN_COOKIE_NAME']!;
 
 const SESSION_MAX_AGE_DAYS = isDev()
   ? 30
@@ -55,6 +60,8 @@ const EMPTY_TOAST: ToastProps = {
 const API_BOARDS_URL = '/api/boards';
 
 export {
+  AUTH_TOKEN_COOKIE_NAME,
+  DOMAIN,
   SESSION_MAX_AGE_DAYS,
   JWT_MAX_AGE_DAYS,
   API_BOARDS_URL,

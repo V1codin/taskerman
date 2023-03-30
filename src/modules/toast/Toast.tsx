@@ -9,7 +9,7 @@ const StyledContainer = styled.div`
   top: 0;
   left: 50%;
   transform: translate(-50%, 0%);
-  z-index: 8000;
+  z-index: 8010;
 
   width: fit-content;
 
@@ -24,7 +24,7 @@ const StyledContainer = styled.div`
   animation-fill-mode: forwards;
 
   text-align: center;
-  background-color: var(--black-aqua);
+  background-color: var(--monokai);
   box-shadow: 0 0 5px var(--pink);
 `;
 

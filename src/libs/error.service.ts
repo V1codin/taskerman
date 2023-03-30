@@ -27,6 +27,10 @@ export class ServerResponseError extends Error {
         return this.message || 'Error: Document was not found';
       }
 
+      case 400: {
+        return this.message || 'Error: Bad request';
+      }
+
       default: {
         return 'Unexpected error';
       }

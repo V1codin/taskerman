@@ -1,8 +1,8 @@
 import BoardsContainer from '@/components/BoardsContainer/BoardsContainer';
 import HeaderLayout from '@/layouts/HeaderLayout';
-import fetcher from '@/libs/fetcher';
 
-import { API_BOARDS_URL, BASE_URL } from '@/utils/constants';
+import { getBoards } from '@/utils/api/boards';
+import { AUTH_TOKEN_COOKIE_NAME } from '@/utils/constants';
 import { GetServerSidePropsContext } from 'next';
 import { getServerSession } from 'next-auth/next';
 import { useSession } from 'next-auth/react';
@@ -28,20 +28,10 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   const session = await getServerSession(context.req, context.res, authOptions);
 
   if (session) {
+    const token = context.req.cookies[AUTH_TOKEN_COOKIE_NAME];
+
     try {
-      const boards = await fetcher<{ data: TBoard[] }>(
-        `${BASE_URL}${API_BOARDS_URL}`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-type': 'application/json',
-          },
-          body: JSON.stringify({
-            userId: session.user.id,
-            subs: session.user.subs,
-          }),
-        },
-      );
+      const boards = await getBoards(session.user.username, token);
 
       return {
         props: {

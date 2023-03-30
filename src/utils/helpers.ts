@@ -98,3 +98,28 @@ export const getAgeInSec = ({
 
   return daysInSec + minsInSec + hoursInSec + sec;
 };
+
+const isImage = (src: string): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const img = document.createElement('img');
+    img.src = src;
+
+    img.onload = () => resolve(src);
+
+    img.onerror = () => {
+      reject('Your link has no image');
+    };
+  });
+};
+
+export const getDataFromClipBoard = async () => {
+  try {
+    const link = await navigator.clipboard.readText();
+    if (!isLink(link)) return Promise.reject('Your link has no image');
+
+    const result = await isImage(link);
+    return result;
+  } catch (e) {
+    throw e;
+  }
+};

@@ -41,8 +41,10 @@ const DefaultHeader: React.FC<DefaultHeaderProps> = () => {
   const openModal = (e: React.MouseEvent<HTMLButtonElement>) => {
     setAuthState({
       isOpen: true,
-      view: e.currentTarget.name as TAuthForms,
-      type: 'auth',
+      window: {
+        type: 'auth',
+        view: e.currentTarget.name as TAuthForms,
+      },
     });
   };
 

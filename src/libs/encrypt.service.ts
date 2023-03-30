@@ -49,6 +49,8 @@ export class EncryptService {
   }
 }
 
+export type TEncryptService = EncryptService;
+
 const encrypt = new EncryptService({
   saltRounds: Number(process.env['SALT_ROUNDS']),
 });

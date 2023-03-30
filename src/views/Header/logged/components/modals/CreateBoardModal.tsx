@@ -10,57 +10,99 @@ import {
   useState,
   SyntheticEvent,
   BaseSyntheticEvent,
+  CSSProperties,
 } from 'react';
+import { getDataFromClipBoard } from '@/utils/helpers';
+import { useToast } from '@/hooks/hooks';
 
 type CreateBoardModalProps = {};
 
 const CreateBoardModal: React.FC<CreateBoardModalProps> = () => {
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<{
+    bg: string;
+    title: string;
+    link: string;
+    style: CSSProperties;
+  }>({
     bg: STANDARD_BG,
     title: '',
     link: '',
+    style: {},
   });
 
-  const changeHandlerClick = (e: SyntheticEvent<HTMLButtonElement>) => {
-    e.preventDefault();
+  const { setToast } = useToast();
 
-    const name = e.currentTarget.name;
-    const value = e.currentTarget.value;
-
-    const formValue = form[name as keyof typeof form];
+  const updateForm = (name: keyof typeof form, value: string) => {
+    const formValue = form[name];
     if (formValue !== value) {
-      setForm({
-        ...form,
-        [name]: value,
+      setForm((prev) => {
+        const customBgStyle =
+          name === 'bg' && value !== ''
+            ? {
+                backgroundColor: value,
+              }
+            : prev.style;
+        return {
+          ...prev,
+          [name]: value,
+          style: customBgStyle,
+        };
       });
     }
+  };
+
+  const changeHandlerClick = async (e: SyntheticEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+
+    const name = e.currentTarget.name as keyof typeof form;
+    const value = e.currentTarget.value;
+
+    if (name === 'link') {
+      try {
+        const link = await getDataFromClipBoard();
+        const customBgStyle = {
+          backgroundImage: `url(${link})`,
+          backgroundSize: 'cover',
+          backgroundRepeat: 'no-repeat',
+        };
+        setForm({
+          ...form,
+          bg: link,
+          link,
+          style: customBgStyle,
+        });
+      } catch (e) {
+        setToast({
+          message: e as string,
+          typeClass: 'warning',
+        });
+      }
+      return;
+    }
+
+    updateForm(name, value);
   };
 
   const changeHandler = async (e: ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
 
-    const name = e.target.name;
+    const name = e.target.name as keyof typeof form;
     const value = e.target.value;
 
-    const formValue = form[name as keyof typeof form];
-    if (formValue !== value) {
-      setForm({
-        ...form,
-        [name]: value,
-      });
-    }
+    updateForm(name, value);
   };
 
   const createBoard = async (e: BaseSyntheticEvent) => {
     e.preventDefault();
+    console.log(form);
   };
 
   return (
-    <FormWrapper submit={createBoard}>
+    <FormWrapper submit={createBoard} formStyle={form.style}>
       <h3 className="form__heading">Add board</h3>
       <input
         type="text"
-        name={'title' as keyof typeof form}
+        name="title"
         className="form__input"
         placeholder="Enter board title"
         value={form.title}
@@ -79,7 +121,7 @@ const CreateBoardModal: React.FC<CreateBoardModalProps> = () => {
                   style={{ backgroundColor: backgroundColor }}
                   onClick={changeHandlerClick}
                   value={backgroundColor}
-                  name={'bg' as keyof typeof form}
+                  name="bg"
                 ></button>
               </li>
             );
@@ -102,18 +144,20 @@ const CreateBoardModal: React.FC<CreateBoardModalProps> = () => {
         <li>
           <input
             className="colorPicker__el card_design"
-            name={'bg' as keyof typeof form}
+            name="bg"
             type="color"
-            style={{ backgroundColor: '#ffffffb0' }}
+            style={{
+              height: '32px',
+              width: '32px',
+              padding: '11px',
+              backgroundColor: '#ffffffb0',
+              marginTop: '12px',
+            }}
             onChange={changeHandler}
           />
         </li>
       </ul>
-      <button
-        className="form__btn"
-        type="submit"
-        disabled={form.title === '' || form.title === undefined ? true : false}
-      >
+      <button className="form__btn" type="submit" disabled={form.title === ''}>
         Create Board
       </button>
     </FormWrapper>

@@ -83,6 +83,9 @@ export const StyledForm = styled.form`
   .menu_linkBg {
     padding: 5px !important;
     margin-right: 0 !important;
+    width: 32px;
+    height: 32px;
+    background-color: transparent;
   }
   .colorPicker__el {
     cursor: pointer;
