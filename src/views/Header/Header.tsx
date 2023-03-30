@@ -17,8 +17,7 @@ const Header: React.FC<HeaderProps> = () => {
   const close = () => {
     setAuthState({
       isOpen: false,
-      view: null,
-      type: null,
+      window: null,
     });
   };
 
@@ -31,7 +30,7 @@ const Header: React.FC<HeaderProps> = () => {
         />
       )}
       <Modal isOpen={authState.isOpen} close={close}>
-        <ModalForms view={authState.view} type={authState.type} />
+        <ModalForms window={authState.window!} />
       </Modal>
       <ActiveLink href="/" className="header__link" activeClassName="">
         <h1>TaskerMan</h1>

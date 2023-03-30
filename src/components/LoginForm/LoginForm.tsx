@@ -3,20 +3,19 @@ import GoogleIcon from '@/assets/google_icon.svg?url';
 import ActiveLink from '@/modules/activeLink/ActiveLink';
 import ButtonWithLoader from '@/modules/button/ButtonWithLoader';
 import ImageModule from '@/modules/image/Image';
+import Router from 'next/router';
 
 import { userLoginSchema } from '../../../types/state';
 import { FormWrapper } from '@/modules/formWrapper/FormWrapper';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ToastProps, TOAuth } from '../../../types/helpers';
 import { TUserLogin } from '../../../types/state';
 import { useDebounce, useToast } from '@/hooks/hooks';
-import { useState } from 'react';
 import { useAtom } from 'jotai';
 import { getSetModal } from '@/context/stateManager';
 import { signIn } from 'next-auth/react';
-import Router from 'next/router';
 
 type LoginFormProps = {};
 
@@ -62,8 +61,7 @@ const LoginForm: React.FC<LoginFormProps> = () => {
 
       setAuthState({
         isOpen: false,
-        view: null,
-        type: null,
+        window: null,
       });
       Router.push('/');
     } catch (e) {
@@ -85,8 +83,10 @@ const LoginForm: React.FC<LoginFormProps> = () => {
     e.preventDefault();
     setAuthState({
       isOpen: true,
-      view: 'signup',
-      type: 'auth',
+      window: {
+        type: 'auth',
+        view: 'signup',
+      },
     });
   };
 

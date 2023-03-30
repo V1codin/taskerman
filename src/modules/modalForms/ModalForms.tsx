@@ -2,13 +2,15 @@ import AuthForms from './authForms/AuthForms';
 import CreateForms from './createForms/CreateForms';
 
 import {
-  TModalUpdates,
+  IModalWindow,
   TAuthForms,
   TMenuModalNames,
 } from '../../../types/state';
-type ModalFormsProps = {} & Omit<TModalUpdates, 'isOpen'>;
+type ModalFormsProps = {
+  window: IModalWindow;
+};
 
-const ModalForms: React.FC<ModalFormsProps> = ({ type, view }) => {
+const ModalForms: React.FC<ModalFormsProps> = ({ window: { type, view } }) => {
   if (!type) return null;
 
   if (type === 'auth') {
