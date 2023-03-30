@@ -96,8 +96,10 @@ const Menu: React.FC<MenuProps> = ({ user, logout, containerRef }) => {
       closeAllDropDowns();
       setAuthState({
         isOpen: true,
-        type: 'create',
-        view: modalName,
+        window: {
+          type: 'create',
+          view: modalName,
+        },
       });
     };
   };
