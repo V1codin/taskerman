@@ -1,4 +1,5 @@
-import { ToastProps } from '../../types/helpers';
+import { ToastProps } from '@/types/helpers';
+import { IModal } from '@/types/state';
 
 const STANDARD_BG = '#091921';
 const BG_IMAGE = '';
@@ -59,7 +60,13 @@ const EMPTY_TOAST: ToastProps = {
 
 const API_BOARDS_URL = '/api/boards';
 
+const DEFAULT_MODAL_STATE: IModal<false> = {
+  isOpen: false,
+  window: null,
+};
+
 export {
+  DEFAULT_MODAL_STATE,
   AUTH_TOKEN_COOKIE_NAME,
   DOMAIN,
   SESSION_MAX_AGE_DAYS,

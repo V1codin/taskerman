@@ -1,7 +1,7 @@
 import BoardCard from './BoardCard';
 
 import { isLink } from '@/utils/helpers';
-import { TBoard } from '../../../types/db';
+import { TBoard } from '@/types/db';
 import { StyledBoardContainer } from './styledBoardContainer';
 
 type BoardContainerProps = {

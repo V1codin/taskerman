@@ -11,7 +11,7 @@ import {
   MONGO_DB_NAME,
   SESSION_MAX_AGE_DAYS,
 } from '@/utils/constants';
-import { SessionUser } from '../../../../types/db';
+import { SessionUser } from '@/types/db';
 import { getAgeInSec } from '@/utils/helpers';
 import { authService } from '@/libs/auth.service';
 

@@ -1,7 +1,7 @@
 import LoginForm from '@/components/LoginForm/LoginForm';
 import SignUpForm from '@/components/SignUpForm/SignUpForm';
 
-import { TAuthForms } from '../../../../types/state';
+import { TAuthForms } from '@/types/state';
 
 type AuthFormsProps = {
   view: TAuthForms;

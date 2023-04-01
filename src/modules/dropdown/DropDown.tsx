@@ -5,7 +5,7 @@ import ImageModule from '../image/Image';
 import { StyledDropDown } from './styledDropDown';
 import { useEscapeCallback } from '@/hooks/hooks';
 import { MouseEvent, SyntheticEvent } from 'react';
-import { TDropDownMinWidth } from '../../../types/helpers';
+import { TDropDownMinWidth } from '@/types/helpers';
 
 type DropDownProps = {
   heading?: string;

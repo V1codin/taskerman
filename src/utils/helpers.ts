@@ -9,7 +9,7 @@ import image_4 from '@/assets/info_img4.jpg?url';
 // @ts-ignore
 import image_5 from '@/assets/info_img5.jpg?url';
 
-import { IMasks } from '../../types/helpers';
+import { IMasks } from '@/types/helpers';
 
 export const masks: IMasks = {
   username: /^[a-zA-Z0-9]{4,16}$/,

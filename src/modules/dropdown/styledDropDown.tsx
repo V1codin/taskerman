@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-import { TDropDownMinWidth } from '../../../types/helpers';
+import { TDropDownMinWidth } from '@/types/helpers';
 
 type DropDownProps = {
   minWidth?: TDropDownMinWidth;

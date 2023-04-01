@@ -5,13 +5,13 @@ import ButtonWithLoader from '@/modules/button/ButtonWithLoader';
 import ImageModule from '@/modules/image/Image';
 import Router from 'next/router';
 
-import { userLoginSchema } from '../../../types/state';
+import { userLoginSchema } from '@/types/state';
 import { FormWrapper } from '@/modules/formWrapper/FormWrapper';
 import { useCallback, useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ToastProps, TOAuth } from '../../../types/helpers';
-import { TUserLogin } from '../../../types/state';
+import { ToastProps, TOAuth } from '@/types/helpers';
+import { TUserLogin } from '@/types/state';
 import { useDebounce, useToast } from '@/hooks/hooks';
 import { useAtom } from 'jotai';
 import { getSetModal } from '@/context/stateManager';

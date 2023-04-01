@@ -3,7 +3,7 @@ import Menu from './components/Menu';
 import { StyledNav } from './styledNav';
 import { signOut } from 'next-auth/react';
 import { useCallback, useRef } from 'react';
-import { SessionUser } from '../../../../types/db';
+import { SessionUser } from '@/types/db';
 
 type LoggedHeaderProps = {
   userData: SessionUser;

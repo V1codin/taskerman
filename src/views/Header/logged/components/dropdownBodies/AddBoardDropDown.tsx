@@ -1,7 +1,7 @@
 import DropDown from '@/modules/dropdown/DropDown';
 
 import { MouseEvent, MouseEventHandler, SyntheticEvent } from 'react';
-import { TMenuModalNames } from '../../../../../../types/state';
+import { TMenuModalNames } from '@/types/state';
 
 type AddBoardDropDownProps = {
   closeDropDown: (

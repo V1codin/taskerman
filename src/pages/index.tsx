@@ -8,17 +8,25 @@ import { getServerSession } from 'next-auth/next';
 import { useSession } from 'next-auth/react';
 import { TBoard } from '@/types/db';
 import { authOptions } from './api/auth/[...nextauth]';
+import { useHydrateAtoms } from 'jotai/utils';
+import { boardsStateAtom } from '@/context/stateManager';
+import { useAtomValue } from 'jotai';
 
 type Props = {
   boards?: TBoard[];
 };
 
 export default function Home({ boards }: Props) {
+  useHydrateAtoms([[boardsStateAtom, boards]]);
   const { status } = useSession();
+
+  // TODO updating boards after creating one
+  const hydratedBoards = useAtomValue(boardsStateAtom);
+
   return (
     <HeaderLayout>
       {status === 'authenticated' && boards && (
-        <BoardsContainer boards={boards} />
+        <BoardsContainer boards={hydratedBoards} />
       )}
     </HeaderLayout>
   );

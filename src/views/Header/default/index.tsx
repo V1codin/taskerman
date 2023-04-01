@@ -2,7 +2,7 @@ import styled from 'styled-components';
 
 import { useAtom } from 'jotai';
 import { getSetModal } from '@/context/stateManager';
-import { TAuthForms } from '../../../../types/state';
+import { TAuthForms } from '@/types/state';
 
 type DefaultHeaderProps = {};
 

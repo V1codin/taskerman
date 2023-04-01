@@ -1,6 +1,7 @@
 import ImageModule from '@/modules/image/Image';
 // @ts-ignore
 import link from '@/assets/link.svg?url';
+import ButtonWithLoader from '@/modules/button/ButtonWithLoader';
 
 import { FormWrapper } from '@/modules/formWrapper/FormWrapper';
 import { addBoardColors, STANDARD_BG } from '@/utils/constants';
@@ -16,8 +17,17 @@ import { getDataFromClipBoard } from '@/utils/helpers';
 import { useToast } from '@/hooks/hooks';
 import { createBoard } from '@/utils/api/boards';
 import { useSession } from 'next-auth/react';
+import { useSetAtom } from 'jotai';
+import { getSetBoardsState } from '@/context/stateManager';
 
 type CreateBoardModalProps = {};
+
+const defaultFormState = {
+  bg: STANDARD_BG,
+  title: '',
+  link: '',
+  style: {},
+};
 
 const CreateBoardModal: React.FC<CreateBoardModalProps> = () => {
   const [form, setForm] = useState<{
@@ -25,15 +35,12 @@ const CreateBoardModal: React.FC<CreateBoardModalProps> = () => {
     title: string;
     link: string;
     style: CSSProperties;
-  }>({
-    bg: STANDARD_BG,
-    title: '',
-    link: '',
-    style: {},
-  });
+  }>(defaultFormState);
 
   const { setToast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
   const { data, status } = useSession();
+  const updateBoards = useSetAtom(getSetBoardsState);
 
   const updateForm = (name: keyof typeof form, value: string) => {
     const formValue = form[name];
@@ -102,6 +109,7 @@ const CreateBoardModal: React.FC<CreateBoardModalProps> = () => {
         throw new Error('Please log into your account');
       }
 
+      setIsLoading(true);
       const result = await createBoard({
         bg: form.bg,
         members: [],
@@ -114,11 +122,15 @@ const CreateBoardModal: React.FC<CreateBoardModalProps> = () => {
         typeClass: 'notification',
         message: `Board ${result.data.title} was created`,
       });
+      setForm(defaultFormState);
+      updateBoards(result.data);
     } catch (e) {
       setToast({
         typeClass: 'warning',
         message: e instanceof Error ? e.message : 'Unexpected error',
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -185,9 +197,16 @@ const CreateBoardModal: React.FC<CreateBoardModalProps> = () => {
           />
         </li>
       </ul>
-      <button className="form__btn" type="submit" disabled={form.title === ''}>
+      <ButtonWithLoader
+        isLoading={isLoading}
+        attrs={{
+          className: 'form__btn',
+          type: 'submit',
+          disabled: form.title === '',
+        }}
+      >
         Create Board
-      </button>
+      </ButtonWithLoader>
     </FormWrapper>
   );
 };

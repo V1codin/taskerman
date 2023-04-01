@@ -1,11 +1,7 @@
 import AuthForms from './authForms/AuthForms';
 import CreateForms from './createForms/CreateForms';
 
-import {
-  IModalWindow,
-  TAuthForms,
-  TMenuModalNames,
-} from '../../../types/state';
+import { IModalWindow, TAuthForms, TMenuModalNames } from '@/types/state';
 type ModalFormsProps = {
   window: IModalWindow;
 };

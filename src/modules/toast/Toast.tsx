@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 import { memo } from 'react';
-import { ToastComponentProps } from '../../../types/helpers';
+import { ToastComponentProps } from '@/types/helpers';
 
 const StyledContainer = styled.div`
   position: absolute;

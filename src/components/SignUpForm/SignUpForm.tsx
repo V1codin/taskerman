@@ -3,11 +3,7 @@ import ImageModule from '@/modules/image/Image';
 // @ts-ignore
 import GoogleIcon from '@/assets/google_icon.svg?url';
 
-import {
-  TAuthTypes,
-  TUserSignUp,
-  userSignUpSchema,
-} from '../../../types/state';
+import { TAuthTypes, TUserSignUp, userSignUpSchema } from '@/types/state';
 import { FormWrapper } from '@/modules/formWrapper/FormWrapper';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
