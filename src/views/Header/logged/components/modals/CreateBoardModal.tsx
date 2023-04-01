@@ -14,6 +14,8 @@ import {
 } from 'react';
 import { getDataFromClipBoard } from '@/utils/helpers';
 import { useToast } from '@/hooks/hooks';
+import { createBoard } from '@/utils/api/boards';
+import { useSession } from 'next-auth/react';
 
 type CreateBoardModalProps = {};
 
@@ -31,6 +33,7 @@ const CreateBoardModal: React.FC<CreateBoardModalProps> = () => {
   });
 
   const { setToast } = useToast();
+  const { data, status } = useSession();
 
   const updateForm = (name: keyof typeof form, value: string) => {
     const formValue = form[name];
@@ -92,13 +95,35 @@ const CreateBoardModal: React.FC<CreateBoardModalProps> = () => {
     updateForm(name, value);
   };
 
-  const createBoard = async (e: BaseSyntheticEvent) => {
+  const createBoardHandler = async (e: BaseSyntheticEvent) => {
     e.preventDefault();
-    console.log(form);
+    try {
+      if (status !== 'authenticated') {
+        throw new Error('Please log into your account');
+      }
+
+      const result = await createBoard({
+        bg: form.bg,
+        members: [],
+        pendingMembers: [],
+        title: form.title,
+        ownerId: data?.user.id!,
+      });
+
+      setToast({
+        typeClass: 'notification',
+        message: `Board ${result.data.title} was created`,
+      });
+    } catch (e) {
+      setToast({
+        typeClass: 'warning',
+        message: e instanceof Error ? e.message : 'Unexpected error',
+      });
+    }
   };
 
   return (
-    <FormWrapper submit={createBoard} formStyle={form.style}>
+    <FormWrapper submit={createBoardHandler} formStyle={form.style}>
       <h3 className="form__heading">Add board</h3>
       <input
         type="text"
@@ -107,6 +132,9 @@ const CreateBoardModal: React.FC<CreateBoardModalProps> = () => {
         placeholder="Enter board title"
         value={form.title}
         onChange={changeHandler}
+        style={{
+          backgroundColor: '#333333a1',
+        }}
         required
         autoFocus
       />

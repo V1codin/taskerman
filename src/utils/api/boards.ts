@@ -1,6 +1,6 @@
 import fetcher from '@/libs/fetcher';
 
-import { TBoard } from '../../../types/db';
+import { TBoard, TCreatingBoard } from '@/types/db';
 import { API_BOARDS_URL, BASE_URL } from '../constants';
 
 export const getBoards = (username: string, token: string | undefined) => {
@@ -13,4 +13,14 @@ export const getBoards = (username: string, token: string | undefined) => {
       },
     },
   );
+};
+
+export const createBoard = (board: TCreatingBoard) => {
+  return fetcher<{ data: TBoard }>(`${BASE_URL}${API_BOARDS_URL}`, {
+    method: 'POST',
+    headers: {
+      'Content-type': 'application/json; charset=utf-8',
+    },
+    body: JSON.stringify(board),
+  });
 };

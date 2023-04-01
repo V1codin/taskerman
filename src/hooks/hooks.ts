@@ -18,12 +18,7 @@ const useToast = (timerToRemoveToast: number = 2000) => {
       });
     };
 
-    const time = setTimeout(resetToast, toast.timeout || timerToRemoveToast);
-
-    return () => {
-      clearTimeout(time);
-      resetToast();
-    };
+    setTimeout(resetToast, toast.timeout || timerToRemoveToast);
   }, [setToast, toast.message, timerToRemoveToast, toast.timeout]);
 
   return {

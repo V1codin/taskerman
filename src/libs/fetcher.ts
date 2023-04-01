@@ -13,7 +13,8 @@ export default async function fetcher<JSON extends unknown>(
   }
 
   throw new ServerResponseError({
-    message: data.message || response.statusText,
-    code: data.code || response.status,
+    code: data.code || response.status || 500,
+    message:
+      data.message || response.statusText || 'Error: Server does not response',
   });
 }

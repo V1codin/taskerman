@@ -10,7 +10,7 @@ import AddBoardDropDown from './dropdownBodies/AddBoardDropDown';
 import AccountDropDown from './dropdownBodies/AccountDropDown';
 import InfoBoardDropDownProps from './dropdownBodies/InfoBoardDropDown';
 
-import { SessionUser } from '../../../../../types/db';
+import { SessionUser } from '@/types/db';
 import {
   useState,
   SyntheticEvent,
@@ -18,7 +18,7 @@ import {
   MutableRefObject,
 } from 'react';
 import { useOuterCLick } from '@/hooks/hooks';
-import { TMenuModalNames } from '../../../../../types/state';
+import { TMenuModalNames } from '@/types/state';
 import { getSetModal } from '@/context/stateManager';
 import { useAtom } from 'jotai';
 
@@ -42,7 +42,7 @@ const Menu: React.FC<MenuProps> = ({ user, logout, containerRef }) => {
     account: false,
   };
   const [dropState, setDropState] = useState<DropState>(defaultDropState);
-  const [, setAuthState] = useAtom(getSetModal);
+  const [, setModalState] = useAtom(getSetModal);
 
   const closeAllDropDowns = () => {
     setDropState(defaultDropState);
@@ -94,7 +94,7 @@ const Menu: React.FC<MenuProps> = ({ user, logout, containerRef }) => {
   const openModal = (modalName: TMenuModalNames) => {
     return () => {
       closeAllDropDowns();
-      setAuthState({
+      setModalState({
         isOpen: true,
         window: {
           type: 'create',

@@ -19,11 +19,14 @@ const defaultModalState: IModal<false> = {
 export const modalAtom = atom<IModal<boolean>>(defaultModalState);
 export const getSetModal: WritableAtom<
   IModal<boolean>,
-  [update: IModal<boolean>],
+  [update: IModal<boolean>, callback?: () => void],
   void
 > = atom(
   (get) => get(modalAtom),
-  (_, set, update) => {
+  (_, set, update, callback) => {
     set(modalAtom, update);
+    if (typeof callback === 'function') {
+      callback();
+    }
   },
 );

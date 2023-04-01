@@ -1,7 +1,28 @@
-export class ServerResponseError extends Error {
-  code: number;
+type TServerResponseCodes = 500 | 403 | 404 | 400;
 
-  constructor({ message, code }: { message?: string; code: number }) {
+/*
+type TMessages = {
+  500: 'Error: Server does not response';
+  403: 'Error: Unauthorized';
+  404: 'Error: Document was not found';
+  400: 'Error: Bad request';
+};
+*/
+
+type TServerMessages<TCode extends TServerResponseCodes> = TCode extends 500
+  ? 'Error: Server does not response'
+  : TCode extends 403
+  ? 'Error: Unauthorized'
+  : TCode extends 404
+  ? 'Error: Document was not found'
+  : TCode extends 400
+  ? 'Error: Bad request'
+  : 'Unexpected error';
+
+export class ServerResponseError<T extends TServerResponseCodes> extends Error {
+  code: TServerResponseCodes;
+
+  constructor({ message, code }: { message: TServerMessages<T>; code: T }) {
     super(message);
 
     if (Error.captureStackTrace) {
@@ -9,31 +30,7 @@ export class ServerResponseError extends Error {
     }
 
     this.name = 'ServerResponseError';
-    this.message = this.reducer(code);
+    this.message = message;
     this.code = code;
-  }
-
-  reducer(code: number) {
-    switch (code) {
-      case 500: {
-        return this.message || 'Error: Server does not response';
-      }
-
-      case 403: {
-        return this.message || 'Error: Unauthorized';
-      }
-
-      case 404: {
-        return this.message || 'Error: Document was not found';
-      }
-
-      case 400: {
-        return this.message || 'Error: Bad request';
-      }
-
-      default: {
-        return 'Unexpected error';
-      }
-    }
   }
 }

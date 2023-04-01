@@ -2,23 +2,17 @@ import mongoProvider from '@/libs/db/mongo';
 
 import { getToken } from 'next-auth/jwt';
 import { dbConnect } from '@/libs/db/connect';
-import type { NextApiRequest, NextApiResponse } from 'next';
-import { TError } from '../../../types/state';
-import { TBoardReturn, TMetods } from '../../../types/api';
+import type { NextApiResponse } from 'next';
+import type { TError } from '@/types/state';
+import { TGetBoardReturnByMethod, TMethods, BoardsRequest } from '@/types/api';
 import { ServerResponseError } from '@/libs/error.service';
+import { TCreatingBoard, creatingBoardSchema } from '@/types/db';
+import { boardService } from '@/libs/boards.service';
 
-const boardsReducer = async <T extends unknown>(
-  method: TMetods,
-  body: T,
-  req: NextApiRequest,
-): Promise<TBoardReturn<TMetods, T>> => {
-  if (!method) {
-    return {
-      status: 500,
-      data: null,
-    };
-  }
-
+const boardsReducer = async <TMethod extends TMethods>(
+  method: TMethod,
+  req: BoardsRequest,
+): Promise<TGetBoardReturnByMethod<TMethod>> => {
   const token = await getToken({
     req,
   });
@@ -26,9 +20,11 @@ const boardsReducer = async <T extends unknown>(
   if (!token) {
     throw new ServerResponseError({
       code: 403,
+      message: 'Error: Unauthorized',
     });
   }
 
+  // ? GET is for getting all boards
   if (method === 'GET') {
     const { username } = req.query;
 
@@ -36,6 +32,7 @@ const boardsReducer = async <T extends unknown>(
       if (!username || typeof username !== 'string') {
         throw new ServerResponseError({
           code: 400,
+          message: 'Error: Bad request',
         });
       }
 
@@ -44,13 +41,13 @@ const boardsReducer = async <T extends unknown>(
       if (!userId) {
         throw new ServerResponseError({
           code: 404,
+          message: 'Error: Document was not found',
         });
       }
 
-      const boards = await mongoProvider.getUserBoards(userId._id);
+      const boards = await boardService.getUserBoards(userId._id);
 
       return {
-        status: 200,
         data: boards,
       };
     } catch (e) {
@@ -60,34 +57,49 @@ const boardsReducer = async <T extends unknown>(
 
       throw new ServerResponseError({
         code: 500,
+        message: 'Error: Server does not response',
       });
     }
   }
 
+  // ? POST is for creating board
+  if (method === 'POST') {
+    const parsedBody = creatingBoardSchema.safeParse(req.body);
+    if (!parsedBody.success) {
+      throw new ServerResponseError({
+        code: 400,
+        message: 'Error: Bad request',
+      });
+    }
+
+    const body = req.body as TCreatingBoard;
+    const createdBoard = await boardService.createBoard(body);
+
+    return {
+      data: createdBoard,
+    };
+  }
+
   return {
-    status: 500,
-    data: null,
+    data: [],
   };
 };
 
 export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<
-    | {
-        data: Awaited<ReturnType<typeof boardsReducer>>;
-      }
-    | TError
-  >,
+  req: BoardsRequest,
+  res: NextApiResponse<Awaited<ReturnType<typeof boardsReducer>> | TError>,
 ) {
   try {
-    const { status, data } = await boardsReducer(
-      req?.method as TMetods,
-      req.body,
-      req,
-    );
+    if (!req.method) {
+      throw new ServerResponseError({
+        code: 400,
+        message: 'Error: Bad request',
+      });
+    }
+    const { data } = await boardsReducer(req.method as TMethods, req);
 
-    res.status(status).json({
-      data: data,
+    res.status(200).json({
+      data,
     });
   } catch (e) {
     if (e instanceof ServerResponseError) {

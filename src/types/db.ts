@@ -1,17 +1,28 @@
+import { TypeOf, z } from 'zod';
 import { IUser } from '@/models/users';
 
 export interface IDbCollections {
   users: IUser;
 }
 
-export type TBoard = {
-  members: OmitedSafeBoardMemebers[];
-  pendingMembers: OmitedSafeBoardMemebers[];
+export type TBoard<T extends unknown = OmitedSafeBoardMemebers> = {
+  members: T[];
+  pendingMembers: T[];
   bg: string;
   title: string;
-  owner: OmitedSafeBoardMemebers | null;
+  ownerId: T | null;
   _id: string;
 };
+
+export const creatingBoardSchema = z.object({
+  bg: z.string(),
+  members: z.array(z.string()),
+  ownerId: z.string().or(z.null()),
+  pendingMembers: z.array(z.string()),
+  title: z.string(),
+});
+export type TCreatingBoard = TypeOf<typeof creatingBoardSchema>;
+// export type TCreatingBoard = Omit<TBoard<string>, '_id'>;
 
 export type TUser = {
   id: string;

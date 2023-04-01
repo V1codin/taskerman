@@ -12,7 +12,6 @@ declare module 'next-auth' {
   interface DefaultUser {}
 
   type ISODateString = string;
-  // export type User = SessionUser;
 
   interface Session {
     user: SessionUser;

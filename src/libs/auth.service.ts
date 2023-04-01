@@ -1,18 +1,18 @@
 import { boardService, TBoardsService } from './boards.service';
-import mongoProvider from '@/libs/db/mongo';
+import mongoProvider from '@/db/mongo';
 import encrypt from '@/libs/encrypt.service';
 
+import { Types } from 'mongoose';
 import {
   OmitedSafeBoardMemebers,
   OmitedSafeUser,
   SessionUser,
   TBoardDataClient,
-} from '../../types/db';
-import { TDb } from './db/mongo';
+} from '@/types/db';
+import { TDb } from '@/db/mongo';
 import { TEncryptService } from './encrypt.service';
-import { dbConnect } from './db/connect';
+import { dbConnect } from '@/db/connect';
 import { IUser } from '@/models/users';
-import { Types } from 'mongoose';
 import { IBoard } from '@/models/boards';
 
 type TSafeUser<T extends boolean> = T extends true
@@ -39,7 +39,7 @@ export class AuthService {
   async getSafeBoardData(board: IBoard) {
     const ownerBoardUser = await this.db.getUserById(board.ownerId);
 
-    const owner = !ownerBoardUser
+    const ownerId = !ownerBoardUser
       ? null
       : await this.getSafeUser(ownerBoardUser);
 
@@ -70,7 +70,7 @@ export class AuthService {
     const result: TBoardDataClient = {
       bg: board.bg,
       members,
-      owner,
+      ownerId,
       pendingMembers,
       title: board.title,
     };

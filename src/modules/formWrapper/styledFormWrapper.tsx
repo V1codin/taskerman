@@ -85,7 +85,7 @@ export const StyledForm = styled.form`
     margin-right: 0 !important;
     width: 32px;
     height: 32px;
-    background-color: transparent;
+    background-color: var(--black-aqua);
   }
   .colorPicker__el {
     cursor: pointer;

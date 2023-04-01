@@ -2,6 +2,7 @@ import Users from '@/models/users';
 import Boards from '@/models/boards';
 
 import { Types } from 'mongoose';
+import { TCreatingBoard } from '@/types/db';
 
 export class MongoDataBaseProvider {
   constructor() {}
@@ -48,9 +49,15 @@ export class MongoDataBaseProvider {
 
     return boards;
   }
+
+  createBoard(board: TCreatingBoard) {
+    const result = Boards.create(board);
+
+    return result;
+  }
 }
 
-export type TDb = MongoDataBaseProvider;
 const mongoProvider = new MongoDataBaseProvider();
+export type TDb = MongoDataBaseProvider;
 
 export default mongoProvider;

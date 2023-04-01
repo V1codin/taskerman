@@ -6,7 +6,7 @@ import { AUTH_TOKEN_COOKIE_NAME } from '@/utils/constants';
 import { GetServerSidePropsContext } from 'next';
 import { getServerSession } from 'next-auth/next';
 import { useSession } from 'next-auth/react';
-import { TBoard } from '../../types/db';
+import { TBoard } from '@/types/db';
 import { authOptions } from './api/auth/[...nextauth]';
 
 type Props = {
