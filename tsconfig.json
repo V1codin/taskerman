@@ -5,7 +5,9 @@
     "jsx": "preserve",
     "incremental": true,
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@/types/*": ["./src/types/*"],
+      "@/db/*": ["./src/libs/db/*"]
     },
     "outDir": "build",
     "target": "es2017",
