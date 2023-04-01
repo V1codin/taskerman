@@ -22,7 +22,6 @@ export const creatingBoardSchema = z.object({
   title: z.string(),
 });
 export type TCreatingBoard = TypeOf<typeof creatingBoardSchema>;
-// export type TCreatingBoard = Omit<TBoard<string>, '_id'>;
 
 export type TUser = {
   id: string;
