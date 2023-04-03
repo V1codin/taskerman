@@ -7,6 +7,12 @@ export const defaultTheme = {
     l: '7px',
     xl: '10px',
   },
+  containerSizes: {
+    s: '20%',
+    m: '50%',
+    l: '95%',
+    default: '330px',
+  },
   spacing: {
     unset: 'unset',
     '6xs': '2px',

@@ -1,8 +1,8 @@
 import CreateBoardModal from '@/views/Header/logged/components/modals/CreateBoardModal';
-import { TMenuModalNames } from '@/types/state';
+import { TMenuCreateModalNames } from '@/types/state';
 
 type CreateFormsProps = {
-  view: TMenuModalNames;
+  view: TMenuCreateModalNames;
 };
 
 const CreateForms: React.FC<CreateFormsProps> = ({ view }) => {

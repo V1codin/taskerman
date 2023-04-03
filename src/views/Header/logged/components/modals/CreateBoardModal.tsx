@@ -1,17 +1,17 @@
-import ImageModule from '@/modules/image/Image';
 // @ts-ignore
 import link from '@/assets/link.svg?url';
 import ButtonWithLoader from '@/modules/button/ButtonWithLoader';
+import DefaultColorPickerButtons from './components/CreateBoard/DefaultColorPickerButtons';
 
 import { FormWrapper } from '@/modules/formWrapper/FormWrapper';
-import { addBoardColors, STANDARD_BG } from '@/utils/constants';
+import { STANDARD_BG } from '@/utils/constants';
 import {
-  Children,
   ChangeEvent,
   useState,
   SyntheticEvent,
   BaseSyntheticEvent,
   CSSProperties,
+  useCallback,
 } from 'react';
 import { getDataFromClipBoard } from '@/utils/helpers';
 import { useToast } from '@/hooks/hooks';
@@ -42,105 +42,117 @@ const CreateBoardModal: React.FC<CreateBoardModalProps> = () => {
   const { data, status } = useSession();
   const updateBoards = useSetAtom(getSetBoardsState);
 
-  const updateForm = (name: keyof typeof form, value: string) => {
-    const formValue = form[name];
-    if (formValue !== value) {
-      setForm((prev) => {
-        const customBgStyle =
-          name === 'bg' && value !== ''
-            ? {
-                backgroundColor: value,
-              }
-            : prev.style;
-        return {
-          ...prev,
-          [name]: value,
-          style: customBgStyle,
-        };
-      });
-    }
-  };
-
-  const changeHandlerClick = async (e: SyntheticEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-
-    const name = e.currentTarget.name as keyof typeof form;
-    const value = e.currentTarget.value;
-
-    if (name === 'link') {
-      try {
-        const link = await getDataFromClipBoard();
-        const customBgStyle = {
-          backgroundImage: `url(${link})`,
-          backgroundSize: 'cover',
-          backgroundRepeat: 'no-repeat',
-        };
-        setForm({
-          ...form,
-          bg: link,
-          link,
-          style: customBgStyle,
+  const updateForm = useCallback(
+    (name: keyof typeof form, value: string) => {
+      const formValue = form[name];
+      if (formValue !== value) {
+        setForm((prev) => {
+          const customBgStyle =
+            name === 'bg' && value !== ''
+              ? {
+                  backgroundColor: value,
+                }
+              : prev.style;
+          return {
+            ...prev,
+            [name]: value,
+            style: customBgStyle,
+          };
         });
+      }
+    },
+    [form],
+  );
+
+  const changeHandlerClick = useCallback(
+    async (e: SyntheticEvent<HTMLButtonElement>) => {
+      e.preventDefault();
+
+      const name = e.currentTarget.name as keyof typeof form;
+      const value = e.currentTarget.value;
+
+      if (name === 'link') {
+        try {
+          const link = await getDataFromClipBoard();
+          const customBgStyle = {
+            backgroundImage: `url(${link})`,
+            backgroundSize: 'cover',
+            backgroundRepeat: 'no-repeat',
+          };
+          setForm({
+            ...form,
+            bg: link,
+            link,
+            style: customBgStyle,
+          });
+        } catch (e) {
+          setToast({
+            message: e as string,
+            typeClass: 'warning',
+          });
+        }
+        return;
+      }
+
+      updateForm(name, value);
+    },
+    [updateForm, form, setToast],
+  );
+
+  const changeHandler = useCallback(
+    async (e: ChangeEvent<HTMLInputElement>) => {
+      e.preventDefault();
+
+      const name = e.target.name as keyof typeof form;
+      const value = e.target.value;
+
+      updateForm(name, value);
+    },
+    [updateForm],
+  );
+
+  const createBoardHandler = useCallback(
+    async (e: BaseSyntheticEvent) => {
+      e.preventDefault();
+      try {
+        if (status !== 'authenticated') {
+          throw new Error('Please log into your account');
+        }
+
+        setIsLoading(true);
+        const result = await createBoard({
+          bg: form.bg,
+          members: [],
+          pendingMembers: [],
+          title: form.title,
+          ownerId: data?.user.id!,
+        });
+
+        setToast({
+          typeClass: 'notification',
+          message: `Board ${result.data.title} was created`,
+        });
+        setForm(defaultFormState);
+        updateBoards(result.data);
       } catch (e) {
         setToast({
-          message: e as string,
           typeClass: 'warning',
+          message: e instanceof Error ? e.message : 'Unexpected error',
         });
+      } finally {
+        setIsLoading(false);
       }
-      return;
-    }
-
-    updateForm(name, value);
-  };
-
-  const changeHandler = async (e: ChangeEvent<HTMLInputElement>) => {
-    e.preventDefault();
-
-    const name = e.target.name as keyof typeof form;
-    const value = e.target.value;
-
-    updateForm(name, value);
-  };
-
-  const createBoardHandler = async (e: BaseSyntheticEvent) => {
-    e.preventDefault();
-    try {
-      if (status !== 'authenticated') {
-        throw new Error('Please log into your account');
-      }
-
-      setIsLoading(true);
-      const result = await createBoard({
-        bg: form.bg,
-        members: [],
-        pendingMembers: [],
-        title: form.title,
-        ownerId: data?.user.id!,
-      });
-
-      setToast({
-        typeClass: 'notification',
-        message: `Board ${result.data.title} was created`,
-      });
-      setForm(defaultFormState);
-      updateBoards(result.data);
-    } catch (e) {
-      setToast({
-        typeClass: 'warning',
-        message: e instanceof Error ? e.message : 'Unexpected error',
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    },
+    [data?.user.id, form.bg, form.title, setToast, status, updateBoards],
+  );
 
   return (
     <FormWrapper submit={createBoardHandler} formStyle={form.style}>
-      <h3 className="form__heading">Add board</h3>
+      <h3 className="heading">Add board</h3>
       <input
         type="text"
         name="title"
-        className="form__input"
+        className="input"
         placeholder="Enter board title"
         value={form.title}
         onChange={changeHandler}
@@ -150,57 +162,14 @@ const CreateBoardModal: React.FC<CreateBoardModalProps> = () => {
         required
         autoFocus
       />
-      <ul className="form__colorPicker">
-        {Children.toArray(
-          addBoardColors.map((color) => {
-            const { backgroundColor } = color;
-            return (
-              <li>
-                <button
-                  className="colorPicker__el card_design"
-                  style={{ backgroundColor: backgroundColor }}
-                  onClick={changeHandlerClick}
-                  value={backgroundColor}
-                  name="bg"
-                ></button>
-              </li>
-            );
-          }),
-        )}
-        <li>
-          <button
-            className="menu__btn card_design menu_linkBg"
-            onClick={changeHandlerClick}
-            name="link"
-          >
-            <ImageModule
-              src={link}
-              alt="link bg"
-              className="menu__ico"
-              title="Get link of the background from clipboard"
-            />
-          </button>
-        </li>
-        <li>
-          <input
-            className="colorPicker__el card_design"
-            name="bg"
-            type="color"
-            style={{
-              height: '32px',
-              width: '32px',
-              padding: '11px',
-              backgroundColor: '#ffffffb0',
-              marginTop: '12px',
-            }}
-            onChange={changeHandler}
-          />
-        </li>
-      </ul>
+      <DefaultColorPickerButtons
+        changeHandlerClick={changeHandlerClick}
+        changeHandler={changeHandler}
+      />
       <ButtonWithLoader
         isLoading={isLoading}
         attrs={{
-          className: 'form__btn',
+          className: 'btn',
           type: 'submit',
           disabled: form.title === '',
         }}

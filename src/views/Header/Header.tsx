@@ -12,10 +12,10 @@ type HeaderProps = {};
 
 const Header: React.FC<HeaderProps> = () => {
   const currentToast = useAtomValue(getSetToastState);
-  const [authState, setAuthState] = useAtom(getSetModal);
+  const [modalState, setModalState] = useAtom(getSetModal);
 
   const close = () => {
-    setAuthState({
+    setModalState({
       isOpen: false,
       window: null,
     });
@@ -29,8 +29,8 @@ const Header: React.FC<HeaderProps> = () => {
           typeClass={currentToast.typeClass}
         />
       )}
-      <Modal isOpen={authState.isOpen} close={close}>
-        <ModalForms window={authState.window!} />
+      <Modal isOpen={modalState.isOpen} close={close}>
+        <ModalForms window={modalState.window!} />
       </Modal>
       <ActiveLink href="/" className="header__link" activeClassName="">
         <h1>TaskerMan</h1>

@@ -38,11 +38,11 @@ const SignUpForm: React.FC<SignUpFormProps> = () => {
 
   return (
     <FormWrapper submit={handleSubmit(onSubmit)}>
-      <h3 className="form__heading">Sign up for your account</h3>
+      <h3 className="heading">Sign up for your account</h3>
       <input
         type="text"
         placeholder="Enter username"
-        className="form__input"
+        className="input"
         {...register('username', {
           required: true,
           onChange: debouncedInputChange,
@@ -50,12 +50,12 @@ const SignUpForm: React.FC<SignUpFormProps> = () => {
         aria-invalid={Boolean(errors.username)}
       />
       {errors.username && (
-        <span className="form__warning">{errors.username.message}</span>
+        <span className="warning">{errors.username.message}</span>
       )}
       <input
         type="password"
         id="password"
-        className="form__input"
+        className="input"
         placeholder="Enter password"
         {...register('password', {
           required: true,
@@ -64,12 +64,12 @@ const SignUpForm: React.FC<SignUpFormProps> = () => {
         aria-invalid={Boolean(errors.password)}
       />
       {errors.password && (
-        <span className="form__warning">{errors.password.message}</span>
+        <span className="warning">{errors.password.message}</span>
       )}
       <input
         type="password"
         id="confirmPassword"
-        className="form__input"
+        className="input"
         placeholder="Confirm password"
         {...register('confirmPassword', {
           required: true,
@@ -79,12 +79,12 @@ const SignUpForm: React.FC<SignUpFormProps> = () => {
       />
 
       {errors.confirmPassword && (
-        <span className="form__warning">{errors.confirmPassword.message}</span>
+        <span className="warning">{errors.confirmPassword.message}</span>
       )}
 
       <input
         type="text"
-        className="form__input"
+        className="input"
         placeholder="Enter Your full name"
         {...register('displayName', {
           required: true,
@@ -93,12 +93,12 @@ const SignUpForm: React.FC<SignUpFormProps> = () => {
         aria-invalid={Boolean(errors.displayName)}
       />
       {errors.displayName && (
-        <span className="form__warning">{errors.displayName.message}</span>
+        <span className="warning">{errors.displayName.message}</span>
       )}
 
       <input
         type="email"
-        className="form__input"
+        className="input"
         placeholder="Enter Your Email"
         {...register('email', {
           required: true,
@@ -106,12 +106,10 @@ const SignUpForm: React.FC<SignUpFormProps> = () => {
         })}
         aria-invalid={Boolean(errors.email)}
       />
-      {errors.email && (
-        <span className="form__warning">{errors.email.message}</span>
-      )}
-      <button className="form__btn">Sign up</button>
+      {errors.email && <span className="warning">{errors.email.message}</span>}
+      <button className="btn">Sign up</button>
       <button
-        className="form__btn google__btn"
+        className="btn google__btn"
         type="button"
         data-oauthtype="google"
         onClick={(e) => {

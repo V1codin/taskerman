@@ -11,7 +11,7 @@ const getBodyRef = () => {
   return isServer() ? document.getElementsByTagName('body')[0] : null;
 };
 
-const addBoardColors = [
+const DEFAULT_ADD_BOARD_BUTTON_COLORS = [
   {
     name: '#003b5c',
     backgroundColor: '#003b5c',
@@ -78,7 +78,7 @@ export {
   MONGO_DB_NAME,
   STANDARD_BG,
   BG_IMAGE,
-  addBoardColors,
+  DEFAULT_ADD_BOARD_BUTTON_COLORS,
   authFormTypeLogin,
   authFormTypeSignup,
   BASE_URL,

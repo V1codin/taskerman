@@ -90,21 +90,36 @@ export type TError = {
 
 export type TAuthTypes = 'google';
 
-export type TMenuModalNames = 'create_board';
-export type TAuthForms = 'login' | 'signup' | 'resetPassword';
-export type TModalForms = TAuthForms | TMenuModalNames;
+export type TEntities = 'board' | 'list' | 'card';
 
 export type TModalAuth = 'auth';
 export type TModalCreate = 'create';
-export type TModalTypes = TModalAuth | TModalCreate;
+export type TModalDelete = 'delete';
+
+export type TMenuCreateModalNames = `create_${TEntities}`;
+export type TMenuDeleteModalNames = `delete_${TEntities}`;
+
+export type TAuthForms = 'login' | 'signup' | 'resetPassword';
+export type TModalForms =
+  | TAuthForms
+  | TMenuCreateModalNames
+  | TMenuDeleteModalNames;
+
 export type IModalWindow =
   | {
       type: TModalAuth;
       view: TAuthForms;
+      text?: string;
     }
   | {
       type: TModalCreate;
-      view: TMenuModalNames;
+      view: TMenuCreateModalNames;
+      text?: string;
+    }
+  | {
+      type: TModalDelete;
+      view: TMenuDeleteModalNames;
+      text?: string;
     };
 
 export interface IModal<T extends boolean> {

@@ -1,7 +1,10 @@
 // @ts-ignore
 import deleteIco from '@/assets/plus.svg?url';
 import Router from 'next/router';
-import ImageModule from '@/modules/image/Image';
+import CloseBtn from '@/modules/button/CloseBtn';
+
+import { useSetAtom } from 'jotai';
+import { getSetModal } from '@/context/stateManager';
 
 type BoardCardProps = {
   _id: string;
@@ -11,7 +14,17 @@ type BoardCardProps = {
 };
 
 const BoardCard: React.FC<BoardCardProps> = ({ _id, bgChecker, bg, title }) => {
-  const deleteBoard = () => {};
+  const setModal = useSetAtom(getSetModal);
+  const deleteBoard = () => {
+    setModal({
+      isOpen: true,
+      window: {
+        type: 'delete',
+        view: 'delete_board',
+        text: title,
+      },
+    });
+  };
 
   const redirectToBoard = () => {
     Router.push(`/board/${_id}`);
@@ -30,17 +43,17 @@ const BoardCard: React.FC<BoardCardProps> = ({ _id, bgChecker, bg, title }) => {
       }
       title={title}
     >
-      <button className="close__btn" onClick={deleteBoard} name={_id}>
-        <ImageModule
-          src={deleteIco}
-          alt="delete"
-          className="menu__ico"
-          title="Delete the board"
-          draggable={false}
-        />
-      </button>
+      <CloseBtn
+        attrs={{
+          onClick: deleteBoard,
+          name: _id,
+        }}
+        iconProps={{
+          title: 'Delete the board',
+        }}
+      />
       <button
-        className="form__btn card__btn"
+        className="btn card__btn"
         title="Go to the board"
         onClick={redirectToBoard}
       >

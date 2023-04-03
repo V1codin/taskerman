@@ -92,11 +92,11 @@ const LoginForm: React.FC<LoginFormProps> = () => {
 
   return (
     <FormWrapper submit={handleSubmit(onSubmit)}>
-      <h3 className="form__heading">Login</h3>
+      <h3 className="heading">Login</h3>
       <input name="csrfToken" type="hidden" defaultValue={''} />
       <input
         type="text"
-        className="form__input"
+        className="input"
         placeholder="Enter username"
         {...register('username', {
           required: true,
@@ -105,11 +105,11 @@ const LoginForm: React.FC<LoginFormProps> = () => {
         aria-invalid={Boolean(errors.username)}
       />
       {errors.username && (
-        <span className="form__warning">{errors.username.message}</span>
+        <span className="warning">{errors.username.message}</span>
       )}
       <input
         type="password"
-        className="form__input"
+        className="input"
         placeholder="Enter password"
         {...register('password', {
           required: true,
@@ -118,7 +118,7 @@ const LoginForm: React.FC<LoginFormProps> = () => {
         aria-invalid={Boolean(errors.password)}
       />
       {errors.password && (
-        <span className="form__warning">{errors.password.message}</span>
+        <span className="warning">{errors.password.message}</span>
       )}
       <ButtonWithLoader
         isLoading={loader}
@@ -126,7 +126,7 @@ const LoginForm: React.FC<LoginFormProps> = () => {
           boxShadow: 'none',
         }}
         attrs={{
-          className: 'form__btn',
+          className: 'btn',
           type: 'submit',
           disabled: loader,
         }}
@@ -134,7 +134,7 @@ const LoginForm: React.FC<LoginFormProps> = () => {
         <span>Log in</span>
       </ButtonWithLoader>
       <button
-        className="form__btn google__btn"
+        className="btn google__btn"
         type="button"
         data-oauthtype="google"
         onClick={(e) => {
@@ -147,7 +147,7 @@ const LoginForm: React.FC<LoginFormProps> = () => {
       </button>
       <ActiveLink
         href="/signup"
-        className="form__link"
+        className="link"
         activeClassName={''}
         onClick={signUpLinkClick}
       >

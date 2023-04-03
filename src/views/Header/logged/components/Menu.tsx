@@ -7,6 +7,7 @@ import Note from '@/assets/notification.svg?url';
 import ImageModule from '@/modules/image/Image';
 import Account from './Account';
 import AddBoardDropDown from './dropdownBodies/AddBoardDropDown';
+import Button from '@/modules/button/Button';
 import AccountDropDown from './dropdownBodies/AccountDropDown';
 import InfoBoardDropDownProps from './dropdownBodies/InfoBoardDropDown';
 
@@ -18,7 +19,7 @@ import {
   MutableRefObject,
 } from 'react';
 import { useOuterCLick } from '@/hooks/hooks';
-import { TMenuModalNames } from '@/types/state';
+import { TMenuCreateModalNames } from '@/types/state';
 import { getSetModal } from '@/context/stateManager';
 import { useAtom } from 'jotai';
 
@@ -91,7 +92,7 @@ const Menu: React.FC<MenuProps> = ({ user, logout, containerRef }) => {
     closeAllDropDowns();
   };
 
-  const openModal = (modalName: TMenuModalNames) => {
+  const openModal = (modalName: TMenuCreateModalNames) => {
     return () => {
       closeAllDropDowns();
       setModalState({
@@ -106,34 +107,42 @@ const Menu: React.FC<MenuProps> = ({ user, logout, containerRef }) => {
 
   return (
     <>
-      <button
-        data-drop-type="add"
-        className={`menu__btn${dropState.add ? ' active' : ''}`}
-        name="add"
-        title="Create"
-        onClick={toggleDropDown}
+      <Button
+        attrs={{
+          'data-drop-type': 'add',
+          className: `menu__btn${dropState.add ? ' active' : ''}`,
+          name: 'add',
+          title: 'Create',
+          onClick: toggleDropDown,
+        }}
       >
         <ImageModule src={Plus} alt="add" className="menu__ico" />
-      </button>
+      </Button>
       {dropState.add && (
         <AddBoardDropDown openModal={openModal} closeDropDown={closeDropDown} />
       )}
-      <button
-        className={`menu__btn${dropState.info ? ' active' : ''}`}
-        name="info"
-        title="Information"
-        data-drop-type="info"
-        onClick={toggleDropDown}
+      <Button
+        attrs={{
+          'data-drop-type': 'info',
+          className: `menu__btn${dropState.info ? ' active' : ''}`,
+          name: 'info',
+          title: 'Information',
+          onClick: toggleDropDown,
+        }}
       >
         <ImageModule src={Info} alt="info" className="menu__ico" />
-      </button>
+      </Button>
       {dropState.info && (
         <InfoBoardDropDownProps closeDropDown={closeDropDown} />
       )}
-      <button
-        className={`menu__btn${dropState.note ? ' active' : ''}`}
-        name="note"
-        title="Notifications"
+      <Button
+        attrs={{
+          'data-drop-type': 'note',
+          className: `menu__btn${dropState.note ? ' active' : ''}`,
+          name: 'note',
+          title: 'Notifications',
+          onClick: toggleDropDown,
+        }}
       >
         {notifications.length > 0 && (
           <div className="badges">
@@ -141,7 +150,7 @@ const Menu: React.FC<MenuProps> = ({ user, logout, containerRef }) => {
           </div>
         )}
         <ImageModule src={Note} alt="notification" className="menu__ico" />
-      </button>
+      </Button>
       {/* 
       {dropState.note && (
         <NoteBoardDrop

@@ -1,6 +1,6 @@
 import Image from 'next/image';
 
-type ImageModuleProps = {
+export type ImageModuleProps = {
   src: string;
   alt: string;
   width?: number | undefined;

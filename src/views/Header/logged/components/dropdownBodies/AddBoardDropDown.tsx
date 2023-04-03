@@ -1,14 +1,14 @@
 import DropDown from '@/modules/dropdown/DropDown';
 
 import { MouseEvent, MouseEventHandler, SyntheticEvent } from 'react';
-import { TMenuModalNames } from '@/types/state';
+import { TMenuCreateModalNames } from '@/types/state';
 
 type AddBoardDropDownProps = {
   closeDropDown: (
     e: KeyboardEvent | MouseEvent | SyntheticEvent<HTMLButtonElement>,
   ) => void;
   openModal: (
-    modalName: TMenuModalNames,
+    modalName: TMenuCreateModalNames,
   ) => MouseEventHandler<HTMLButtonElement>;
 };
 

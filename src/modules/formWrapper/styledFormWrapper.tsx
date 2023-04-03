@@ -1,7 +1,14 @@
 import styled from 'styled-components';
 
-export const StyledFormContainer = styled.div`
-  max-width: 330px;
+import { PartialContainerProps } from './FormWrapper';
+
+export const StyledFormContainer = styled.div<{
+  containerProps?: PartialContainerProps;
+}>`
+  width: ${({ theme, containerProps }) =>
+    containerProps && containerProps.size
+      ? theme.containerSizes[containerProps.size]
+      : theme.containerSizes.default};
   margin: 0 auto;
 `;
 
@@ -58,7 +65,13 @@ export const StyledForm = styled.form`
     transition: 0.2s ease;
   }
 
-  .form__heading {
+  .btn_secondary {
+    background-color: #fff;
+    border: 1px solid var(--monokai);
+    color: var(--monokai);
+  }
+
+  .heading {
     color: var(--bright-green);
   }
 
@@ -68,18 +81,19 @@ export const StyledForm = styled.form`
     color: #fff;
   }
 
-  .form__warning {
+  .warning {
     font-weight: 600;
     margin-top: 5px;
     color: var(--pink);
   }
 
-  .form__colorPicker {
+  .color-picker {
     display: flex;
     align-items: center;
     width: 100%;
     margin-top: 10px;
   }
+
   .menu_linkBg {
     padding: 5px !important;
     margin-right: 0 !important;
@@ -87,7 +101,7 @@ export const StyledForm = styled.form`
     height: 32px;
     background-color: var(--black-aqua);
   }
-  .colorPicker__el {
+  .color-picker__el {
     cursor: pointer;
     padding: 15px;
 
@@ -107,33 +121,33 @@ export const StyledForm = styled.form`
     height: 35px;
   }
 
-  .form__colorPicker > li {
+  .color-picker > li {
     margin-left: 10px;
   }
-  .form__colorPicker > li:first-of-type {
+  .color-picker > li:first-of-type {
     margin-left: 0;
   }
-  .form__link:active {
+  .link:active {
     color: var(--yellow);
   }
 
-  .form__link:hover {
+  .link:hover {
     text-decoration: underline;
   }
 
-  .form__btn:hover {
+  .btn:hover {
     background-color: #71c74f;
   }
 
-  .form__btn:active {
+  .btn:active {
     background-color: var(--yellow);
     color: var(--pale-green);
   }
-  .form__btn:focus {
+  .btn:focus {
     border: 1px dashed var(--pale-blue);
   }
 
-  .form__input:focus {
+  .input:focus {
     border-bottom: 1px solid var(--pale-blue);
   }
 

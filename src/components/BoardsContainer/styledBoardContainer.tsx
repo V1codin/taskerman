@@ -52,7 +52,7 @@ export const StyledBoardContainer = styled.div`
     margin-left: 10px;
   }
 
-  .form__btn {
+  .btn {
     cursor: pointer;
     padding: 10px;
     width: 100%;
@@ -64,15 +64,15 @@ export const StyledBoardContainer = styled.div`
     transition: 0.2s ease;
   }
 
-  .form__btn:hover {
+  .btn:hover {
     background-color: #71c74f;
   }
-  .form__btn:active {
+  .btn:active {
     border-radius: 7px;
     background-color: var(--yellow);
     color: var(--pale-green);
   }
-  .form__btn:focus {
+  .btn:focus {
     border: 1px dashed var(--pale-blue);
   }
 `;

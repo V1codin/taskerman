@@ -30,6 +30,9 @@ declare module 'styled-components' {
   };
 
   export type ThemesType = 'dark' | 'light';
+  export type TButtonDataTypes = {
+    'data-drop-type'?: string;
+  };
 
   export interface DefaultTheme {
     radius: {
@@ -37,6 +40,12 @@ declare module 'styled-components' {
       m: string;
       l: string;
       xl: string;
+    };
+    containerSizes: {
+      s: string;
+      m: string;
+      l: string;
+      default: string;
     };
     spacing: {
       unset: string;
