@@ -105,21 +105,29 @@ export type TModalForms =
   | TMenuCreateModalNames
   | TMenuDeleteModalNames;
 
+export type TAuthModalData = {};
+export type TCreateModalData = {};
+export type TDeleteModalData = {
+  id: string;
+  text?: string;
+  entity: TEntities;
+};
+
 export type IModalWindow =
   | {
       type: TModalAuth;
       view: TAuthForms;
-      text?: string;
+      data?: TAuthModalData;
     }
   | {
       type: TModalCreate;
       view: TMenuCreateModalNames;
-      text?: string;
+      data?: TCreateModalData;
     }
   | {
       type: TModalDelete;
       view: TMenuDeleteModalNames;
-      text?: string;
+      data?: TDeleteModalData;
     };
 
 export interface IModal<T extends boolean> {
