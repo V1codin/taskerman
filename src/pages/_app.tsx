@@ -1,5 +1,6 @@
 import '@/styles/globals.css';
 import GlobalStyle from '@/styles/GlobalStyles';
+import DefaultLayout from '@/layouts/DefaultLayout';
 
 import { SessionProvider } from 'next-auth/react';
 import { themes } from '@/styles/theme';
@@ -12,13 +13,15 @@ export default function App({
   pageProps: { session, ...pageProps },
 }: AppProps) {
   return (
-    <SessionProvider session={session}>
-      <Provider>
-        <ThemeProvider theme={themes['dark']}>
+    <ThemeProvider theme={themes['dark']}>
+      <SessionProvider session={session}>
+        <Provider>
           <GlobalStyle />
-          <Component {...pageProps} />
-        </ThemeProvider>
-      </Provider>
-    </SessionProvider>
+          <DefaultLayout>
+            <Component {...pageProps} />
+          </DefaultLayout>
+        </Provider>
+      </SessionProvider>
+    </ThemeProvider>
   );
 }

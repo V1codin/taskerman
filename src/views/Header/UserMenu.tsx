@@ -1,18 +1,14 @@
 import DefaultHeader from './default';
 import LoggedHeader from './logged/LoggedHeader';
 
-import { useSession } from 'next-auth/react';
+import { SessionUser } from '@/types/db';
 
-type UserMenuProps = {};
+type UserMenuProps = {
+  user: SessionUser | null;
+};
 
-const UserMenu: React.FC<UserMenuProps> = () => {
-  const { data, status } = useSession();
-
-  return status === 'authenticated' && data.user ? (
-    <LoggedHeader userData={data.user} />
-  ) : (
-    <DefaultHeader />
-  );
+const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
+  return user ? <LoggedHeader userData={user} /> : <DefaultHeader />;
 };
 
 export default UserMenu;

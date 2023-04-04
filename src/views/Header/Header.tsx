@@ -7,10 +7,13 @@ import ModalForms from '@/modules/modalForms/ModalForms';
 import { useAtom, useAtomValue } from 'jotai';
 import { StyledHeader } from './styledHeader';
 import { getSetModal, getSetToastState } from '@/context/stateManager';
+import { SessionUser } from '@/types/db';
 
-type HeaderProps = {};
+type HeaderProps = {
+  user: SessionUser | null;
+};
 
-const Header: React.FC<HeaderProps> = () => {
+const Header: React.FC<HeaderProps> = ({ user }) => {
   const currentToast = useAtomValue(getSetToastState);
   const [modalState, setModalState] = useAtom(getSetModal);
 
@@ -35,7 +38,7 @@ const Header: React.FC<HeaderProps> = () => {
       <ActiveLink href="/" className="header__link" activeClassName="">
         <h1>TaskerMan</h1>
       </ActiveLink>
-      <UserMenu />
+      <UserMenu user={user} />
     </StyledHeader>
   );
 };
