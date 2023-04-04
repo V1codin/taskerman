@@ -5,6 +5,7 @@ import DeleteForms from './deleteForms/DeleteForms';
 import {
   IModalWindow,
   TAuthForms,
+  TDeleteModalData,
   TMenuCreateModalNames,
   TMenuDeleteModalNames,
 } from '@/types/state';
@@ -13,7 +14,7 @@ type ModalFormsProps = {
 };
 
 const ModalForms: React.FC<ModalFormsProps> = ({
-  window: { type, view, text },
+  window: { type, view, data },
 }) => {
   if (!type) return null;
 
@@ -28,7 +29,12 @@ const ModalForms: React.FC<ModalFormsProps> = ({
   }
 
   if (type === 'delete') {
-    return <DeleteForms view={view as TMenuDeleteModalNames} text={text} />;
+    return (
+      <DeleteForms
+        view={view as TMenuDeleteModalNames}
+        data={data as TDeleteModalData}
+      />
+    );
   }
 
   return null;
