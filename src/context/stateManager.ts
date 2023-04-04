@@ -2,22 +2,31 @@ import { atom, WritableAtom } from 'jotai';
 import { ToastProps } from '@/types/helpers';
 import { EMPTY_TOAST, DEFAULT_MODAL_STATE } from '@/utils/constants';
 import { IModal } from '@/types/state';
-import { TBoard } from '@/types/db';
+import { TRawUserBoard, TRawUserBoards } from '@/libs/boards.service';
 
-export const boardsStateAtom = atom<TBoard[]>([]);
+export const boardsStateAtom = atom<TRawUserBoards>([]);
 export const getSetBoardsState: WritableAtom<
-  TBoard[],
-  [update: TBoard | TBoard[]],
+  TRawUserBoards,
+  [
+    update:
+      | TRawUserBoard
+      | TRawUserBoards
+      | ((prevValue: TRawUserBoards) => TRawUserBoards),
+  ],
   void
 > = atom(
   (get) => get(boardsStateAtom),
-  (get, set, update) => {
+  (_, set, update) => {
     if (Array.isArray(update)) {
       set(boardsStateAtom, update);
+    } else if (typeof update === 'function') {
+      set(boardsStateAtom, (prev) => update(prev));
     } else {
-      const arr = get(boardsStateAtom);
-      arr.push(update);
-      set(boardsStateAtom, arr);
+      set(boardsStateAtom, (prev) => {
+        prev.push(update);
+
+        return prev;
+      });
     }
   },
 );
@@ -37,14 +46,23 @@ export const getSetToastState: WritableAtom<
 export const modalAtom = atom<IModal<boolean>>(DEFAULT_MODAL_STATE);
 export const getSetModal: WritableAtom<
   IModal<boolean>,
-  [update: IModal<boolean>, callback?: () => void],
+  [update: IModal<boolean>],
   void
 > = atom(
   (get) => get(modalAtom),
-  (_, set, update, callback) => {
+  (_, set, update) => {
     set(modalAtom, update);
-    if (typeof callback === 'function') {
-      callback();
-    }
+  },
+);
+
+export const confirmAtom = atom<boolean | null>(null);
+export const getSetConfirm: WritableAtom<
+  boolean | null,
+  [update: boolean, callback?: () => void],
+  void
+> = atom(
+  (get) => get(confirmAtom),
+  (_, set, update) => {
+    set(confirmAtom, update);
   },
 );

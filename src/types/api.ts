@@ -1,23 +1,23 @@
 import type { NextApiRequest } from 'next';
-import { TCreatingBoard } from './db';
-import { TCreatedBoard, TUserBoards } from '@/libs/boards.service';
+import { TCreatingBoard, TDeletingBoard } from './db';
+import { TCreatedBoard, TRawUserBoards } from '@/libs/boards.service';
 
 export type TMethods = 'POST' | 'PUT' | 'DELETE' | 'GET';
 
 export type TBoardReducerBody = {
   POST: TCreatingBoard;
+  DELETE: TDeletingBoard;
 
   PUT: null;
-  DELETE: null;
   GET: null;
 };
 
 type TBoardReturnType = {
-  GET: TUserBoards;
+  GET: TRawUserBoards;
   POST: TCreatedBoard;
+  DELETE: TDeletingBoard;
 
   PUT: null;
-  DELETE: null;
 };
 
 type TMethodReturnMap = Record<TMethods, TBoardReturnType[TMethods]>;

@@ -21,6 +21,11 @@ export const creatingBoardSchema = z.object({
   pendingMembers: z.array(z.string()),
   title: z.string(),
 });
+export const deletingBoardSchema = z.object({
+  boardId: z.string(),
+});
+
+export type TDeletingBoard = TypeOf<typeof deletingBoardSchema>;
 export type TCreatingBoard = TypeOf<typeof creatingBoardSchema>;
 
 export type TUser = {

@@ -8,9 +8,9 @@ export const defaultTheme = {
     xl: '10px',
   },
   containerSizes: {
-    s: '20%',
-    m: '50%',
-    l: '95%',
+    s: '20vw',
+    m: '50vw',
+    l: '95vw',
     default: '330px',
   },
   spacing: {
