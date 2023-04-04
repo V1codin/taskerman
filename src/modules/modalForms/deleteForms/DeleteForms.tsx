@@ -1,14 +1,14 @@
-import { TMenuDeleteModalNames } from '@/types/state';
+import { TDeleteModalData, TMenuDeleteModalNames } from '@/types/state';
 import DeleteBoardModal from '@/views/Header/logged/components/modals/DeleteBoardModal';
 
 type DeleteFormsProps = {
   view: TMenuDeleteModalNames;
-  text?: string;
+  data: TDeleteModalData;
 };
 
-const DeleteForms: React.FC<DeleteFormsProps> = ({ view, text }) => {
+const DeleteForms: React.FC<DeleteFormsProps> = ({ view, data }) => {
   if (view === 'delete_board') {
-    return <DeleteBoardModal boardTitle={text} />;
+    return <DeleteBoardModal {...data} />;
   }
 
   return null;
