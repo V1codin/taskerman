@@ -3,8 +3,8 @@ import GoogleIcon from '@/assets/google_icon.svg?url';
 import ActiveLink from '@/modules/activeLink/ActiveLink';
 import ButtonWithLoader from '@/modules/button/ButtonWithLoader';
 import ImageModule from '@/modules/image/Image';
-import Router from 'next/router';
 
+import { useRouter } from 'next/navigation';
 import { userLoginSchema } from '@/types/state';
 import { FormWrapper } from '@/modules/formWrapper/FormWrapper';
 import { useCallback, useEffect, useState } from 'react';
@@ -33,6 +33,7 @@ const LoginForm: React.FC<LoginFormProps> = () => {
     (e: React.ChangeEvent<HTMLInputElement>) =>
       trigger(e.target.name as keyof TUserLogin),
   );
+  const { refresh } = useRouter();
 
   const [, setAuthState] = useAtom(getSetModal);
 
@@ -63,7 +64,7 @@ const LoginForm: React.FC<LoginFormProps> = () => {
         isOpen: false,
         window: null,
       });
-      Router.push('/');
+      refresh();
     } catch (e) {
       setLoader(false);
       const newToast: ToastProps = {
@@ -124,6 +125,7 @@ const LoginForm: React.FC<LoginFormProps> = () => {
         isLoading={loader}
         styles={{
           boxShadow: 'none',
+          height: '43px',
         }}
         attrs={{
           className: 'btn',
