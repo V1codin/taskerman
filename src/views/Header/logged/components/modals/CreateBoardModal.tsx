@@ -15,10 +15,10 @@ import {
 } from 'react';
 import { getDataFromClipBoard } from '@/utils/helpers';
 import { useToast } from '@/hooks/hooks';
-import { createBoard } from '@/utils/api/boards';
 import { useSession } from 'next-auth/react';
-import { useSetAtom } from 'jotai';
 import { getSetBoardsState } from '@/context/stateManager';
+import { useSetAtom } from 'jotai';
+import { createBoard } from '@/utils/api/boards';
 
 type CreateBoardModalProps = {};
 
@@ -120,6 +120,7 @@ const CreateBoardModal: React.FC<CreateBoardModalProps> = () => {
         }
 
         setIsLoading(true);
+
         const result = await createBoard({
           bg: form.bg,
           members: [],
@@ -128,12 +129,16 @@ const CreateBoardModal: React.FC<CreateBoardModalProps> = () => {
           ownerId: data?.user.id!,
         });
 
+        setForm(defaultFormState);
+        updateBoards((state) => {
+          const newState = [...state, result.data];
+
+          return newState;
+        });
         setToast({
           typeClass: 'notification',
-          message: `Board ${result.data.title} was created`,
+          message: `Board titled : ${result.data.title} was created`,
         });
-        setForm(defaultFormState);
-        updateBoards(result.data);
       } catch (e) {
         setToast({
           typeClass: 'warning',
@@ -168,6 +173,9 @@ const CreateBoardModal: React.FC<CreateBoardModalProps> = () => {
       />
       <ButtonWithLoader
         isLoading={isLoading}
+        styles={{
+          height: '43px',
+        }}
         attrs={{
           className: 'btn',
           type: 'submit',
