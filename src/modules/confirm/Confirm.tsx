@@ -1,28 +1,23 @@
-import { SyntheticEvent, useCallback, useEffect } from 'react';
+import Button from '../button/Button';
+
+import { SyntheticEvent } from 'react';
 import { FormWrapper } from '../formWrapper/FormWrapper';
 import { StyledConfirmButtonsWrapper } from './styledConfirm';
-import Button from '../button/Button';
 
 type ConfirmProps = {
   children: React.ReactNode;
+  accept: (e: SyntheticEvent<HTMLElement>) => void;
+  decline: () => void;
 };
 
-const Confirm: React.FC<ConfirmProps> = ({ children }) => {
-  const submit = useCallback((e: SyntheticEvent<HTMLElement>) => {
-    e.preventDefault();
-  }, []);
-
-  useEffect(() => {
-    return () => {
-      console.log('asd');
-    };
-  }, []);
+const Confirm: React.FC<ConfirmProps> = ({ children, accept, decline }) => {
   return (
-    <FormWrapper submit={submit} containerProps={{ size: 's' }}>
+    <FormWrapper submit={accept} containerProps={{ size: 's' }}>
       {children}
       <StyledConfirmButtonsWrapper>
         <Button
           attrs={{
+            onClick: accept,
             type: 'submit',
             className: 'btn',
           }}
@@ -31,6 +26,7 @@ const Confirm: React.FC<ConfirmProps> = ({ children }) => {
         </Button>
         <Button
           attrs={{
+            onClick: decline,
             className: 'btn_secondary',
           }}
         >
