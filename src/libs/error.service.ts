@@ -9,15 +9,16 @@ type TMessages = {
 };
 */
 
-type TServerMessages<TCode extends TServerResponseCodes> = TCode extends 500
-  ? 'Error: Server does not response'
-  : TCode extends 403
-  ? 'Error: Unauthorized'
-  : TCode extends 404
-  ? 'Error: Document was not found'
-  : TCode extends 400
-  ? 'Error: Bad request'
-  : 'Unexpected error';
+export type TServerMessages<TCode extends TServerResponseCodes> =
+  TCode extends 500
+    ? 'Error: Server does not response'
+    : TCode extends 403
+    ? 'Error: Unauthorized'
+    : TCode extends 404
+    ? 'Error: Document was not found'
+    : TCode extends 400
+    ? 'Error: Bad request'
+    : 'Unexpected error';
 
 export class ServerResponseError<T extends TServerResponseCodes> extends Error {
   code: TServerResponseCodes;
