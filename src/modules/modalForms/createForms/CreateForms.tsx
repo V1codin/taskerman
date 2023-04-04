@@ -1,4 +1,5 @@
 import CreateBoardModal from '@/views/Header/logged/components/modals/CreateBoardModal';
+
 import { TMenuCreateModalNames } from '@/types/state';
 
 type CreateFormsProps = {
