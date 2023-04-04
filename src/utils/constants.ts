@@ -59,6 +59,8 @@ const EMPTY_TOAST: ToastProps = {
 };
 
 const API_BOARDS_URL = '/api/boards';
+const API_SINGLE_BOARD_URL = '/api/single_board';
+const API_REQUEST_SESSION_URL = '/api/auth/session';
 
 const DEFAULT_MODAL_STATE: IModal<false> = {
   isOpen: false,
@@ -66,6 +68,8 @@ const DEFAULT_MODAL_STATE: IModal<false> = {
 };
 
 export {
+  API_REQUEST_SESSION_URL,
+  API_SINGLE_BOARD_URL,
   DEFAULT_MODAL_STATE,
   AUTH_TOKEN_COOKIE_NAME,
   DOMAIN,
