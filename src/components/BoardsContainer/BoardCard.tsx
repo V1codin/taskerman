@@ -15,13 +15,17 @@ type BoardCardProps = {
 
 const BoardCard: React.FC<BoardCardProps> = ({ _id, bgChecker, bg, title }) => {
   const setModal = useSetAtom(getSetModal);
-  const deleteBoard = () => {
+  const deleteBoard = async () => {
     setModal({
       isOpen: true,
       window: {
         type: 'delete',
         view: 'delete_board',
-        text: title,
+        data: {
+          id: _id,
+          text: title,
+          entity: 'board',
+        },
       },
     });
   };
