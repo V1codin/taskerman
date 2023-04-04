@@ -55,6 +55,16 @@ export class MongoDataBaseProvider {
 
     return result;
   }
+
+  deleteBoard(
+    boardId: string | Types.ObjectId,
+  ): ReturnType<typeof Boards.deleteOne> {
+    const result = Boards.deleteOne({
+      _id: boardId,
+    });
+
+    return result;
+  }
 }
 
 const mongoProvider = new MongoDataBaseProvider();

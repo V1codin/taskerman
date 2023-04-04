@@ -2,7 +2,7 @@ import mongoProvider from '@/db/mongo';
 
 import { Types } from 'mongoose';
 import { TDb } from '@/db/mongo';
-import { TCreatingBoard } from '@/types/db';
+import { TBoard, TCreatingBoard } from '@/types/db';
 
 export class BoardsService {
   private readonly db: TDb;
@@ -11,8 +11,21 @@ export class BoardsService {
     this.db = dbProvider;
   }
 
-  getUserBoards(userId: string | Types.ObjectId) {
-    const result = this.db.getUserBoards(userId);
+  async getUserBoards(
+    userId: string | Types.ObjectId,
+  ): Promise<TBoard<string>[]> {
+    const boards = await this.db.getUserBoards(userId);
+
+    const result = boards.map((item) => {
+      return {
+        _id: item._id,
+        bg: item.bg,
+        members: item.memberIds,
+        ownerId: String(item.ownerId),
+        pendingMembers: item.pendingMemberIds,
+        title: item.title,
+      };
+    });
 
     return result;
   }
@@ -21,8 +34,25 @@ export class BoardsService {
     return this.db.getBoardById(boerdId);
   }
 
-  createBoard(board: TCreatingBoard) {
-    const result = this.db.createBoard(board);
+  async create(board: TCreatingBoard): Promise<TBoard<string>> {
+    const createdBoard = await this.db.createBoard(board);
+
+    const result = {
+      _id: createdBoard._id,
+      bg: createdBoard.bg,
+      members: createdBoard.memberIds,
+      ownerId: String(createdBoard.ownerId),
+      pendingMembers: createdBoard.pendingMemberIds,
+      title: createdBoard.title,
+    };
+
+    return result;
+  }
+
+  delete(
+    boardId: string | Types.ObjectId,
+  ): ReturnType<typeof mongoProvider.deleteBoard> {
+    const result = this.db.deleteBoard(boardId);
 
     return result;
   }
@@ -31,9 +61,8 @@ export class BoardsService {
 export type TBoardsService = BoardsService;
 
 export const boardService = new BoardsService(mongoProvider);
-export type TCreatedBoard = Awaited<
-  ReturnType<typeof boardService.createBoard>
->;
-export type TUserBoards = Awaited<
+export type TCreatedBoard = Awaited<ReturnType<typeof boardService.create>>;
+export type TRawUserBoards = Awaited<
   ReturnType<typeof boardService.getUserBoards>
 >;
+export type TRawUserBoard = TBoard<string>;
