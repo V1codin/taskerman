@@ -17,7 +17,7 @@ export const StyledProcessContainer = styled.div<
     isBordered ? '1px solid var(--pale-green)' : '1px solid transparent'};
 
   border-radius: 50%;
-  width: ${({ width }) => width || '50px'};
+  width: ${({ width }) => width || '55px'};
   height: ${({ height }) => height || 'inherit'};
 
   position: absolute;

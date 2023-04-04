@@ -15,7 +15,6 @@ export const StyledModalOverlay = styled.div`
 
 export const StyledModalContent = styled.div`
   position: absolute;
-  width: 100%;
   top: 10%;
   left: 50%;
   transform: translate(-50%, 0);
