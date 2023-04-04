@@ -6,7 +6,12 @@ import type { NextApiResponse } from 'next';
 import type { TError } from '@/types/state';
 import { TGetBoardReturnByMethod, TMethods, BoardsRequest } from '@/types/api';
 import { ServerResponseError } from '@/libs/error.service';
-import { TCreatingBoard, creatingBoardSchema } from '@/types/db';
+import {
+  TCreatingBoard,
+  TDeletingBoard,
+  creatingBoardSchema,
+  deletingBoardSchema,
+} from '@/types/db';
 import { boardService } from '@/libs/boards.service';
 
 const boardsReducer = async <TMethod extends TMethods>(
@@ -73,10 +78,36 @@ const boardsReducer = async <TMethod extends TMethods>(
     }
 
     const body = req.body as TCreatingBoard;
-    const createdBoard = await boardService.createBoard(body);
+    const createdBoard = await boardService.create(body);
 
     return {
       data: createdBoard,
+    };
+  }
+
+  if (method === 'DELETE') {
+    const parsedBody = deletingBoardSchema.safeParse(req.body);
+    if (!parsedBody.success) {
+      throw new ServerResponseError({
+        code: 400,
+        message: 'Error: Bad request',
+      });
+    }
+
+    const { boardId } = req.body as TDeletingBoard;
+    const deleted = await boardService.delete(boardId);
+
+    if (!deleted.acknowledged) {
+      throw new ServerResponseError({
+        code: 400,
+        message: 'Error: Bad request',
+      });
+    }
+
+    return {
+      data: {
+        boardId,
+      },
     };
   }
 
