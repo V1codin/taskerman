@@ -37,7 +37,7 @@ const AccountDropDown: React.FC<AccountDropDownProps> = ({
         </Link>
       </li>
       <li className="list__body_mt5">
-        <Link className="popup__body__el" href="/">
+        <Link className="popup__body__el" href="/boards">
           <ImageModule
             src={boardIcon}
             alt="logout icon"
