@@ -26,7 +26,7 @@ export const createBoard = (board: TCreatingBoard) => {
   });
 };
 
-export const deleteBoard = (boardId: string) => {
+export const deleteBoard = (boardId: string, boardOwnerId: string | null) => {
   return fetcher<{ data: string }>(`${BASE_URL}${API_BOARDS_URL}`, {
     method: 'DELETE',
     headers: {
@@ -34,6 +34,7 @@ export const deleteBoard = (boardId: string) => {
     },
     body: JSON.stringify({
       boardId,
+      boardOwnerId,
     }),
   });
 };

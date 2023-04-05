@@ -23,6 +23,7 @@ export const creatingBoardSchema = z.object({
 });
 export const deletingBoardSchema = z.object({
   boardId: z.string(),
+  boardOwnerId: z.string().or(z.null()),
 });
 
 export type TDeletingBoard = TypeOf<typeof deletingBoardSchema>;
@@ -33,12 +34,16 @@ export type TUser = {
   username: string;
   password: string;
   displayName?: string;
-  externalLogin: string;
+  externalLogin: TLoginType;
   email: string;
   subs: TBoardDataClient[];
   imageURL?: string;
   nameAlias: string;
+  roles: TUserRoles[];
 };
+
+export type TLoginType = 'credentials' | 'google';
+export type TUserRoles = 'user';
 
 export type TUnsafeUserProps = 'password';
 export type TUnsafeBoardProps = '_id';

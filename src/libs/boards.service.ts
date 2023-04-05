@@ -14,7 +14,8 @@ export class BoardsService {
   async getUserBoards(
     userId: string | Types.ObjectId,
   ): Promise<TBoard<string>[]> {
-    const boards = await this.db.getUserBoards(userId);
+    const boardsQuery = this.db.getBoardsQueryUtils(userId);
+    const boards = await this.db.getUserBoards(boardsQuery);
 
     const result = boards.map((item) => {
       return {

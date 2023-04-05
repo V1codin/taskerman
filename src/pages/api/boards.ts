@@ -13,6 +13,7 @@ import {
   deletingBoardSchema,
 } from '@/types/db';
 import { boardService } from '@/libs/boards.service';
+import { Types } from 'mongoose';
 
 const boardsReducer = async <TMethod extends TMethods>(
   method: TMethod,
@@ -94,7 +95,20 @@ const boardsReducer = async <TMethod extends TMethods>(
       });
     }
 
-    const { boardId } = req.body as TDeletingBoard;
+    const { boardId, boardOwnerId } = req.body as TDeletingBoard;
+
+    const boardToDelete = await boardService.getBoardById(boardId);
+
+    if (
+      !boardOwnerId ||
+      boardToDelete?.ownerId !== new Types.ObjectId(boardOwnerId)
+    ) {
+      throw new ServerResponseError({
+        code: 403,
+        message: 'Error: Only board OWNER can delete the board ',
+      });
+    }
+
     const deleted = await boardService.delete(boardId);
 
     if (!deleted.acknowledged) {
@@ -107,6 +121,7 @@ const boardsReducer = async <TMethod extends TMethods>(
     return {
       data: {
         boardId,
+        boardOwnerId,
       },
     };
   }

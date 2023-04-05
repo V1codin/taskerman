@@ -2,15 +2,18 @@ import mongoose from 'mongoose';
 
 import { Types, Model } from 'mongoose';
 
+import type { TLoginType, TUserRoles } from '@/types/db';
+
 export interface IUser extends mongoose.Document {
   username: string;
   password: string;
   displayName?: string;
-  externalLogin: string;
+  externalLogin: TLoginType;
   email: string;
   subs: Types.ObjectId[];
   imageURL?: string;
   nameAlias: string;
+  roles: TUserRoles[];
 }
 
 const UserScheme = new mongoose.Schema<IUser, Model<IUser>>(
@@ -21,7 +24,7 @@ const UserScheme = new mongoose.Schema<IUser, Model<IUser>>(
       type: String,
       default: '',
     },
-    externalLogin: { type: String, require: false, default: 'local' },
+    externalLogin: { type: String, require: false, default: 'credentials' },
     email: { type: String, unique: true, require: true },
     subs: [{ type: Types.ObjectId, ref: 'boards' }],
     imageURL: {
@@ -29,6 +32,7 @@ const UserScheme = new mongoose.Schema<IUser, Model<IUser>>(
       default: '',
     },
     nameAlias: { type: String, require },
+    roles: { type: [], required: true, default: ['user'] },
   },
   {
     timestamps: true,
@@ -36,5 +40,5 @@ const UserScheme = new mongoose.Schema<IUser, Model<IUser>>(
   },
 );
 
-export default (mongoose.models['Users'] as mongoose.Model<IUser>) ||
+export default (mongoose.models['Users'] as Model<IUser>) ||
   mongoose.model('Users', UserScheme);

@@ -5,12 +5,19 @@ import { TDeleteModalData } from '@/types/state';
 import { deleteBoard } from '@/utils/api/boards';
 import { useSetAtom } from 'jotai';
 import { SyntheticEvent, useCallback } from 'react';
+import { ServerResponseError } from '@/libs/error.service';
+import { useToast } from '@/hooks/hooks';
 
 type DeleteBoardModalProps = TDeleteModalData;
 
-const DeleteBoardModal: React.FC<DeleteBoardModalProps> = ({ id, text }) => {
+const DeleteBoardModal: React.FC<DeleteBoardModalProps> = ({
+  id,
+  text,
+  boardOwnderId,
+}) => {
   const setModal = useSetAtom(getSetModal);
   const setBoards = useSetAtom(getSetBoardsState);
+  const { setToast } = useToast();
 
   const refreshData = useCallback(
     (boardId: string) => {
@@ -23,7 +30,7 @@ const DeleteBoardModal: React.FC<DeleteBoardModalProps> = ({ id, text }) => {
     async (e: SyntheticEvent<HTMLElement>) => {
       e.preventDefault();
       try {
-        await deleteBoard(id);
+        await deleteBoard(id, boardOwnderId);
         refreshData(id);
 
         setModal({
@@ -31,10 +38,23 @@ const DeleteBoardModal: React.FC<DeleteBoardModalProps> = ({ id, text }) => {
           window: null,
         });
       } catch (e) {
-        console.error('error', e);
+        if (e instanceof ServerResponseError) {
+          setToast({
+            message: e.message,
+            typeClass: 'conflict',
+            timeout: 3500,
+          });
+
+          return;
+        }
+
+        setToast({
+          message: 'Unexpected error',
+          typeClass: 'conflict',
+        });
       }
     },
-    [id, refreshData, setModal],
+    [boardOwnderId, id, refreshData, setModal, setToast],
   );
 
   const decline = useCallback(() => {
