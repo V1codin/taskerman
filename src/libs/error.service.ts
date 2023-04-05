@@ -1,19 +1,14 @@
 type TServerResponseCodes = 500 | 403 | 404 | 400;
 
-/*
-type TMessages = {
-  500: 'Error: Server does not response';
-  403: 'Error: Unauthorized';
-  404: 'Error: Document was not found';
-  400: 'Error: Bad request';
-};
-*/
+type TBoardErrorMessages = 'Error: Only board OWNER can delete the board ';
+type TServerErrorMessages = 'Error: Server does not response';
+type TAuthErrorMessages = 'Error: Unauthorized' | TBoardErrorMessages;
 
 export type TServerMessages<TCode extends TServerResponseCodes> =
   TCode extends 500
-    ? 'Error: Server does not response'
+    ? TServerErrorMessages
     : TCode extends 403
-    ? 'Error: Unauthorized'
+    ? TAuthErrorMessages
     : TCode extends 404
     ? 'Error: Document was not found'
     : TCode extends 400
