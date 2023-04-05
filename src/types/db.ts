@@ -23,7 +23,6 @@ export const creatingBoardSchema = z.object({
 });
 export const deletingBoardSchema = z.object({
   boardId: z.string(),
-  boardOwnerId: z.string().or(z.null()),
 });
 
 export type TDeletingBoard = TypeOf<typeof deletingBoardSchema>;

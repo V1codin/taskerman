@@ -95,13 +95,16 @@ const boardsReducer = async <TMethod extends TMethods>(
       });
     }
 
-    const { boardId, boardOwnerId } = req.body as TDeletingBoard;
+    const { boardId } = req.body as TDeletingBoard;
 
     const boardToDelete = await boardService.getBoardById(boardId);
 
+    const issuerId = token.user.id;
+
     if (
-      !boardOwnerId ||
-      boardToDelete?.ownerId !== new Types.ObjectId(boardOwnerId)
+      !issuerId ||
+      !boardToDelete ||
+      !new Types.ObjectId(issuerId).equals(boardToDelete.ownerId)
     ) {
       throw new ServerResponseError({
         code: 403,
@@ -121,7 +124,6 @@ const boardsReducer = async <TMethod extends TMethods>(
     return {
       data: {
         boardId,
-        boardOwnerId,
       },
     };
   }

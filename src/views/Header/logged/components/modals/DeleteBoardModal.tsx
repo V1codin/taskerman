@@ -10,11 +10,7 @@ import { useToast } from '@/hooks/hooks';
 
 type DeleteBoardModalProps = TDeleteModalData;
 
-const DeleteBoardModal: React.FC<DeleteBoardModalProps> = ({
-  id,
-  text,
-  boardOwnderId,
-}) => {
+const DeleteBoardModal: React.FC<DeleteBoardModalProps> = ({ id, text }) => {
   const setModal = useSetAtom(getSetModal);
   const setBoards = useSetAtom(getSetBoardsState);
   const { setToast } = useToast();
@@ -30,7 +26,7 @@ const DeleteBoardModal: React.FC<DeleteBoardModalProps> = ({
     async (e: SyntheticEvent<HTMLElement>) => {
       e.preventDefault();
       try {
-        await deleteBoard(id, boardOwnderId);
+        await deleteBoard(id);
         refreshData(id);
 
         setModal({
@@ -54,7 +50,7 @@ const DeleteBoardModal: React.FC<DeleteBoardModalProps> = ({
         });
       }
     },
-    [boardOwnderId, id, refreshData, setModal, setToast],
+    [id, refreshData, setModal, setToast],
   );
 
   const decline = useCallback(() => {

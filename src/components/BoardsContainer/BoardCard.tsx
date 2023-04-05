@@ -11,13 +11,7 @@ type BoardCardProps = TRawUserBoard & {
   bgChecker: boolean;
 };
 
-const BoardCard: React.FC<BoardCardProps> = ({
-  _id,
-  bgChecker,
-  bg,
-  title,
-  ownerId,
-}) => {
+const BoardCard: React.FC<BoardCardProps> = ({ _id, bgChecker, bg, title }) => {
   const setModal = useSetAtom(getSetModal);
   const deleteBoard = async () => {
     setModal({
@@ -29,7 +23,6 @@ const BoardCard: React.FC<BoardCardProps> = ({
           id: _id,
           text: title,
           entity: 'board',
-          boardOwnderId: ownerId,
         },
       },
     });
