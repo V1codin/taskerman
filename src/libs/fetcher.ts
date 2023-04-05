@@ -14,8 +14,8 @@ export default async function fetcher<JSON extends unknown>(
     }
 
     throw new ServerResponseError({
-      code: 403,
-      message: 'Error: Unauthorized',
+      code: data.code,
+      message: data.message,
     });
   } catch (e) {
     if (e instanceof ServerResponseError) {
