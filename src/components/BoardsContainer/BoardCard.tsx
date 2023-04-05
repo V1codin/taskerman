@@ -5,15 +5,19 @@ import CloseBtn from '@/modules/button/CloseBtn';
 
 import { useSetAtom } from 'jotai';
 import { getSetModal } from '@/context/stateManager';
+import { TRawUserBoard } from '@/libs/boards.service';
 
-type BoardCardProps = {
-  _id: string;
+type BoardCardProps = TRawUserBoard & {
   bgChecker: boolean;
-  title: string;
-  bg: string;
 };
 
-const BoardCard: React.FC<BoardCardProps> = ({ _id, bgChecker, bg, title }) => {
+const BoardCard: React.FC<BoardCardProps> = ({
+  _id,
+  bgChecker,
+  bg,
+  title,
+  ownerId,
+}) => {
   const setModal = useSetAtom(getSetModal);
   const deleteBoard = async () => {
     setModal({
@@ -25,6 +29,7 @@ const BoardCard: React.FC<BoardCardProps> = ({ _id, bgChecker, bg, title }) => {
           id: _id,
           text: title,
           entity: 'board',
+          boardOwnderId: ownerId,
         },
       },
     });

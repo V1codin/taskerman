@@ -111,6 +111,7 @@ export type TDeleteModalData = {
   id: string;
   text?: string;
   entity: TEntities;
+  boardOwnderId: string | null;
 };
 
 export type IModalWindow =
