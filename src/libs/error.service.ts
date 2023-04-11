@@ -1,8 +1,17 @@
 type TServerResponseCodes = 500 | 403 | 404 | 400;
 
-type TBoardErrorMessages = 'Error: Only board OWNER can delete the board ';
+type TBoardAuthErrorMessages = 'Error: Only board OWNER can delete the board';
+
 type TServerErrorMessages = 'Error: Server does not response';
-type TAuthErrorMessages = 'Error: Unauthorized' | TBoardErrorMessages;
+type TAuthErrorMessages = 'Error: Unauthorized' | TBoardAuthErrorMessages;
+
+type TBoardNotFoundMessages = 'Error: The requested board was not found';
+type TNotFoundMessages =
+  | 'Error: Document was not found'
+  | TBoardNotFoundMessages;
+
+type TBadRequestMessages = 'Error: Bad request';
+type TUnexpectedErrorMessage = 'Unexpected error';
 
 export type TServerMessages<TCode extends TServerResponseCodes> =
   TCode extends 500
@@ -10,10 +19,10 @@ export type TServerMessages<TCode extends TServerResponseCodes> =
     : TCode extends 403
     ? TAuthErrorMessages
     : TCode extends 404
-    ? 'Error: Document was not found'
+    ? TNotFoundMessages
     : TCode extends 400
-    ? 'Error: Bad request'
-    : 'Unexpected error';
+    ? TBadRequestMessages
+    : TUnexpectedErrorMessage;
 
 export class ServerResponseError<T extends TServerResponseCodes> extends Error {
   code: TServerResponseCodes;
@@ -28,5 +37,24 @@ export class ServerResponseError<T extends TServerResponseCodes> extends Error {
     this.name = 'ServerResponseError';
     this.message = message;
     this.code = code;
+  }
+}
+
+export class BadRequestError extends ServerResponseError<400> {
+  override code: 400;
+
+  constructor() {
+    super({
+      message: 'Error: Bad request',
+      code: 400,
+    });
+
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, ServerResponseError);
+    }
+
+    this.name = 'BadRequestError';
+    this.message = 'Error: Bad request';
+    this.code = 400;
   }
 }
