@@ -1,34 +1,19 @@
 import mongoProvider from '@/libs/db/mongo';
 
-import { getToken } from 'next-auth/jwt';
-import { dbConnect } from '@/libs/db/connect';
-import type { NextApiResponse } from 'next';
-import type { TError } from '@/types/state';
 import { TGetBoardReturnByMethod, TMethods, BoardsRequest } from '@/types/api';
-import { ServerResponseError } from '@/libs/error.service';
-import {
-  TCreatingBoard,
-  TDeletingBoard,
-  creatingBoardSchema,
-  deletingBoardSchema,
-} from '@/types/db';
+import { BadRequestError, ServerResponseError } from '@/libs/error.service';
+import { TBoardNS, creatingBoardSchema, deletingBoardSchema } from '@/types/db';
 import { boardService } from '@/libs/boards.service';
 import { Types } from 'mongoose';
+import { checkSessionToken } from '@/libs/sessionTokenChecker';
+import type { NextApiResponse } from 'next';
+import type { TError } from '@/types/state';
 
 const boardsReducer = async <TMethod extends TMethods>(
   method: TMethod,
   req: BoardsRequest,
 ): Promise<TGetBoardReturnByMethod<TMethod>> => {
-  const token = await getToken({
-    req,
-  });
-
-  if (!token) {
-    throw new ServerResponseError({
-      code: 403,
-      message: 'Error: Unauthorized',
-    });
-  }
+  const token = await checkSessionToken(req);
 
   // ? GET is for getting all boards
   if (method === 'GET') {
@@ -36,13 +21,9 @@ const boardsReducer = async <TMethod extends TMethods>(
 
     try {
       if (!username || typeof username !== 'string') {
-        throw new ServerResponseError({
-          code: 400,
-          message: 'Error: Bad request',
-        });
+        throw new BadRequestError();
       }
 
-      await dbConnect();
       const userId = await mongoProvider.getUserIdByUserName(username);
       if (!userId) {
         throw new ServerResponseError({
@@ -72,13 +53,10 @@ const boardsReducer = async <TMethod extends TMethods>(
   if (method === 'POST') {
     const parsedBody = creatingBoardSchema.safeParse(req.body);
     if (!parsedBody.success) {
-      throw new ServerResponseError({
-        code: 400,
-        message: 'Error: Bad request',
-      });
+      throw new BadRequestError();
     }
 
-    const body = req.body as TCreatingBoard;
+    const body = req.body as TBoardNS.TCreatingBoard;
     const createdBoard = await boardService.create(body);
 
     return {
@@ -89,43 +67,51 @@ const boardsReducer = async <TMethod extends TMethods>(
   if (method === 'DELETE') {
     const parsedBody = deletingBoardSchema.safeParse(req.body);
     if (!parsedBody.success) {
-      throw new ServerResponseError({
-        code: 400,
-        message: 'Error: Bad request',
-      });
+      throw new BadRequestError();
     }
 
-    const { boardId } = req.body as TDeletingBoard;
+    const { boardId } = req.body as TBoardNS.TDeletingBoard;
 
-    const boardToDelete = await boardService.getBoardById(boardId);
+    try {
+      const boardToDelete = await boardService.getBoardById(boardId);
 
-    const issuerId = token.user.id;
+      if (!boardToDelete) {
+        throw new ServerResponseError({
+          code: 404,
+          message: 'Error: Document was not found',
+        });
+      }
 
-    if (
-      !issuerId ||
-      !boardToDelete ||
-      !new Types.ObjectId(issuerId).equals(boardToDelete.ownerId)
-    ) {
-      throw new ServerResponseError({
-        code: 403,
-        message: 'Error: Only board OWNER can delete the board ',
-      });
+      const issuerId = token.user.id;
+
+      if (
+        !issuerId ||
+        !new Types.ObjectId(issuerId).equals(boardToDelete.ownerId)
+      ) {
+        throw new ServerResponseError({
+          code: 403,
+          message: 'Error: Only board OWNER can delete the board',
+        });
+      }
+
+      const deleted = await boardService.delete(boardId);
+
+      if (!deleted.acknowledged) {
+        throw new BadRequestError();
+      }
+
+      return {
+        data: {
+          boardId,
+        },
+      };
+    } catch (e) {
+      if (e instanceof ServerResponseError) {
+        throw e;
+      }
+
+      throw new BadRequestError();
     }
-
-    const deleted = await boardService.delete(boardId);
-
-    if (!deleted.acknowledged) {
-      throw new ServerResponseError({
-        code: 400,
-        message: 'Error: Bad request',
-      });
-    }
-
-    return {
-      data: {
-        boardId,
-      },
-    };
   }
 
   return {
@@ -139,10 +125,7 @@ export default async function handler(
 ) {
   try {
     if (!req.method) {
-      throw new ServerResponseError({
-        code: 400,
-        message: 'Error: Bad request',
-      });
+      throw new BadRequestError();
     }
     const { data } = await boardsReducer(req.method as TMethods, req);
 
