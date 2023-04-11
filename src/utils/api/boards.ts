@@ -1,11 +1,11 @@
-import fetcher from '@/libs/fetcher';
+import fetcher from './fetcher';
 
-import { TBoard, TCreatingBoard } from '@/types/db';
+import { TBoardNS } from '@/types/db';
 import { API_BOARDS_URL, API_SINGLE_BOARD_URL, BASE_URL } from '../constants';
-import { TRawUserBoard, TRawUserBoards } from '@/libs/boards.service';
+import { TRawUserBoard } from '@/libs/boards.service';
 
 export const getBoards = (username: string, token: string | undefined) => {
-  return fetcher<{ data: TRawUserBoards }>(
+  return fetcher<{ data: TBoardNS.TRawUserBoards }>(
     `${BASE_URL}${API_BOARDS_URL}?username=${username}`,
     {
       method: 'GET',
@@ -16,7 +16,7 @@ export const getBoards = (username: string, token: string | undefined) => {
   );
 };
 
-export const createBoard = (board: TCreatingBoard) => {
+export const createBoard = (board: TBoardNS.TCreatingBoard) => {
   return fetcher<{ data: TRawUserBoard }>(`${BASE_URL}${API_BOARDS_URL}`, {
     method: 'POST',
     headers: {
@@ -39,7 +39,7 @@ export const deleteBoard = (boardId: string) => {
 };
 
 export const getBoardById = (boardId: string, token: string | undefined) => {
-  return fetcher<{ data: TBoard }>(
+  return fetcher<{ data: TBoardNS.TBoard }>(
     `${BASE_URL}${API_SINGLE_BOARD_URL}?boardId=${boardId}`,
     {
       method: 'GET',
