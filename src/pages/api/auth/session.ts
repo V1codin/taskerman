@@ -1,17 +1,17 @@
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from './[...nextauth]';
 import { ServerResponseError } from '@/libs/error.service';
-import { TRawUserBoards, boardService } from '@/libs/boards.service';
+import { boardService } from '@/libs/boards.service';
 
 import type { TError } from '@/types/state';
 import type { NextApiRequest, NextApiResponse } from 'next/types';
-import type { SessionUser } from '@/types/db';
+import type { SessionUser, TBoardNS } from '@/types/db';
 
 import { dbConnect } from '@/libs/db/connect';
 
 export type TAuthenticatedUser = {
   user: SessionUser;
-  boards: TRawUserBoards;
+  boards: TBoardNS.TRawUserBoards;
 };
 
 export default async function handler(
