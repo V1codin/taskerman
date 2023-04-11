@@ -1,5 +1,5 @@
+import fetcher from '@/utils/api/fetcher';
 import useSWR from 'swr';
-import fetcher from '@/libs/fetcher';
 
 import { getSetToastState } from '@/context/stateManager';
 import {
@@ -77,13 +77,20 @@ const useBodyColor = (background = BG_IMAGE) => {
   }, [background, linkChecker, bodyRef]);
 };
 
-const useEscapeCallback = (callback: (arg: KeyboardEvent) => void) => {
-  useEffect(() => {
-    const keyDown = (e: KeyboardEvent) => {
+const useEscapeCallback = <TProps extends unknown>(
+  callback: (arg: KeyboardEvent, props?: TProps) => void,
+  props?: TProps,
+) => {
+  const keyDown = useCallback(
+    (e: KeyboardEvent) => {
       if (e.code === 'Escape') {
-        callback(e);
+        callback(e, props);
       }
-    };
+    },
+    [callback, props],
+  );
+
+  useEffect(() => {
     window.addEventListener('keydown', keyDown);
 
     return () => {
