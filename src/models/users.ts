@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 import { Types, Model } from 'mongoose';
 
-import type { TLoginType, TUserRoles } from '@/types/db';
+import type { TLoginType } from '@/types/db';
 
 export interface IUser extends mongoose.Document {
   username: string;
@@ -13,7 +13,6 @@ export interface IUser extends mongoose.Document {
   subs: Types.ObjectId[];
   imageURL?: string;
   nameAlias: string;
-  roles: TUserRoles[];
 }
 
 const UserScheme = new mongoose.Schema<IUser, Model<IUser>>(
@@ -32,7 +31,6 @@ const UserScheme = new mongoose.Schema<IUser, Model<IUser>>(
       default: '',
     },
     nameAlias: { type: String, require },
-    roles: { type: [], required: true, default: ['user'] },
   },
   {
     timestamps: true,
@@ -40,5 +38,5 @@ const UserScheme = new mongoose.Schema<IUser, Model<IUser>>(
   },
 );
 
-export default (mongoose.models['Users'] as Model<IUser>) ||
-  mongoose.model('Users', UserScheme);
+export default (mongoose.models['User'] as Model<IUser>) ||
+  mongoose.model('User', UserScheme);
