@@ -8,7 +8,6 @@ import {
   StyledCloseBtn,
   StyledModalContent,
 } from './styledModal';
-import { useEscapeCallback } from '@/hooks/hooks';
 
 type ModalProps = {
   children: React.ReactNode;
@@ -17,8 +16,6 @@ type ModalProps = {
 };
 
 const Modal: React.FC<ModalProps> = ({ children, isOpen, close }) => {
-  useEscapeCallback(close);
-
   return isOpen ? (
     <StyledModalContainer>
       <StyledModalOverlay onClick={close} />

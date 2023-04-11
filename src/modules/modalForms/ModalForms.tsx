@@ -9,13 +9,20 @@ import {
   TMenuCreateModalNames,
   TMenuDeleteModalNames,
 } from '@/types/state';
+
+import { useEscapeCallback } from '@/hooks/hooks';
+
 type ModalFormsProps = {
   window: IModalWindow;
+  close: () => void;
 };
 
 const ModalForms: React.FC<ModalFormsProps> = ({
   window: { type, view, data },
+  close,
 }) => {
+  useEscapeCallback(close);
+
   if (!type) return null;
 
   if (type === 'auth') {
