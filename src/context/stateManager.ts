@@ -2,16 +2,17 @@ import { atom, WritableAtom } from 'jotai';
 import { ToastProps } from '@/types/helpers';
 import { EMPTY_TOAST, DEFAULT_MODAL_STATE } from '@/utils/constants';
 import { IModal } from '@/types/state';
-import { TRawUserBoard, TRawUserBoards } from '@/libs/boards.service';
+import { TBoardNS } from '@/types/db';
+import { TRawUserBoard } from '@/libs/boards.service';
 
-export const boardsStateAtom = atom<TRawUserBoards>([]);
+export const boardsStateAtom = atom<TBoardNS.TRawUserBoards>([]);
 export const getSetBoardsState: WritableAtom<
-  TRawUserBoards,
+  TBoardNS.TRawUserBoards,
   [
     update:
       | TRawUserBoard
-      | TRawUserBoards
-      | ((prevValue: TRawUserBoards) => TRawUserBoards),
+      | TBoardNS.TRawUserBoards
+      | ((prevValue: TBoardNS.TRawUserBoards) => TBoardNS.TRawUserBoards),
   ],
   void
 > = atom(

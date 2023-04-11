@@ -3,21 +3,11 @@ import mongoProvider from '@/db/mongo';
 import encrypt from '@/libs/encrypt.service';
 
 import { Types } from 'mongoose';
-import {
-  OmitedSafeBoardMemebers,
-  OmitedSafeUser,
-  SessionUser,
-  TBoardDataClient,
-} from '@/types/db';
+import { OmitedSafeBoardMemebers, SessionUser, TBoardNS } from '@/types/db';
 import { TDb } from '@/db/mongo';
 import { TEncryptService } from './encrypt.service';
-import { dbConnect } from '@/db/connect';
 import { IUser } from '@/models/users';
 import { IBoard } from '@/models/boards';
-
-type TSafeUser<T extends boolean> = T extends true
-  ? OmitedSafeUser
-  : SessionUser;
 
 interface IAuth {
   db: TDb;
@@ -67,7 +57,7 @@ export class AuthService {
       pendingMembers.push(safePendingMemberData);
     }
 
-    const result: TBoardDataClient = {
+    const result: TBoardNS.TBoardDataClient = {
       bg: board.bg,
       members,
       ownerId,
@@ -79,7 +69,7 @@ export class AuthService {
   }
 
   private async getSubscribedBoardsData(userSubs: Types.ObjectId[]) {
-    const subs: TBoardDataClient[] = [];
+    const subs: TBoardNS.TBoardDataClient[] = [];
 
     for (let i = 0; i < userSubs.length; i++) {
       const item = userSubs[i];
@@ -103,14 +93,14 @@ export class AuthService {
       ? await this.getSubscribedBoardsData(user.subs)
       : user.subs.map((item) => String(item));
 
-    const result = {
-      id: user._id,
+    const result: SessionUser = {
+      id: user._id as string,
       email: user.email,
       username: user.username,
       displayName: user.displayName,
       imageURL: user.imageURL,
       subs,
-    } as TSafeUser<T>;
+    };
 
     return result;
   }
@@ -119,8 +109,6 @@ export class AuthService {
     username: string;
     password: string;
   }) {
-    await dbConnect();
-
     const userFromBD = await this.db.getUserByUserName(credentials.username!);
 
     if (!userFromBD) {
