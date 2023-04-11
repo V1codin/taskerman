@@ -1,5 +1,6 @@
+import DeleteBoardModal from './DeleteBoardModal';
+
 import { TDeleteModalData, TMenuDeleteModalNames } from '@/types/state';
-import DeleteBoardModal from '@/views/Header/logged/components/modals/DeleteBoardModal';
 
 type DeleteFormsProps = {
   view: TMenuDeleteModalNames;
