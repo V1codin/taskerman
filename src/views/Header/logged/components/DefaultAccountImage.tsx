@@ -7,9 +7,16 @@ type DefaultAccountImageProps = {
   };
 };
 
-const StyledImageContainer = styled.span`
-  text-align: center;
+const StyledImageContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
   font-size: 1.4em;
+  border-radius: 50%;
+  width: 100%;
+  height: 100%;
+  color: ${({ theme }) => theme.colors.yellow};
+  background-color: ${({ theme }) => theme.colors.gentleBlack};
 `;
 
 const DefaultAccountImage: React.FC<DefaultAccountImageProps> = ({

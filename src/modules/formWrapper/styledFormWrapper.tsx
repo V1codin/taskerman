@@ -3,12 +3,14 @@ import styled from 'styled-components';
 import { PartialContainerProps } from './FormWrapper';
 
 export const StyledFormContainer = styled.div<{
-  containerProps?: PartialContainerProps;
+  containerProps: PartialContainerProps;
 }>`
   width: ${({ theme, containerProps }) =>
-    containerProps && containerProps.size
-      ? theme.containerSizes[containerProps.size]
-      : theme.containerSizes.default};
+    containerProps.customWidth
+      ? containerProps.customWidth
+      : containerProps.width
+      ? theme.formWidth[containerProps.width]
+      : theme.formWidth.default};
   margin: 0 auto;
 `;
 
@@ -30,21 +32,21 @@ export const StyledForm = styled.form`
     font-size: 1.2em;
   }
 
-  & input {
-    color: #fff;
-    margin-top: 10px;
+  .input {
+    color: ${({ theme }) => theme.colors.white};
     width: 100%;
     padding: 10px;
+    margin-top: 10px;
     font-size: 0.9em;
     background-color: unset;
     border: unset;
-    border-bottom: 1px solid var(--yellow);
+    border-bottom: 1px solid ${({ theme }) => theme.colors.yellow};
     outline: none;
 
     &:focus,
     &:hover {
       &::placeholder {
-        color: var(--yellow);
+        color: ${({ theme }) => theme.colors.yellow};
       }
     }
 
@@ -55,36 +57,25 @@ export const StyledForm = styled.form`
 
   & button {
     cursor: pointer;
-    margin-top: 15px;
-    padding: 10px;
-    width: 100%;
-    background-color: var(--pale-green);
-    color: var(--yellow);
     font-size: 1em;
     font-weight: 700;
     transition: 0.2s ease;
   }
 
-  .btn_secondary {
-    background-color: #fff;
-    border: 1px solid var(--monokai);
-    color: var(--monokai);
-  }
-
   .heading {
-    color: var(--bright-green);
+    color: ${({ theme }) => theme.colors.brightGreen};
   }
 
   & a {
     margin-top: 15px;
     text-decoration: none;
-    color: #fff;
+    color: ${({ theme }) => theme.colors.white};
   }
 
   .warning {
     font-weight: 600;
     margin-top: 5px;
-    color: var(--pink);
+    color: ${({ theme }) => theme.colors.red};
   }
 
   .color-picker {
@@ -110,11 +101,26 @@ export const StyledForm = styled.form`
 
   .add__list__btns {
     width: 100%;
-    height: 40px;
     display: flex;
     align-items: center;
     justify-content: flex-start;
     margin-top: 15px;
+
+    & .primary {
+      font-weight: 500;
+      border-radius: 7px;
+      padding: 5px 10px;
+      background-color: #42a185;
+      color: ${({ theme }) => theme.colors.white};
+
+      &:hover {
+        background-color: #42c185;
+      }
+
+      &:active {
+        box-shadow: unset;
+      }
+    }
   }
   .add__list__input {
     width: 100%;
@@ -128,11 +134,31 @@ export const StyledForm = styled.form`
     margin-left: 0;
   }
   .link:active {
-    color: var(--yellow);
+    color: ${({ theme }) => theme.colors.yellow};
   }
 
   .link:hover {
     text-decoration: underline;
+  }
+
+  .btn {
+    width: 100%;
+    margin-top: 15px;
+    height: 43px;
+    padding: 10px;
+  }
+
+  .btn_primary {
+    box-shadow: none;
+
+    background-color: ${({ theme }) => theme.colors.paleGreen};
+    color: ${({ theme }) => theme.colors.yellow};
+  }
+
+  .btn_secondary {
+    background-color: ${({ theme }) => theme.colors.white};
+    border: 1px solid ${({ theme }) => theme.colors.gentleBlack};
+    color: ${({ theme }) => theme.colors.gentleBlack};
   }
 
   .btn:hover {
@@ -140,26 +166,26 @@ export const StyledForm = styled.form`
   }
 
   .btn:active {
-    background-color: var(--yellow);
-    color: var(--pale-green);
+    background-color: ${({ theme }) => theme.colors.yellow};
+    color: ${({ theme }) => theme.colors.paleGreen};
   }
   .btn:focus {
-    border: 1px dashed var(--pale-blue);
+    border: 1px dashed ${({ theme }) => theme.colors.paleBlue};
   }
 
   .input:focus {
-    border-bottom: 1px solid var(--pale-blue);
+    border-bottom: 1px solid ${({ theme }) => theme.colors.paleBlue};
   }
 
   .google__btn {
     display: flex;
     align-items: center;
     justify-content: space-evenly;
-    background-color: #fff;
+    background-color: ${({ theme }) => theme.colors.white};
     color: #2727fe;
   }
   .google__btn:hover {
     background-color: #2727fe;
-    color: #fff;
+    color: ${({ theme }) => theme.colors.white};
   }
 `;

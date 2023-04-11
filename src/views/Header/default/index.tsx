@@ -18,7 +18,7 @@ const StyledContainer = styled.div`
     margin-right: 5px;
   }
   .sign {
-    color: #ffffff;
+    color: ${({ theme }) => theme.colors.white};
     margin-right: 0;
     border-radius: 7px;
     border: 1px dashed transparent;

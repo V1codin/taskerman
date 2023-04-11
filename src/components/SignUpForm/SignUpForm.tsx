@@ -37,7 +37,12 @@ const SignUpForm: React.FC<SignUpFormProps> = () => {
   }, [setFocus]);
 
   return (
-    <FormWrapper submit={handleSubmit(onSubmit)}>
+    <FormWrapper
+      submit={handleSubmit(onSubmit)}
+      containerProps={{
+        customWidth: '330px',
+      }}
+    >
       <h3 className="heading">Sign up for your account</h3>
       <input
         type="text"
@@ -107,9 +112,9 @@ const SignUpForm: React.FC<SignUpFormProps> = () => {
         aria-invalid={Boolean(errors.email)}
       />
       {errors.email && <span className="warning">{errors.email.message}</span>}
-      <button className="btn">Sign up</button>
+      <button className="btn btn_primary">Sign up</button>
       <button
-        className="btn google__btn"
+        className="btn google__btn btn_secondary"
         type="button"
         data-oauthtype="google"
         onClick={(e) => {

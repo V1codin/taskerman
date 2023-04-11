@@ -56,7 +56,6 @@ const DefaultColorPickerButtons: React.FC<DefaultColorPickerButtonsProps> = ({
             width: '32px',
             padding: '11px',
             backgroundColor: '#ffffffb0',
-            marginTop: '12px',
           }}
           onChange={changeHandler}
         />

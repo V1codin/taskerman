@@ -173,11 +173,8 @@ const CreateBoardModal: React.FC<CreateBoardModalProps> = () => {
       />
       <ButtonWithLoader
         isLoading={isLoading}
-        styles={{
-          height: '43px',
-        }}
         attrs={{
-          className: 'btn',
+          className: 'btn btn_primary',
           type: 'submit',
           disabled: form.title === '',
         }}

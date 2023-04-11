@@ -18,8 +18,8 @@ const ButtonWithLoader: React.FC<ButtonWithLoaderProps> = ({
   return (
     <Button
       styles={{
-        ...styles,
         position: 'relative',
+        ...styles,
       }}
       attrs={attrs}
     >

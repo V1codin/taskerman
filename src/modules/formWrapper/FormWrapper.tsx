@@ -1,8 +1,10 @@
 import { CSSProperties, FormEventHandler, memo } from 'react';
 import { StyledForm, StyledFormContainer } from './styledFormWrapper';
+import { CSSMeasurementUnit } from 'styled-components';
 
 type ContainerProps = {
-  size: 's' | 'm' | 'l';
+  width: 's' | 'm' | 'l';
+  customWidth: `${number}${CSSMeasurementUnit}`;
 };
 
 export type PartialContainerProps = Partial<ContainerProps>;

@@ -92,7 +92,12 @@ const LoginForm: React.FC<LoginFormProps> = () => {
   };
 
   return (
-    <FormWrapper submit={handleSubmit(onSubmit)}>
+    <FormWrapper
+      submit={handleSubmit(onSubmit)}
+      containerProps={{
+        customWidth: '330px',
+      }}
+    >
       <h3 className="heading">Login</h3>
       <input name="csrfToken" type="hidden" defaultValue={''} />
       <input
@@ -123,12 +128,8 @@ const LoginForm: React.FC<LoginFormProps> = () => {
       )}
       <ButtonWithLoader
         isLoading={loader}
-        styles={{
-          boxShadow: 'none',
-          height: '43px',
-        }}
         attrs={{
-          className: 'btn',
+          className: 'btn btn_primary',
           type: 'submit',
           disabled: loader,
         }}
@@ -136,7 +137,7 @@ const LoginForm: React.FC<LoginFormProps> = () => {
         <span>Log in</span>
       </ButtonWithLoader>
       <button
-        className="btn google__btn"
+        className="btn google__btn btn_secondary"
         type="button"
         data-oauthtype="google"
         onClick={(e) => {

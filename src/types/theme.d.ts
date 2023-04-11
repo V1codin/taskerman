@@ -41,7 +41,7 @@ declare module 'styled-components' {
       l: string;
       xl: string;
     };
-    containerSizes: {
+    formWidth: {
       s: string;
       m: string;
       l: string;

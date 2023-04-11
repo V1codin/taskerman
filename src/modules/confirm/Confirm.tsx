@@ -12,14 +12,18 @@ type ConfirmProps = {
 
 const Confirm: React.FC<ConfirmProps> = ({ children, accept, decline }) => {
   return (
-    <FormWrapper submit={accept} containerProps={{ size: 's' }}>
+    <FormWrapper submit={accept} containerProps={{ customWidth: '20vw' }}>
       {children}
       <StyledConfirmButtonsWrapper>
         <Button
           attrs={{
             onClick: accept,
             type: 'submit',
-            className: 'btn',
+            className: 'btn btn_primary',
+          }}
+          styles={{
+            padding: '10px 25px',
+            marginTop: 0,
           }}
         >
           Confirm
@@ -27,7 +31,11 @@ const Confirm: React.FC<ConfirmProps> = ({ children, accept, decline }) => {
         <Button
           attrs={{
             onClick: decline,
-            className: 'btn_secondary',
+            className: 'btn btn_secondary',
+          }}
+          styles={{
+            padding: '10px 25px',
+            marginTop: 0,
           }}
         >
           Cancel

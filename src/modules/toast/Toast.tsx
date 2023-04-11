@@ -24,8 +24,8 @@ const StyledContainer = styled.div`
   animation-fill-mode: forwards;
 
   text-align: center;
-  background-color: var(--monokai);
-  box-shadow: 0 0 5px var(--pink);
+  background-color: ${({ theme }) => theme.colors.gentleBlack};
+  box-shadow: 0 0 5px ${({ theme }) => theme.colors.red};
 `;
 
 const Toast: React.FC<ToastComponentProps> = memo(({ message, typeClass }) => {

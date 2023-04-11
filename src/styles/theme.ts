@@ -7,11 +7,11 @@ export const defaultTheme = {
     l: '7px',
     xl: '10px',
   },
-  containerSizes: {
-    s: '20vw',
+  formWidth: {
+    s: '8vw',
     m: '50vw',
     l: '95vw',
-    default: '330px',
+    default: 'fit-content',
   },
   spacing: {
     unset: 'unset',

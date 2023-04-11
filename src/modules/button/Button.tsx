@@ -1,22 +1,20 @@
 import styled from 'styled-components';
+
+import type { ReactNode, ButtonHTMLAttributes, CSSProperties } from 'react';
 import type { TButtonDataTypes } from 'styled-components';
 
+export type CustomButtonAttrs = TButtonDataTypes &
+  Partial<ButtonHTMLAttributes<HTMLButtonElement>>;
+
 type ButtonProps = {
-  children?: JSX.Element | JSX.Element[] | React.ReactNode;
-  attrs?: {} & TButtonDataTypes &
-    Partial<React.ButtonHTMLAttributes<HTMLButtonElement>>;
-  styles?: React.CSSProperties;
+  children?: ReactNode;
+  attrs?: {} & CustomButtonAttrs;
+  styles?: CSSProperties;
 };
 
 export const StyledButton = styled.button<{ style: React.CSSProperties }>`
-  /*  
-  justify-content: center;
-  text-align: center;
-  min-width: 70px;
-  min-height: 44px;
-  */
   background-color: var(--black-aqua);
-  box-shadow: 0 0 5px var(--yellow);
+  box-shadow: 0 0 5px ${({ theme }) => theme.colors.yellow};
   transition: 0.2s ease;
   position: relative;
 

@@ -24,12 +24,12 @@ export const StyledDropDown = styled.div<DropDownProps>`
   }
   .popup__header,
   .body_shape {
-    border-bottom: 1px solid var(--blue);
+    border-bottom: 1px solid ${({ theme }) => theme.colors.brightBlue};
   }
 
   .popup__article {
     grid-column: 2;
-    color: var(--pale-green);
+    color: ${({ theme }) => theme.colors.paleGreen};
   }
 
   .body_shape {
@@ -37,7 +37,7 @@ export const StyledDropDown = styled.div<DropDownProps>`
   }
 
   .body_shape {
-    border-bottom: 1px solid var(--blue);
+    border-bottom: 1px solid ${({ theme }) => theme.colors.brightBlue};
   }
 
   .popup__body {
@@ -50,7 +50,7 @@ export const StyledDropDown = styled.div<DropDownProps>`
     width: 100%;
     text-align: start;
     font-size: 1em;
-    color: #fff;
+    color: ${({ theme }) => theme.colors.white};
     cursor: pointer;
     padding: 10px 5px;
     border: 1px solid transparent;
@@ -117,7 +117,7 @@ export const StyledDropDown = styled.div<DropDownProps>`
   .note > header {
     position: sticky;
     top: 0;
-    background-color: var(--monokai);
+    background-color: ${({ theme }) => theme.colors.gentleBlack};
     z-index: 500;
   }
 
