@@ -1,6 +1,5 @@
-import ImageModule from '@/modules/image/Image';
 import styled from 'styled-components';
-import DefaultAccountImage from './DefaultAccountImage';
+import Avatar from '@/modules/avatar/Avatar';
 
 type AccountProps = {
   imageURL?: string;
@@ -10,12 +9,12 @@ type AccountProps = {
 };
 
 const StyledAvatarButton = styled.button`
-  width: 47px;
-  height: 47px;
-  padding: 5px;
+  width: 40px;
+  height: 40px;
   display: flex;
   justify-content: center;
   align-items: center;
+  background-color: ${({ theme }) => theme.colors.gentleBlack};
 
   & > img {
     border-radius: 50%;
@@ -35,16 +34,16 @@ const Account: React.FC<AccountProps> = ({
 }) => {
   return (
     <StyledAvatarButton
-      className="avatar_btn colored"
+      className="avatar__btn"
       name="account"
       onClick={onToggle}
       data-drop-type="account"
     >
-      {imageURL ? (
-        <ImageModule src={imageURL} width={45} height={45} alt="User avarar" />
-      ) : (
-        <DefaultAccountImage userAliases={{ displayName, username }} />
-      )}
+      <Avatar
+        displayName={displayName}
+        imageURL={imageURL}
+        username={username}
+      />
     </StyledAvatarButton>
   );
 };
