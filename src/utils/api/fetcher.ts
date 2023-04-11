@@ -1,4 +1,4 @@
-import { ServerResponseError } from './error.service';
+import { ServerResponseError } from '@/libs/error.service';
 
 export default async function fetcher<JSON extends unknown>(
   input: RequestInfo,
