@@ -2,19 +2,22 @@ import DropDown from '@/modules/dropdown/DropDown';
 import Image from 'next/image';
 
 import { imagesForInfoDropDown } from '@/utils/helpers';
-import { MouseEvent, SyntheticEvent, useState } from 'react';
+import { MutableRefObject, useState } from 'react';
+import { useOuterCLick } from '@/hooks/hooks';
 
 type InfoBoardDropDownProps = {
-  closeDropDown: (
-    e: KeyboardEvent | MouseEvent | SyntheticEvent<HTMLButtonElement>,
-  ) => void;
+  closeDropDown: () => void;
+  containerRef: MutableRefObject<HTMLElement | null>;
 };
 
 const InfoBoardDropDown: React.FC<InfoBoardDropDownProps> = ({
   closeDropDown,
+  containerRef,
 }) => {
   const [imageState] = useState(imagesForInfoDropDown);
   const [imageIterator, setImageIterator] = useState(0);
+
+  useOuterCLick(containerRef, closeDropDown);
 
   const changeTip = () => {
     setImageIterator((prevS) => {

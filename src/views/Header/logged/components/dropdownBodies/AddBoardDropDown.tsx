@@ -1,21 +1,26 @@
 import DropDown from '@/modules/dropdown/DropDown';
 
-import { MouseEvent, MouseEventHandler, SyntheticEvent } from 'react';
+import { MouseEventHandler, MutableRefObject } from 'react';
 import { TMenuCreateModalNames } from '@/types/state';
+import { useOuterCLick } from '@/hooks/hooks';
 
 type AddBoardDropDownProps = {
-  closeDropDown: (
-    e: KeyboardEvent | MouseEvent | SyntheticEvent<HTMLButtonElement>,
-  ) => void;
+  closeDropDown: () => void;
   openModal: (
     modalName: TMenuCreateModalNames,
   ) => MouseEventHandler<HTMLButtonElement>;
+
+  containerRef: MutableRefObject<HTMLElement | null>;
 };
 
 const AddBoardDropDown: React.FC<AddBoardDropDownProps> = ({
   closeDropDown,
   openModal,
+
+  containerRef,
 }) => {
+  useOuterCLick(containerRef, closeDropDown);
+
   return (
     <DropDown
       close={closeDropDown}

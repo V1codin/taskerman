@@ -9,23 +9,31 @@ import profileIcon from '@/assets/profile.svg?url';
 // @ts-ignore
 import boardIcon from '@/assets/board_colored.svg?url';
 
-import { MouseEvent, SyntheticEvent } from 'react';
+import { MutableRefObject } from 'react';
+import { useOuterCLick } from '@/hooks/hooks';
 
 type AccountDropDownProps = {
-  closeDropDown: (
-    e: KeyboardEvent | MouseEvent | SyntheticEvent<HTMLButtonElement>,
-  ) => void;
+  closeDropDown: () => void;
   logoutHandler: () => void;
+
+  containerRef: MutableRefObject<HTMLElement | null>;
 };
 
 const AccountDropDown: React.FC<AccountDropDownProps> = ({
   closeDropDown,
   logoutHandler,
+  containerRef,
 }) => {
+  useOuterCLick(containerRef, closeDropDown);
+
   return (
     <DropDown close={closeDropDown} heading="Account">
       <li className="list__body_mt5">
-        <Link className="popup__body__el" href="/profile">
+        <Link
+          className="popup__body__el"
+          href="/profile"
+          onClick={closeDropDown}
+        >
           <ImageModule
             src={profileIcon}
             alt="logout icon"
@@ -37,7 +45,11 @@ const AccountDropDown: React.FC<AccountDropDownProps> = ({
         </Link>
       </li>
       <li className="list__body_mt5">
-        <Link className="popup__body__el" href="/boards">
+        <Link
+          className="popup__body__el"
+          href="/boards"
+          onClick={closeDropDown}
+        >
           <ImageModule
             src={boardIcon}
             alt="logout icon"

@@ -1,6 +1,4 @@
 // @ts-ignore
-import Plus from '@/assets/plus.svg?url';
-// @ts-ignore
 import Info from '@/assets/info.svg?url';
 // @ts-ignore
 import Note from '@/assets/notification.svg?url';
@@ -17,63 +15,78 @@ import {
   SyntheticEvent,
   MouseEvent as IMouseEvent,
   MutableRefObject,
+  useCallback,
 } from 'react';
-import { useOuterCLick } from '@/hooks/hooks';
 import { TMenuCreateModalNames } from '@/types/state';
 import { getSetModal } from '@/context/stateManager';
 import { useAtom } from 'jotai';
+import AddButton from '@/modules/button/AddButton';
 
 type MenuProps = {
   user: SessionUser;
   logout: () => void;
   containerRef: MutableRefObject<HTMLElement | null>;
 };
-type DropState = {
+
+export type DropState = {
   add: boolean;
   info: boolean;
   note: boolean;
   account: boolean;
 };
 
+const defaultDropState: DropState = {
+  add: false,
+  info: false,
+  note: false,
+  account: false,
+};
+
 const Menu: React.FC<MenuProps> = ({ user, logout, containerRef }) => {
-  const defaultDropState: DropState = {
-    add: false,
-    info: false,
-    note: false,
-    account: false,
-  };
   const [dropState, setDropState] = useState<DropState>(defaultDropState);
   const [, setModalState] = useAtom(getSetModal);
 
-  const closeAllDropDowns = () => {
+  const closeAllDropDowns = useCallback(() => {
     setDropState(defaultDropState);
-  };
-
-  useOuterCLick(containerRef, () => {
-    closeAllDropDowns();
-  });
+  }, []);
 
   const notifications = [];
 
-  const toggleDropDown = (
-    e: KeyboardEvent | IMouseEvent | SyntheticEvent<HTMLButtonElement>,
-  ) => {
-    const event = e as SyntheticEvent<HTMLButtonElement>;
-    const dropType = event.currentTarget?.dataset['dropType'] || '';
-    if (dropType) {
-      setDropState((prev) => {
-        return {
-          ...defaultDropState,
-          [dropType]: !prev[dropType as keyof DropState],
-        };
-      });
-    }
-  };
+  const toggleDropDown = useCallback(
+    (e: KeyboardEvent | IMouseEvent | SyntheticEvent<HTMLButtonElement>) => {
+      const event = e as SyntheticEvent<HTMLButtonElement>;
+      const dropType = event.currentTarget?.dataset['dropType'] || '';
+      if (dropType) {
+        setDropState((prev) => {
+          return {
+            ...defaultDropState,
+            [dropType]: !prev[dropType as keyof DropState],
+          };
+        });
+      }
+    },
+    [],
+  );
 
   const closeDropDown = (
-    e: KeyboardEvent | IMouseEvent | SyntheticEvent<HTMLButtonElement>,
+    e:
+      | KeyboardEvent
+      | IMouseEvent
+      | SyntheticEvent<HTMLButtonElement>
+      | keyof DropState,
   ) => {
     if (!(e instanceof KeyboardEvent)) {
+      if (typeof e === 'string') {
+        setDropState((prev) => {
+          return {
+            ...prev,
+            [e]: false,
+          };
+        });
+
+        return;
+      }
+
       const event = e as SyntheticEvent<HTMLButtonElement>;
       const dropType = event.currentTarget?.dataset['dropType'] || '';
       if (dropType) {
@@ -87,10 +100,19 @@ const Menu: React.FC<MenuProps> = ({ user, logout, containerRef }) => {
         return;
       }
     }
-
-    // ? if pressed keyboard's key (if esc the window will be closed)
-    closeAllDropDowns();
   };
+
+  const closeAddBoardDropDown = useCallback(() => {
+    closeDropDown('add');
+  }, []);
+
+  const closeInfoDropDown = useCallback(() => {
+    closeDropDown('info');
+  }, []);
+
+  const closeAccountDropDown = useCallback(() => {
+    closeDropDown('account');
+  }, []);
 
   const openModal = (modalName: TMenuCreateModalNames) => {
     return () => {
@@ -107,19 +129,19 @@ const Menu: React.FC<MenuProps> = ({ user, logout, containerRef }) => {
 
   return (
     <>
-      <Button
+      <AddButton
+        className={`menu__btn${dropState.add ? ' active' : ''}`}
+        onClick={toggleDropDown}
         attrs={{
           'data-drop-type': 'add',
-          className: `menu__btn${dropState.add ? ' active' : ''}`,
-          name: 'add',
-          title: 'Create',
-          onClick: toggleDropDown,
         }}
-      >
-        <ImageModule src={Plus} alt="add" className="menu__ico" />
-      </Button>
+      />
       {dropState.add && (
-        <AddBoardDropDown openModal={openModal} closeDropDown={closeDropDown} />
+        <AddBoardDropDown
+          openModal={openModal}
+          closeDropDown={closeAddBoardDropDown}
+          containerRef={containerRef}
+        />
       )}
       <Button
         attrs={{
@@ -133,7 +155,10 @@ const Menu: React.FC<MenuProps> = ({ user, logout, containerRef }) => {
         <ImageModule src={Info} alt="info" className="menu__ico" />
       </Button>
       {dropState.info && (
-        <InfoBoardDropDownProps closeDropDown={closeDropDown} />
+        <InfoBoardDropDownProps
+          closeDropDown={closeInfoDropDown}
+          containerRef={containerRef}
+        />
       )}
       <Button
         attrs={{
@@ -167,7 +192,11 @@ const Menu: React.FC<MenuProps> = ({ user, logout, containerRef }) => {
         onToggle={toggleDropDown}
       />
       {dropState.account && (
-        <AccountDropDown closeDropDown={closeDropDown} logoutHandler={logout} />
+        <AccountDropDown
+          closeDropDown={closeAccountDropDown}
+          logoutHandler={logout}
+          containerRef={containerRef}
+        />
       )}
     </>
   );
