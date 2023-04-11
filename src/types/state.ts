@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { masks, warns } from '@/utils/helpers';
-import { OmitedSafeUser, TUserDataClient } from './db';
+import { SessionUser, TUserDataClient } from './db';
 
 /*
 const Note = z.object({
@@ -135,4 +135,4 @@ export interface IModal<T extends boolean> {
   window: T extends true ? IModalWindow : null;
 }
 
-export type TUserHeaderProps = Omit<OmitedSafeUser, 'subs'>;
+export type TUserHeaderProps = Omit<SessionUser, 'subs'>;
