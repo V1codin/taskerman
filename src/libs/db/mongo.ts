@@ -1,10 +1,11 @@
 import Users from '@/models/users';
 import Boards from '@/models/boards';
+import Lists from '@/models/lists';
 
 import { Types } from 'mongoose';
 import type { IBoard } from '@/models/boards';
 import type { FilterQuery } from 'mongoose';
-import type { TCreatingBoard } from '@/types/db';
+import type { TBoardNS, TListNS } from '@/types/db';
 
 interface DataBaseProvider<
   ParticularDBType extends unknown,
@@ -16,19 +17,27 @@ interface DataBaseProvider<
   TUserBoards = unknown,
   TCreatedBoard = unknown,
   TDeletedBoard = unknown,
+  TListsByBoardId = unknown,
 > {
-  getBoardsQueryUtils(userId: string): TBoardQuery;
+  getAllBoardsByUserQueryUtils(userId: string): TBoardQuery;
+  isValidUserForGettingBoardUtils(
+    userId: string,
+    boardId: string,
+  ): Promise<boolean>;
 
   getUserByUserName(username: string): TUserByName;
   getUserById(userId: string | ParticularDBType): TUserById;
   getUserIdByUserName(username: string): TUserIdByUserName;
-  getBoardById(boerdId: string | ParticularDBType): TBoarById;
+
+  getBoardById(boardId: string | ParticularDBType): TBoarById;
   getUserBoards(
     query: TBoardQuery | null,
     userId?: string | ParticularDBType,
   ): TUserBoards;
-  createBoard(board: TCreatingBoard): TCreatedBoard;
+  createBoard(board: TBoardNS.TCreatingBoard): TCreatedBoard;
   deleteBoard(boardId: string | ParticularDBType): TDeletedBoard;
+
+  getListsByBoardId(boardId: string | ParticularDBType): TListsByBoardId;
 }
 
 export class MongoDataBaseProvider
@@ -44,7 +53,8 @@ export class MongoDataBaseProvider
       // ? unknown because Boards.create is overloading function
       // ? and ReturnType is not compatible
       unknown,
-      ReturnType<typeof Boards.deleteOne>
+      ReturnType<typeof Boards.deleteOne>,
+      ReturnType<typeof Lists.find>
     >
 {
   constructor() {}
@@ -57,7 +67,9 @@ export class MongoDataBaseProvider
   *  getUserBoards(query): Boards -> makes request to db relies YourDataBaseQuery
   * }
   */
-  getBoardsQueryUtils(userId: string | Types.ObjectId): FilterQuery<IBoard> {
+  getAllBoardsByUserQueryUtils(
+    userId: string | ParticularDBType,
+  ): FilterQuery<IBoard> {
     return {
       $or: [
         {
@@ -68,6 +80,42 @@ export class MongoDataBaseProvider
     };
   }
 
+  private getObjectIdFromStringUtils(id: string | ParticularDBType) {
+    if (typeof id === 'string') {
+      return new Types.ObjectId(id);
+    }
+
+    return id;
+  }
+
+  async isValidUserForGettingBoardUtils(userId: string, boardId: string) {
+    const userObj = this.getObjectIdFromStringUtils(userId);
+    const boardObj = this.getObjectIdFromStringUtils(boardId);
+
+    const result = await Boards.find({
+      $or: [
+        {
+          _id: boardObj,
+          ownerId: userObj,
+        },
+        {
+          _id: boardObj,
+          memberIds: userId,
+        },
+      ],
+    });
+
+    return result.length > 0;
+  }
+
+  getListsByBoardId(boardId: string | ParticularDBType) {
+    const result = Lists.find({
+      boardId: this.getObjectIdFromStringUtils(boardId),
+    });
+
+    return result;
+  }
+
   getUserByUserName(username: string) {
     const user = Users.findOne({
       username,
@@ -76,9 +124,9 @@ export class MongoDataBaseProvider
     return user;
   }
 
-  getUserById(userId: string | Types.ObjectId) {
+  getUserById(userId: string | ParticularDBType) {
     const result = Users.findOne({
-      _id: typeof userId === 'string' ? new Types.ObjectId(userId) : userId,
+      _id: this.getObjectIdFromStringUtils(userId),
     });
 
     return result;
@@ -92,38 +140,32 @@ export class MongoDataBaseProvider
     return result;
   }
 
-  getBoardById(boerdId: string | Types.ObjectId) {
+  getBoardById(boardId: string | ParticularDBType) {
     const result = Boards.findOne({
-      _id: typeof boerdId === 'string' ? new Types.ObjectId(boerdId) : boerdId,
+      _id: this.getObjectIdFromStringUtils(boardId),
     });
 
     return result;
   }
 
-  getUserBoards(
-    query: FilterQuery<IBoard> | null,
-    userId?: string | Types.ObjectId,
-  ) {
-    if (query) {
-      return Boards.find(query);
-    }
-
-    const _id =
-      typeof userId === 'string' ? new Types.ObjectId(userId) : userId;
-
-    const boards = Boards.find({ ownerId: _id });
-
-    return boards;
+  getUserBoards(query: FilterQuery<IBoard>) {
+    return Boards.find(query);
   }
 
-  createBoard(board: TCreatingBoard) {
+  createBoard(board: TBoardNS.TCreatingBoard) {
     const result = Boards.create(board);
 
     return result;
   }
 
+  createList(list: TListNS.TCreatingList) {
+    const result = Lists.create(list);
+
+    return result;
+  }
+
   deleteBoard(
-    boardId: string | Types.ObjectId,
+    boardId: string | ParticularDBType,
   ): ReturnType<typeof Boards.deleteOne> {
     const result = Boards.deleteOne({
       _id: boardId,
@@ -135,5 +177,6 @@ export class MongoDataBaseProvider
 
 const mongoProvider = new MongoDataBaseProvider();
 export type TDb = MongoDataBaseProvider;
+export type ParticularDBType = Types.ObjectId;
 
 export default mongoProvider;

@@ -1,8 +1,8 @@
-import mongoProvider from '@/db/mongo';
+import dbProvider from '@/db/mongo';
 
-import { Types } from 'mongoose';
 import { TDb } from '@/db/mongo';
-import { TBoard, TCreatingBoard } from '@/types/db';
+import type { TBoardNS } from '@/types/db';
+import type { ParticularDBType } from '@/db/mongo';
 
 export class BoardsService {
   private readonly db: TDb;
@@ -12,9 +12,9 @@ export class BoardsService {
   }
 
   async getUserBoards(
-    userId: string | Types.ObjectId,
-  ): Promise<TBoard<string>[]> {
-    const boardsQuery = this.db.getBoardsQueryUtils(userId);
+    userId: string | ParticularDBType,
+  ): Promise<TBoardNS.TBoard<string>[]> {
+    const boardsQuery = this.db.getAllBoardsByUserQueryUtils(userId);
     const boards = await this.db.getUserBoards(boardsQuery);
 
     const result = boards.map((item) => {
@@ -31,11 +31,33 @@ export class BoardsService {
     return result;
   }
 
-  getBoardById(boerdId: string | Types.ObjectId) {
-    return this.db.getBoardById(boerdId);
+  isValidUser(userId: string, boardId: string) {
+    return this.db.isValidUserForGettingBoardUtils(userId, boardId);
   }
 
-  async create(board: TCreatingBoard): Promise<TBoard<string>> {
+  getBoardById(boardId: string | ParticularDBType) {
+    return this.db.getBoardById(boardId);
+  }
+
+  /*
+  async getBoardByIdWithSubs(boardId: string | ParticularDBType) {
+    const board = await this.db.getBoardById(boardId);
+
+    if (!board) return null;
+
+    const result: TBoardNS.TBoard = {
+      _id: board._id,
+      bg: board.bg,
+      ownerId: board.ownerId,
+    };
+
+    return result;
+  }
+  */
+
+  async create(
+    board: TBoardNS.TCreatingBoard,
+  ): Promise<TBoardNS.TBoard<string>> {
     const createdBoard = await this.db.createBoard(board);
 
     const result = {
@@ -51,8 +73,8 @@ export class BoardsService {
   }
 
   delete(
-    boardId: string | Types.ObjectId,
-  ): ReturnType<typeof mongoProvider.deleteBoard> {
+    boardId: string | ParticularDBType,
+  ): ReturnType<typeof dbProvider.deleteBoard> {
     const result = this.db.deleteBoard(boardId);
 
     return result;
@@ -61,9 +83,8 @@ export class BoardsService {
 
 export type TBoardsService = BoardsService;
 
-export const boardService = new BoardsService(mongoProvider);
-export type TCreatedBoard = Awaited<ReturnType<typeof boardService.create>>;
-export type TRawUserBoards = Awaited<
-  ReturnType<typeof boardService.getUserBoards>
->;
-export type TRawUserBoard = TBoard<string>;
+export const boardService = new BoardsService(dbProvider);
+export type BoardServiceCreate = typeof boardService.create;
+export type BoardServiceGetUserBoards = typeof boardService.getUserBoards;
+
+export type TRawUserBoard = TBoardNS.TBoard<string>;
