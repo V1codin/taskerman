@@ -18,8 +18,8 @@ const DefaultLayout: React.FC<DefaultLayoutProps> = ({ children }) => {
   const setBoards = useSetAtom(getSetBoardsState);
 
   useEffect(() => {
-    if (data && data?.boards) {
-      setBoards(data.boards);
+    if (data && data?.user) {
+      setBoards(data.user.subs);
     }
   }, [data, setBoards]);
 

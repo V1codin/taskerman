@@ -2,12 +2,12 @@ import Divider from '@/modules/divider/Divider';
 import SubscriberSection from './SubscriberSection';
 import styled from 'styled-components';
 
-import type { OmitedSafeBoardMemebers } from '@/types/db';
+import { IUser } from '@/models/users';
 
 type BoardHeaderProps = {
   title: string;
-  boardMembers: OmitedSafeBoardMemebers[];
-  owner: OmitedSafeBoardMemebers;
+  boardMembers: IUser[];
+  owner: IUser;
 };
 
 const StyledSection = styled.section``;

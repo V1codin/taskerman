@@ -1,7 +1,9 @@
-import Users from '@/models/users';
-import Boards from '@/models/boards';
-import Lists from '@/models/lists';
-
+import {
+  BoardModel,
+  UserModel,
+  ListModel,
+  PasswordModel,
+} from '@/models/middlewares';
 import { Types } from 'mongoose';
 import type { IBoard } from '@/models/boards';
 import type { FilterQuery } from 'mongoose';
@@ -25,6 +27,7 @@ interface DataBaseProvider<
     boardId: string,
   ): Promise<boolean>;
 
+  getUserHashedPassword(username: string): Promise<string>;
   getUserByUserName(username: string): TUserByName;
   getUserById(userId: string | ParticularDBType): TUserById;
   getUserIdByUserName(username: string): TUserIdByUserName;
@@ -45,16 +48,16 @@ export class MongoDataBaseProvider
     DataBaseProvider<
       Types.ObjectId,
       FilterQuery<IBoard>,
-      ReturnType<typeof Users.findOne>,
-      ReturnType<typeof Users.findOne>,
-      ReturnType<typeof Users.findOne>,
-      ReturnType<typeof Boards.findOne>,
-      ReturnType<typeof Boards.find>,
+      ReturnType<typeof UserModel.findOne>,
+      ReturnType<typeof UserModel.findOne>,
+      ReturnType<typeof UserModel.findOne>,
+      ReturnType<typeof BoardModel.findOne>,
+      ReturnType<typeof BoardModel.find>,
       // ? unknown because Boards.create is overloading function
       // ? and ReturnType is not compatible
       unknown,
-      ReturnType<typeof Boards.deleteOne>,
-      ReturnType<typeof Lists.find>
+      ReturnType<typeof BoardModel.deleteOne>,
+      ReturnType<typeof ListModel.find>
     >
 {
   constructor() {}
@@ -70,12 +73,13 @@ export class MongoDataBaseProvider
   getAllBoardsByUserQueryUtils(
     userId: string | ParticularDBType,
   ): FilterQuery<IBoard> {
+    const userObj = this.getObjectIdFromStringUtils(userId);
     return {
       $or: [
         {
-          ownerId: userId,
+          owner: userObj,
         },
-        { memberIds: userId },
+        { members: userObj },
       ],
     };
   }
@@ -92,15 +96,15 @@ export class MongoDataBaseProvider
     const userObj = this.getObjectIdFromStringUtils(userId);
     const boardObj = this.getObjectIdFromStringUtils(boardId);
 
-    const result = await Boards.find({
+    const result = await BoardModel.find({
       $or: [
         {
           _id: boardObj,
-          ownerId: userObj,
+          owner: userObj,
         },
         {
           _id: boardObj,
-          memberIds: userId,
+          members: userObj,
         },
       ],
     });
@@ -109,69 +113,89 @@ export class MongoDataBaseProvider
   }
 
   getListsByBoardId(boardId: string | ParticularDBType) {
-    const result = Lists.find({
+    return ListModel.find({
       boardId: this.getObjectIdFromStringUtils(boardId),
     });
+  }
 
-    return result;
+  async getUserHashedPassword(username: string) {
+    try {
+      const user = await this.getUserByUserName(username);
+      if (!user) {
+        return '';
+      }
+      const obj = user.toObject();
+      const result = await PasswordModel.findOne({
+        user: obj,
+      });
+
+      return result?.pw || '';
+    } catch (e) {
+      return '';
+    }
   }
 
   getUserByUserName(username: string) {
-    const user = Users.findOne({
+    return UserModel.findOne({
       username,
     });
-
-    return user;
   }
 
   getUserById(userId: string | ParticularDBType) {
-    const result = Users.findOne({
+    return UserModel.findOne({
       _id: this.getObjectIdFromStringUtils(userId),
     });
-
-    return result;
   }
 
   getUserIdByUserName(username: string) {
-    const result = Users.findOne({
+    return UserModel.findOne({
       username,
     });
-
-    return result;
   }
 
   getBoardById(boardId: string | ParticularDBType) {
-    const result = Boards.findOne({
+    return BoardModel.findOne({
       _id: this.getObjectIdFromStringUtils(boardId),
     });
-
-    return result;
   }
 
   getUserBoards(query: FilterQuery<IBoard>) {
-    return Boards.find(query);
+    return BoardModel.find(query);
   }
 
-  createBoard(board: TBoardNS.TCreatingBoard) {
-    const result = Boards.create(board);
+  async createBoard(board: TBoardNS.TCreatingBoard) {
+    const ownerObj = this.getObjectIdFromStringUtils(board.owner);
 
-    return result;
+    const boardToCreate = {
+      ...board,
+      owner: ownerObj,
+    };
+
+    const createdBoard = await BoardModel.create(boardToCreate);
+    await UserModel.updateOne(
+      {
+        _id: ownerObj,
+      },
+      {
+        $push: {
+          subs: new Types.ObjectId(createdBoard._id),
+        },
+      },
+    );
+
+    return createdBoard;
   }
 
   createList(list: TListNS.TCreatingList) {
-    const result = Lists.create(list);
-
-    return result;
+    return ListModel.create(list);
   }
 
   deleteBoard(
     boardId: string | ParticularDBType,
-  ): ReturnType<typeof Boards.deleteOne> {
-    const result = Boards.deleteOne({
+  ): ReturnType<typeof BoardModel.deleteOne> {
+    return BoardModel.deleteOne({
       _id: boardId,
     });
-
-    return result;
   }
 }
 

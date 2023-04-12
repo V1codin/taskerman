@@ -1,30 +1,39 @@
-import mongoose, { Schema, Document, Model } from 'mongoose';
+import { Schema, Model } from 'mongoose';
 
-export interface IBoard extends Document {
+import { IUser } from './users';
+
+export interface IBoard {
+  _id: string;
   title: string;
   bg: string;
-  ownerId: mongoose.Types.ObjectId;
-  memberIds: string[];
-  pendingMemberIds: string[];
+  owner: IUser;
+  members: IUser[];
+  pendingMembers: Schema.Types.ObjectId[] | IBoard[];
 }
 
-const BoardScheme = new Schema<IBoard, Model<IBoard>>(
+interface IBoardMethods {}
+
+export const BoardScheme = new Schema<IBoard, Model<IBoard>, IBoardMethods>(
   {
+    members: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+      },
+    ],
     title: { type: String, required: true },
     bg: { type: String, required: true },
-    ownerId: { type: Schema.Types.ObjectId, ref: 'users' },
-    memberIds: [{ type: String }],
+    owner: { type: Schema.Types.ObjectId, ref: 'User', required: true },
 
     // ! send board invite -> invited client's ID put to pending.
     // ! agree from invited client -> ID to memberIds
     // ! and boardId to SUBS array of the client
-    pendingMemberIds: [{ type: String }],
+    pendingMembers: [
+      { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    ],
   },
   {
     timestamps: true,
     collection: 'boards',
   },
 );
-
-export default (mongoose.models['Board'] as Model<IBoard>) ||
-  mongoose.model('Board', BoardScheme);

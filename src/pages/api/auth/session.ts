@@ -1,17 +1,15 @@
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from './[...nextauth]';
 import { ServerResponseError } from '@/libs/error.service';
-import { boardService } from '@/libs/boards.service';
 
 import type { TError } from '@/types/state';
 import type { NextApiRequest, NextApiResponse } from 'next/types';
-import type { SessionUser, TBoardNS } from '@/types/db';
+import type { SessionUser } from '@/types/db';
 
 import { dbConnect } from '@/libs/db/connect';
 
 export type TAuthenticatedUser = {
   user: SessionUser;
-  boards: TBoardNS.TRawUserBoards;
 };
 
 export default async function handler(
@@ -19,14 +17,11 @@ export default async function handler(
   res: NextApiResponse<TAuthenticatedUser | TError>,
 ) {
   try {
+    await dbConnect();
     const session = await getServerSession(req, res, authOptions);
     if (session) {
-      await dbConnect();
-      const boards = await boardService.getUserBoards(session.user.id);
-
       res.status(200).json({
         user: session.user,
-        boards,
       });
 
       return;

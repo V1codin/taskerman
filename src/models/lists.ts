@@ -1,22 +1,20 @@
-import mongoose, { Schema, Document, Model } from 'mongoose';
+import { Schema, Model } from 'mongoose';
 
-export interface IList extends Document {
+export interface IList {
+  _id: string;
   title: string;
-  boardId: mongoose.Types.ObjectId;
-  cards: mongoose.Types.ObjectId;
+  board: Schema.Types.ObjectId;
+  cards: Schema.Types.ObjectId;
 }
 
-const ListScheme = new Schema<IList, Model<IList>>(
+export const ListScheme = new Schema<IList, Model<IList>>(
   {
     title: { type: String, required: true },
-    boardId: { type: Schema.Types.ObjectId, ref: 'boards' },
-    cards: [{ type: Schema.Types.ObjectId, ref: 'cards' }],
+    board: { type: Schema.Types.ObjectId, ref: 'Board' },
+    cards: [{ type: Schema.Types.ObjectId, ref: 'Card' }],
   },
   {
     timestamps: true,
     collection: 'lists',
   },
 );
-
-export default (mongoose.models['List'] as Model<IList>) ||
-  mongoose.model('List', ListScheme);

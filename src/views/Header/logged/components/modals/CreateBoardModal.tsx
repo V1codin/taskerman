@@ -126,7 +126,7 @@ const CreateBoardModal: React.FC<CreateBoardModalProps> = () => {
           members: [],
           pendingMembers: [],
           title: form.title,
-          ownerId: data?.user.id!,
+          owner: data?.user.id!,
         });
 
         setForm(defaultFormState);

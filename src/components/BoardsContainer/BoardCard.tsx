@@ -5,9 +5,9 @@ import CloseBtn from '@/modules/button/CloseBtn';
 
 import { useSetAtom } from 'jotai';
 import { getSetModal } from '@/context/stateManager';
-import { TRawUserBoard } from '@/libs/boards.service';
+import { IBoard } from '@/models/boards';
 
-type BoardCardProps = TRawUserBoard & {
+type BoardCardProps = IBoard & {
   bgChecker: boolean;
 };
 

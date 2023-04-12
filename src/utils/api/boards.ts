@@ -2,10 +2,10 @@ import fetcher from './fetcher';
 
 import { TBoardNS } from '@/types/db';
 import { API_BOARDS_URL, API_SINGLE_BOARD_URL, BASE_URL } from '../constants';
-import { TRawUserBoard } from '@/libs/boards.service';
+import { IBoard } from '@/models/boards';
 
 export const getBoards = (username: string, token: string | undefined) => {
-  return fetcher<{ data: TBoardNS.TRawUserBoards }>(
+  return fetcher<{ data: IBoard[] }>(
     `${BASE_URL}${API_BOARDS_URL}?username=${username}`,
     {
       method: 'GET',
@@ -17,7 +17,7 @@ export const getBoards = (username: string, token: string | undefined) => {
 };
 
 export const createBoard = (board: TBoardNS.TCreatingBoard) => {
-  return fetcher<{ data: TRawUserBoard }>(`${BASE_URL}${API_BOARDS_URL}`, {
+  return fetcher<{ data: IBoard }>(`${BASE_URL}${API_BOARDS_URL}`, {
     method: 'POST',
     headers: {
       'Content-type': 'application/json; charset=utf-8',
@@ -39,7 +39,7 @@ export const deleteBoard = (boardId: string) => {
 };
 
 export const getBoardById = (boardId: string, token: string | undefined) => {
-  return fetcher<{ data: TBoardNS.TBoard }>(
+  return fetcher<{ data: IBoard }>(
     `${BASE_URL}${API_SINGLE_BOARD_URL}?boardId=${boardId}`,
     {
       method: 'GET',

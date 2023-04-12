@@ -2,10 +2,10 @@ import BoardCard from './BoardCard';
 
 import { isLink } from '@/utils/helpers';
 import { StyledBoardContainer } from './styledBoardContainer';
-import { TBoardNS } from '@/types/db';
+import { IBoard } from '@/models/boards';
 
 type BoardContainerProps = {
-  boards: TBoardNS.TRawUserBoards;
+  boards: IBoard[];
 };
 
 const BoardsContainer: React.FC<BoardContainerProps> = ({ boards }) => {

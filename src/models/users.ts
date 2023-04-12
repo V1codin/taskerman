@@ -1,42 +1,36 @@
-import mongoose from 'mongoose';
-
-import { Types, Model } from 'mongoose';
-
+import { Schema, Model } from 'mongoose';
 import type { TLoginType } from '@/types/db';
+import type { IBoard } from './boards';
 
-export interface IUser extends mongoose.Document {
+export interface IUser {
+  _id: string;
   username: string;
-  password: string;
   displayName?: string;
   externalLogin: TLoginType;
   email: string;
-  subs: Types.ObjectId[];
+  subs: Schema.Types.ObjectId[] | IBoard[];
   imageURL?: string;
   nameAlias: string;
 }
 
-const UserScheme = new mongoose.Schema<IUser, Model<IUser>>(
+export const UserScheme = new Schema<IUser, Model<IUser>>(
   {
-    username: { type: String, unique: true, require: false },
-    password: { type: String, required: false },
+    username: { type: String, unique: true, require: true },
     displayName: {
       type: String,
       default: '',
     },
     externalLogin: { type: String, require: false, default: 'credentials' },
     email: { type: String, unique: true, require: true },
-    subs: [{ type: Types.ObjectId, ref: 'boards' }],
+    subs: [{ type: Schema.Types.ObjectId, ref: 'Board' }],
     imageURL: {
       type: String,
       default: '',
     },
-    nameAlias: { type: String, require },
+    nameAlias: { type: String, require: true },
   },
   {
     timestamps: true,
     collection: 'users',
   },
 );
-
-export default (mongoose.models['User'] as Model<IUser>) ||
-  mongoose.model('User', UserScheme);

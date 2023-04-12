@@ -4,11 +4,11 @@ import ImageModule from '@/modules/image/Image';
 import Avatar from '@/modules/avatar/Avatar';
 import styled from 'styled-components';
 
-import { OmitedSafeBoardMemebers } from '@/types/db';
+import { IUser } from '@/models/users';
 
 type SubscriberSectionProps = {
-  members: OmitedSafeBoardMemebers[];
-  owner: OmitedSafeBoardMemebers;
+  members: IUser[];
+  owner: IUser;
 };
 
 const StyledContainer = styled.section`
@@ -49,10 +49,10 @@ const SubscriberSection: React.FC<SubscriberSectionProps> = ({
         />
         <ImageModule alt="owner icon" src={ownerIco} className="owner__icon" />
       </StyledAvatarContainer>
-      {members.map(({ id, imageURL, displayName, username }) => {
+      {members.map(({ _id, imageURL, displayName, username }) => {
         return (
           <Avatar
-            key={id + Math.random()}
+            key={_id + Math.random()}
             avatarHeight={25}
             avatarWidth={25}
             imageURL={imageURL}

@@ -1,25 +1,25 @@
 import { TypeOf, z } from 'zod';
 import { IUser } from '@/models/users';
-import { TOmitedGeneric } from './utils';
 import {
   BoardServiceCreate,
   BoardServiceGetUserBoards,
 } from '@/libs/boards.service';
+import { IBoard } from '@/models/boards';
+
+/*
+  | 'cards'
+  | 'lists'
+  | 'notifications';
+  */
 
 export interface IDbCollections {
   users: IUser;
 }
 
-// export type TList = {
-//   title: string;
-//   boardId: mongoose.Types.ObjectId;
-//   cards: mongoose.Types.ObjectId;
-// };
-
 export const creatingBoardSchema = z.object({
   bg: z.string(),
   members: z.array(z.string()),
-  ownerId: z.string().or(z.null()),
+  owner: z.string(),
   pendingMembers: z.array(z.string()),
   title: z.string(),
 });
@@ -38,17 +38,6 @@ export namespace TBoardNS {
 
   export type TDeletingBoard = TypeOf<typeof deletingBoardSchema>;
   export type TCreatingBoard = TypeOf<typeof creatingBoardSchema>;
-
-  export type TBoardDataClient = TOmitedGeneric<TBoard, TUnsafeBoardProps>;
-
-  export type TBoard<T extends unknown = OmitedSafeBoardMemebers> = {
-    members: T[];
-    pendingMembers: T[];
-    bg: string;
-    title: string;
-    ownerId: T | null;
-    _id: string;
-  };
 
   export type TCreatedBoard = Awaited<ReturnType<BoardServiceCreate>>;
   export type TRawUserBoards = Awaited<ReturnType<BoardServiceGetUserBoards>>;
@@ -72,11 +61,10 @@ export namespace TListNS {
 export type TUser = {
   id: string;
   username: string;
-  password: string;
   displayName?: string;
   externalLogin: TLoginType;
   email: string;
-  subs: TBoardNS.TBoardDataClient[];
+  subs: IBoard[];
   imageURL?: string;
   nameAlias: string;
 };
@@ -84,24 +72,16 @@ export type TUser = {
 export type TLoginType = 'credentials' | 'google';
 export type TUserRolesForBoard = 'guest' | 'owner' | 'admin';
 
-export type TUnsafeUserProps = 'password';
 export type TUnsafeBoardProps = '_id';
 
 export type SessionUser = {
+  _id: string;
   id: string;
-  subs: string[] | TBoardNS.TBoardDataClient[];
+  subs: IBoard[];
   displayName?: string;
   imageURL?: string;
   email: string;
   username: string;
 };
 
-export type TUserDataClient = TOmitedGeneric<TUser, TUnsafeUserProps>;
-
-export type OmitedSafeBoardMemebers = TOmitedGeneric<SessionUser, 'subs'>;
-
-/*
-  | 'cards'
-  | 'lists'
-  | 'notifications';
-  */
+export type TUserDataClient = TUser;
