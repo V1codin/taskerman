@@ -73,6 +73,10 @@ export class AuthService {
       ],
     }).populate('ownerId');
   }
+
+  getUserIdByUserName(username: string) {
+    return this.db.getUserIdByUserName(username);
+  }
 }
 
 export const authService = new AuthService({

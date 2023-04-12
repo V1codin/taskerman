@@ -23,6 +23,10 @@ export class BoardsService {
     return this.db.isValidUserForGettingBoardUtils(userId, boardId);
   }
 
+  isValidIssuer(issuerId: string, boardOwnerId: string) {
+    return this.db.isEqualUtils(issuerId, boardOwnerId);
+  }
+
   getBoardById(boardId: string | ParticularDBType) {
     return this.db.getBoardById(boardId);
   }

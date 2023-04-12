@@ -22,6 +22,10 @@ interface DataBaseProvider<
   TListsByBoardId = unknown,
 > {
   getAllBoardsByUserQueryUtils(userId: string): TBoardQuery;
+  isEqualUtils(
+    str1: string | ParticularDBType,
+    str2: string | ParticularDBType,
+  ): boolean;
   isValidUserForGettingBoardUtils(
     userId: string,
     boardId: string,
@@ -63,7 +67,7 @@ export class MongoDataBaseProvider
   constructor() {}
 
   /*
-  ? Util method for changing DataProvider but save request data API
+  ? Util methods for changing DataProvider but save request data API
   ? example: 
   *  class YourDataBaseProvider {
   *  getBoardsQueryUtils(): YourDataBaseQuery
@@ -82,6 +86,13 @@ export class MongoDataBaseProvider
         { members: userObj },
       ],
     };
+  }
+
+  isEqualUtils(
+    str1: string | ParticularDBType,
+    str2: string | ParticularDBType,
+  ) {
+    return new Types.ObjectId(str1).equals(str2);
   }
 
   private getObjectIdFromStringUtils(id: string | ParticularDBType) {

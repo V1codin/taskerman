@@ -1,10 +1,9 @@
-import mongoProvider from '@/libs/db/mongo';
-
+import { dbConnect } from '@/libs/db/connect';
+import { authService } from '@/libs/auth.service';
 import { TGetBoardReturnByMethod, TMethods, BoardsRequest } from '@/types/api';
 import { BadRequestError, ServerResponseError } from '@/libs/error.service';
 import { TBoardNS, creatingBoardSchema, deletingBoardSchema } from '@/types/db';
 import { boardService } from '@/libs/boards.service';
-import { Types } from 'mongoose';
 import { checkSessionToken } from '@/libs/sessionTokenChecker';
 import type { NextApiResponse } from 'next';
 import type { TError } from '@/types/state';
@@ -14,6 +13,7 @@ const boardsReducer = async <TMethod extends TMethods>(
   req: BoardsRequest,
 ): Promise<TGetBoardReturnByMethod<TMethod>> => {
   const token = await checkSessionToken(req);
+  await dbConnect();
 
   // ? GET is for getting all boards
   if (method === 'GET') {
@@ -24,7 +24,7 @@ const boardsReducer = async <TMethod extends TMethods>(
         throw new BadRequestError();
       }
 
-      const userId = await mongoProvider.getUserIdByUserName(username);
+      const userId = await authService.getUserIdByUserName(username);
       if (!userId) {
         throw new ServerResponseError({
           code: 404,
@@ -86,7 +86,7 @@ const boardsReducer = async <TMethod extends TMethods>(
 
       if (
         !issuerId ||
-        !new Types.ObjectId(issuerId).equals(boardToDelete.ownerId)
+        !boardService.isValidIssuer(issuerId, boardToDelete.owner._id)
       ) {
         throw new ServerResponseError({
           code: 403,
