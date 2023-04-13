@@ -1,12 +1,10 @@
 import { Schema, Model } from 'mongoose';
-import type { TLoginType } from '@/types/db';
 import type { IBoard } from './boards';
 
 export interface IUser {
   _id: string;
   username: string;
   displayName?: string;
-  externalLogin: TLoginType;
   email: string;
   subs: Schema.Types.ObjectId[] | IBoard[];
   imageURL?: string;
@@ -20,7 +18,6 @@ export const UserScheme = new Schema<IUser, Model<IUser>>(
       type: String,
       default: '',
     },
-    externalLogin: { type: String, require: false, default: 'credentials' },
     email: { type: String, unique: true, require: true },
     subs: [{ type: Schema.Types.ObjectId, ref: 'Board' }],
     imageURL: {

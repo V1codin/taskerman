@@ -4,7 +4,6 @@ import ActiveLink from '@/modules/activeLink/ActiveLink';
 import ButtonWithLoader from '@/modules/button/ButtonWithLoader';
 import ImageModule from '@/modules/image/Image';
 
-import { useRouter } from 'next/navigation';
 import { userLoginSchema } from '@/types/state';
 import { FormWrapper } from '@/modules/formWrapper/FormWrapper';
 import { useCallback, useEffect, useState } from 'react';
@@ -33,7 +32,6 @@ const LoginForm: React.FC<LoginFormProps> = () => {
     (e: React.ChangeEvent<HTMLInputElement>) =>
       trigger(e.target.name as keyof TUserLogin),
   );
-  const { refresh } = useRouter();
 
   const [, setAuthState] = useAtom(getSetModal);
 
@@ -64,7 +62,6 @@ const LoginForm: React.FC<LoginFormProps> = () => {
         isOpen: false,
         window: null,
       });
-      refresh();
     } catch (e) {
       setLoader(false);
       const newToast: ToastProps = {

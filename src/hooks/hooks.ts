@@ -1,17 +1,8 @@
-import fetcher from '@/utils/api/fetcher';
-import useSWR from 'swr';
-
 import { getSetToastState } from '@/context/stateManager';
-import {
-  API_REQUEST_SESSION_URL,
-  BG_IMAGE,
-  getBodyRef,
-} from '@/utils/constants';
+import { BG_IMAGE, getBodyRef } from '@/utils/constants';
 import { isLink } from '@/utils/helpers';
 import { useAtom } from 'jotai';
 import { MutableRefObject, useCallback, useEffect } from 'react';
-import { TAuthenticatedUser } from '@/pages/api/auth/session';
-import { TError } from '@/types/state';
 
 const useToast = (timerToRemoveToast: number = 2000) => {
   const [toast, setToast] = useAtom(getSetToastState);
@@ -126,24 +117,7 @@ const useOuterCLick = (
   }, []);
 };
 
-const useSessionFromServer = () => {
-  const { data, error, isLoading } = useSWR<TAuthenticatedUser, TError>(
-    API_REQUEST_SESSION_URL,
-    fetcher,
-    {
-      shouldRetryOnError: false,
-    },
-  );
-
-  return {
-    data,
-    error,
-    isLoading,
-  };
-};
-
 export {
-  useSessionFromServer,
   useToast,
   useDebounce,
   useBodyColor,

@@ -1,10 +1,11 @@
 import mongoProvider from '@/db/mongo';
 import encrypt from '@/libs/encrypt.service';
 
-import { BoardModel } from '@/models/middlewares';
+import { BoardModel, SessionModel } from '@/models/middlewares';
 import { TEncryptService } from './encrypt.service';
 import type { TDb } from '@/db/mongo';
 import { IBoard } from '@/models/boards';
+import { dbAdapter } from '@/pages/api/auth/[...nextauth]';
 
 interface IAuth {
   db: TDb;
@@ -18,6 +19,46 @@ export class AuthService {
   constructor({ db, encrypter }: IAuth) {
     this.db = db;
     this.encrypter = encrypter;
+  }
+
+  isExpired(date?: string | Date) {
+    if (!date) return false;
+
+    const dateToCheck = new Date(date);
+    const now = new Date();
+    return dateToCheck < now;
+  }
+
+  isValidUserForGettingBoard(
+    issuerId?: string,
+    boardId?: string,
+  ): Promise<boolean> {
+    if (!issuerId || !boardId) return Promise.resolve(false);
+
+    return this.db.isValidUserForGettingBoardUtils(issuerId, boardId);
+  }
+
+  async getSessionUser(token?: string) {
+    if (!token) {
+      return null;
+    }
+
+    const sessionAndUser = await dbAdapter._getSessionAndUser(token);
+
+    if (!sessionAndUser) {
+      return null;
+    }
+
+    const isExpired = this.isExpired(sessionAndUser?.session.expires);
+
+    if (isExpired) {
+      await SessionModel.deleteOne({
+        sessionToken: token,
+      });
+      return null;
+    }
+
+    return sessionAndUser?.user;
   }
 
   async authorizeWithCredentials(credentials: {
@@ -36,14 +77,14 @@ export class AuthService {
       throw new Error('Wrong username or password');
     }
 
-    const userFromBD = await this.db
-      .getUserByUserName(credentials.username!)
-      .populate('subs');
+    const userFromBD = await this.db.getUserByUserName(credentials.username!);
 
     if (!userFromBD) {
       throw new Error('Wrong username or password');
     }
 
+    // TODO move logic to db provider
+    // ? toObj is mongo method
     const result = userFromBD.toObject();
 
     const subs = result.subs as IBoard[];
@@ -60,7 +101,8 @@ export class AuthService {
       imageURL: result.imageURL,
     };
   }
-
+  // TODO move getting the query to db provider
+  // ? getUserBoards(userId) -> db.getQueryForUserBoards(userId) -> db.getUserBoards
   getUserBoards(userId: string) {
     return BoardModel.find({
       $or: [

@@ -1,7 +1,8 @@
 import CustomHead from '@/modules/head/CustomHead';
 import Header from '@/views/Header/Header';
 
-import { useSessionFromServer, useToast } from '@/hooks/hooks';
+import { useSession } from 'next-auth/react';
+import { useToast } from '@/hooks/hooks';
 import { Process } from '@/modules/process/Process';
 import { useEffect } from 'react';
 import { useSetAtom } from 'jotai';
@@ -12,7 +13,8 @@ type DefaultLayoutProps = {
 };
 
 const DefaultLayout: React.FC<DefaultLayoutProps> = ({ children }) => {
-  const { data, error, isLoading } = useSessionFromServer();
+  const { data, status } = useSession();
+
   const { setToast } = useToast();
   const setModalState = useSetAtom(getSetModal);
   const setBoards = useSetAtom(getSetBoardsState);
@@ -24,7 +26,7 @@ const DefaultLayout: React.FC<DefaultLayoutProps> = ({ children }) => {
   }, [data, setBoards]);
 
   useEffect(() => {
-    if (error) {
+    if (status === 'unauthenticated') {
       setToast({
         typeClass: 'warning',
         message: 'Please login into your account',
@@ -38,9 +40,9 @@ const DefaultLayout: React.FC<DefaultLayoutProps> = ({ children }) => {
         },
       });
     }
-  }, [error, setModalState, setToast]);
+  }, [setModalState, setToast, status]);
 
-  return isLoading ? (
+  return status === 'loading' ? (
     <Process
       isBordered={true}
       styles={{
@@ -55,4 +57,5 @@ const DefaultLayout: React.FC<DefaultLayoutProps> = ({ children }) => {
     </>
   );
 };
+
 export default DefaultLayout;

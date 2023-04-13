@@ -1,5 +1,3 @@
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from './[...nextauth]';
 import { ServerResponseError } from '@/libs/error.service';
 
 import type { TError } from '@/types/state';
@@ -7,6 +5,9 @@ import type { NextApiRequest, NextApiResponse } from 'next/types';
 import type { SessionUser } from '@/types/db';
 
 import { dbConnect } from '@/libs/db/connect';
+import { authService } from '@/libs/auth.service';
+import { AUTH_TOKEN_COOKIE_NAME } from '@/utils/constants';
+import { deleteCookie } from 'cookies-next';
 
 export type TAuthenticatedUser = {
   user: SessionUser;
@@ -18,14 +19,23 @@ export default async function handler(
 ) {
   try {
     await dbConnect();
-    const session = await getServerSession(req, res, authOptions);
-    if (session) {
+
+    const token = req.cookies[AUTH_TOKEN_COOKIE_NAME];
+    const user = await authService.getSessionUser(token);
+
+    if (user) {
       res.status(200).json({
-        user: session.user,
+        user,
       });
 
       return;
     }
+    // ? if there is no user we need to clear invalid token
+    deleteCookie(AUTH_TOKEN_COOKIE_NAME, {
+      req,
+      res,
+    });
+
     throw new ServerResponseError({
       code: 403,
       message: 'Error: Unauthorized',

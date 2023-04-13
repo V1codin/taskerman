@@ -16,7 +16,7 @@ declare module 'next-auth' {
   type ISODateString = string;
 
   interface Session {
-    user: SessionUser;
+    user: AdapterUser;
     expires: ISODateString;
   }
 }

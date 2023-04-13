@@ -4,7 +4,7 @@ import { TGetBoardReturnByMethod, TMethods, BoardsRequest } from '@/types/api';
 import { BadRequestError, ServerResponseError } from '@/libs/error.service';
 import { TBoardNS, creatingBoardSchema, deletingBoardSchema } from '@/types/db';
 import { boardService } from '@/libs/boards.service';
-import { checkSessionToken } from '@/libs/sessionTokenChecker';
+import { getUserByRequest } from '@/libs/getUserByRequest';
 import type { NextApiResponse } from 'next';
 import type { TError } from '@/types/state';
 
@@ -12,7 +12,6 @@ const boardsReducer = async <TMethod extends TMethods>(
   method: TMethod,
   req: BoardsRequest,
 ): Promise<TGetBoardReturnByMethod<TMethod>> => {
-  const token = await checkSessionToken(req);
   await dbConnect();
 
   // ? GET is for getting all boards
@@ -82,12 +81,9 @@ const boardsReducer = async <TMethod extends TMethods>(
         });
       }
 
-      const issuerId = token.user.id;
+      const issuerId = await getUserByRequest(req);
 
-      if (
-        !issuerId ||
-        !boardService.isValidIssuer(issuerId, boardToDelete.owner._id)
-      ) {
+      if (!boardService.isValidIssuer(issuerId, boardToDelete.owner._id)) {
         throw new ServerResponseError({
           code: 403,
           message: 'Error: Only board OWNER can delete the board',

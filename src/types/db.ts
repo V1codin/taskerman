@@ -62,14 +62,12 @@ export type TUser = {
   id: string;
   username: string;
   displayName?: string;
-  externalLogin: TLoginType;
   email: string;
   subs: IBoard[];
   imageURL?: string;
   nameAlias: string;
 };
 
-export type TLoginType = 'credentials' | 'google';
 export type TUserRolesForBoard = 'guest' | 'owner' | 'admin';
 
 export type TUnsafeBoardProps = '_id';

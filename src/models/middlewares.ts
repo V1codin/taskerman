@@ -5,6 +5,7 @@ import { IUser, UserScheme } from './users';
 import { IList, ListScheme } from './lists';
 import { CardScheme, ICard } from './cards';
 import { IPassword, PasswordScheme } from './passwords';
+import { ISession, SessionScheme } from './sessions';
 
 BoardScheme.pre('deleteOne', {}, async function (next) {
   const filter = this.getFilter();
@@ -59,3 +60,7 @@ export const CardModel =
 export const PasswordModel =
   (mongoose.models['Password'] as Model<IPassword>) ||
   mongoose.model('Password', PasswordScheme);
+
+export const SessionModel =
+  (mongoose.models['Session'] as Model<ISession>) ||
+  mongoose.model('Session', SessionScheme);

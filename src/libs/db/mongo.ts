@@ -149,7 +149,7 @@ export class MongoDataBaseProvider
   getUserByUserName(username: string) {
     return UserModel.findOne({
       username,
-    });
+    }).populate('subs');
   }
 
   getUserById(userId: string | ParticularDBType) {
@@ -167,7 +167,9 @@ export class MongoDataBaseProvider
   getBoardById(boardId: string | ParticularDBType) {
     return BoardModel.findOne({
       _id: this.getObjectIdFromStringUtils(boardId),
-    });
+    })
+      .populate('owner')
+      .populate('members');
   }
 
   getUserBoards(query: FilterQuery<IBoard>) {
