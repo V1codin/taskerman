@@ -106,7 +106,6 @@ export const getAuthOptions = (
 ): NextAuthOptions => {
   return {
     session: {
-      strategy: 'database',
       maxAge: getAgeInSec({ days: SESSION_MAX_AGE_DAYS }),
     },
     jwt: {
