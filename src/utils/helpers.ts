@@ -11,6 +11,8 @@ import image_5 from '@/assets/info_img5.jpg?url';
 
 import { IMasks } from '@/types/helpers';
 
+import { randomUUID } from 'crypto';
+
 export const masks: IMasks = {
   username: /^[a-zA-Z0-9]{4,16}$/,
   password: /^(?=.*[0-9])(?=.*[a-zA-Z])(?=\S+$).{4,16}$/,
@@ -29,7 +31,7 @@ export const warns = {
   email: 'Invalid email',
 };
 
-export const isLink = (str: string) => {
+export const isLink = (str: string = '') => {
   return /^https:\/\/images\.unsplash\.com\/.{1,}/g.test(str);
 };
 
@@ -122,4 +124,28 @@ export const getDataFromClipBoard = async () => {
   } catch (e) {
     throw e;
   }
+};
+
+export const generate = {
+  uuid() {
+    return this.uuidv4();
+  },
+  uuidv4() {
+    // @ts-ignore
+    return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, (c) =>
+      (
+        c ^
+        // @ts-ignore
+        (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))
+      ).toString(16),
+    );
+  },
+};
+
+export const fromDate = (time: number, date = Date.now()) => {
+  return new Date(date + time * 1000);
+};
+
+export const generateSessionToken = () => {
+  return randomUUID?.() ?? generate.uuid();
 };

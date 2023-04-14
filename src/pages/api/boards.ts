@@ -11,6 +11,7 @@ import type { TError } from '@/types/state';
 const boardsReducer = async <TMethod extends TMethods>(
   method: TMethod,
   req: BoardsRequest,
+  issuerId: string,
 ): Promise<TGetBoardReturnByMethod<TMethod>> => {
   await dbConnect();
 
@@ -81,8 +82,6 @@ const boardsReducer = async <TMethod extends TMethods>(
         });
       }
 
-      const issuerId = await getUserByRequest(req);
-
       if (!boardService.isValidIssuer(issuerId, boardToDelete.owner._id)) {
         throw new ServerResponseError({
           code: 403,
@@ -123,7 +122,8 @@ export default async function handler(
     if (!req.method) {
       throw new BadRequestError();
     }
-    const { data } = await boardsReducer(req.method as TMethods, req);
+    const issuerId = await getUserByRequest(req);
+    const { data } = await boardsReducer(req.method as TMethods, req, issuerId);
 
     res.status(200).json({
       data,

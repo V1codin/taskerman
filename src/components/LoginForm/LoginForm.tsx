@@ -15,6 +15,7 @@ import { useDebounce, useToast } from '@/hooks/hooks';
 import { useAtom } from 'jotai';
 import { getSetModal } from '@/context/stateManager';
 import { signIn } from 'next-auth/react';
+import { useRouter } from 'next/router';
 
 type LoginFormProps = {};
 
@@ -28,10 +29,8 @@ const LoginForm: React.FC<LoginFormProps> = () => {
   } = useForm<TUserLogin>({
     resolver: zodResolver(userLoginSchema),
   });
-  const debouncedInputChange = useDebounce(
-    (e: React.ChangeEvent<HTMLInputElement>) =>
-      trigger(e.target.name as keyof TUserLogin),
-  );
+
+  const { replace, pathname, asPath } = useRouter();
 
   const [, setAuthState] = useAtom(getSetModal);
 
@@ -42,6 +41,15 @@ const LoginForm: React.FC<LoginFormProps> = () => {
   useEffect(() => {
     setFocus('username', { shouldSelect: true });
   }, [setFocus]);
+
+  const refreshData = () => {
+    replace(asPath);
+  };
+
+  const debouncedInputChange = useDebounce(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      trigger(e.target.name as keyof TUserLogin),
+  );
 
   const onSubmit: SubmitHandler<TUserLogin> = async (userToSubmit, e) => {
     e?.preventDefault();
@@ -62,6 +70,11 @@ const LoginForm: React.FC<LoginFormProps> = () => {
         isOpen: false,
         window: null,
       });
+
+      // ? the page /boards gets data from session so it doesn't need to reload
+      if (pathname !== '/boards') {
+        refreshData();
+      }
     } catch (e) {
       setLoader(false);
       const newToast: ToastProps = {

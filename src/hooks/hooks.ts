@@ -1,5 +1,5 @@
 import { getSetToastState } from '@/context/stateManager';
-import { BG_IMAGE, getBodyRef } from '@/utils/constants';
+import { getBodyRef } from '@/utils/constants';
 import { isLink } from '@/utils/helpers';
 import { useAtom } from 'jotai';
 import { MutableRefObject, useCallback, useEffect } from 'react';
@@ -44,11 +44,13 @@ const useDebounce = (
   };
 };
 
-const useBodyColor = (background = BG_IMAGE) => {
+const useBodyColor = (background?: string) => {
   const bodyRef = getBodyRef()!;
   const linkChecker = isLink(background);
 
   useEffect(() => {
+    if (!background) return;
+
     if (!linkChecker) {
       bodyRef.style.backgroundImage = 'none';
       bodyRef.style.background = background;

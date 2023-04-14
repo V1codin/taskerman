@@ -8,7 +8,7 @@ const isServer = () => {
   return typeof window === 'undefined';
 };
 const getBodyRef = () => {
-  return isServer() ? document.getElementsByTagName('body')[0] : null;
+  return !isServer() ? document.getElementsByTagName('body')[0] : null;
 };
 
 const DEFAULT_ADD_BOARD_BUTTON_COLORS = [

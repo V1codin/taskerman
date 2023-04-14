@@ -6,6 +6,21 @@ import CloseBtn from '@/modules/button/CloseBtn';
 import { useSetAtom } from 'jotai';
 import { getSetModal } from '@/context/stateManager';
 import { IBoard } from '@/models/boards';
+import styled from 'styled-components';
+
+const StyledCard = styled.div`
+  position: relative;
+  margin: 10px 0 0 15px;
+  overflow: auto;
+
+  cursor: pointer;
+  width: 225px;
+  height: 150px;
+
+  &:active {
+    background-color: red;
+  }
+`;
 
 type BoardCardProps = IBoard & {
   bgChecker: boolean;
@@ -32,8 +47,8 @@ const BoardCard: React.FC<BoardCardProps> = ({ _id, bgChecker, bg, title }) => {
     Router.push(`/board/${_id}`);
   };
   return (
-    <div
-      className="board__card colored"
+    <StyledCard
+      className="colored"
       style={
         bgChecker
           ? {
@@ -61,7 +76,7 @@ const BoardCard: React.FC<BoardCardProps> = ({ _id, bgChecker, bg, title }) => {
       >
         {title}
       </button>
-    </div>
+    </StyledCard>
   );
 };
 export default BoardCard;

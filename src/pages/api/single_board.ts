@@ -6,6 +6,7 @@ import type { TError } from '@/types/state';
 import type { NextApiResponse, NextApiRequest } from 'next/types';
 import { getUserByRequest } from '@/libs/getUserByRequest';
 import { authService } from '@/libs/auth.service';
+import { TMethods } from '@/types/api';
 
 export default async function handler(
   req: NextApiRequest,
@@ -16,7 +17,7 @@ export default async function handler(
       throw new BadRequestError();
     }
 
-    const { method } = req;
+    const method = req.method as TMethods;
     await dbConnect();
 
     if (method === 'GET') {

@@ -3,6 +3,7 @@ import { ToastProps } from '@/types/helpers';
 import { EMPTY_TOAST, DEFAULT_MODAL_STATE } from '@/utils/constants';
 import { IModal } from '@/types/state';
 import { IBoard } from '@/models/boards';
+import { TBoardNS } from '@/types/db';
 
 export const boardsStateAtom = atom<IBoard[]>([]);
 export const getSetBoardsState: WritableAtom<
@@ -23,6 +24,21 @@ export const getSetBoardsState: WritableAtom<
         return prev;
       });
     }
+  },
+);
+
+export const singleBoardStateAtom = atom<TBoardNS.ISingleBoard>({
+  board: null,
+  lists: [],
+});
+export const getSetsingleBoardState: WritableAtom<
+  TBoardNS.ISingleBoard,
+  [updade: TBoardNS.ISingleBoard],
+  void
+> = atom(
+  (get) => get(singleBoardStateAtom),
+  (_, set, update) => {
+    set(singleBoardStateAtom, update);
   },
 );
 

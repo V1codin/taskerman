@@ -6,27 +6,9 @@ export const StyledBoardContainer = styled.div`
   margin: 0 auto;
   background-color: unset;
 
-  .board__card {
-    position: relative;
-    margin: 10px 0 0 15px;
-    overflow: auto;
-
-    cursor: pointer;
-    width: 225px;
-    height: 150px;
-  }
-
   .card__error {
     left: 50%;
     top: -3%;
-  }
-
-  .board__card:hover {
-    box-shadow: 0 0 15px var(--blue);
-  }
-
-  .board__card:active {
-    background-color: red;
   }
 
   .card__btn {

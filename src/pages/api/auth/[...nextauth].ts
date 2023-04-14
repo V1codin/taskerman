@@ -11,11 +11,10 @@ import {
   MONGO_DB_NAME,
   SESSION_MAX_AGE_DAYS,
 } from '@/utils/constants';
-import { getAgeInSec } from '@/utils/helpers';
+import { fromDate, generateSessionToken, getAgeInSec } from '@/utils/helpers';
 import { authService } from '@/libs/auth.service';
 
 import { setCookie, getCookie } from 'cookies-next';
-import { randomUUID } from 'crypto';
 import { NextApiRequest, NextApiResponse } from 'next/types';
 import { decode, encode } from 'next-auth/jwt';
 import { SessionModel } from '@/models/middlewares';
@@ -24,34 +23,15 @@ import { IUser } from '@/models/users';
 import { SessionUser } from '@/types/db';
 import { IBoard } from '@/models/boards';
 
-const generate = {
-  uuid() {
-    return this.uuidv4();
-  },
-  uuidv4() {
-    // @ts-ignore
-    return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, (c) =>
-      (
-        c ^
-        // @ts-ignore
-        (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))
-      ).toString(16),
-    );
-  },
-};
-
-const fromDate = (time: number, date = Date.now()) => {
-  return new Date(date + time * 1000);
-};
-
-const generateSessionToken = () => {
-  return randomUUID?.() ?? generate.uuid();
-};
-
 type MyAdapter = Adapter & {
   _getSessionAndUser(
     sessionToken: string,
   ): Promise<{ user: SessionUser; session: AdapterSession } | null>;
+  _createSession(session: {
+    sessionToken: string;
+    userId: string;
+    expires: Date;
+  }): Promise<AdapterSession>;
 };
 
 const mongoAdapter: MyAdapter = {
@@ -95,6 +75,17 @@ const mongoAdapter: MyAdapter = {
       user,
       session,
     };
+  },
+
+  async _createSession(session: {
+    sessionToken: string;
+    userId: string;
+    expires: Date;
+  }): Promise<AdapterSession> {
+    await dbConnect();
+    await SessionModel.create(session);
+
+    return session;
   },
 };
 
@@ -163,20 +154,27 @@ export const getAuthOptions = (
         ) {
           if (user) {
             const sessionToken = generateSessionToken(); // Implement a function to generate the session token (you can use randomUUID as an example)
+            // ? this max age should be the same as expireAfterSeconds in SESSION SCHEMA props
             const sessionMaxAge = getAgeInSec({ days: SESSION_MAX_AGE_DAYS });
             const sessionExpiry = fromDate(sessionMaxAge); // Implement a function to calculate the session cookie expiry date
 
-            await mongoAdapter.createSession({
-              sessionToken: sessionToken,
-              userId: user.id,
-              expires: sessionExpiry,
-            });
+            try {
+              await mongoAdapter._createSession({
+                sessionToken: sessionToken,
+                userId: user.id,
+                expires: sessionExpiry,
+              });
 
-            setCookie(AUTH_TOKEN_COOKIE_NAME, sessionToken, {
-              req,
-              res,
-              expires: sessionExpiry,
-            });
+              setCookie(AUTH_TOKEN_COOKIE_NAME, sessionToken, {
+                req,
+                res,
+                expires: sessionExpiry,
+              });
+            } catch (e) {
+              console.error('creating session error', e);
+
+              return false;
+            }
           }
         }
 

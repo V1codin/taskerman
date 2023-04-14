@@ -5,22 +5,37 @@ import { GetServerSidePropsContext } from 'next';
 import { AUTH_TOKEN_COOKIE_NAME } from '@/utils/constants';
 import { dbAdapter } from '../api/auth/[...nextauth]';
 import { getBoardById } from '@/utils/api/boards';
-import { TListNS } from '@/types/db';
-import { IBoard } from '@/models/boards';
+import { TBoardNS } from '@/types/db';
+import { useBodyColor } from '@/hooks/hooks';
+import { useSetAtom } from 'jotai';
+import { getSetsingleBoardState } from '@/context/stateManager';
+import { useLayoutEffect } from 'react';
 
 type Props = {
-  data: {
-    board: IBoard;
-    lists: TListNS.TList[];
-  } | null;
+  data: TBoardNS.ISingleBoard;
 };
 
 export default function SingleBoard({ data }: Props) {
-  if (!data) {
-    return <p>Wrong board or you have no access to the board</p>;
-  }
-
   const { board, lists } = data;
+  useBodyColor(board?.bg);
+
+  const setBoard = useSetAtom(getSetsingleBoardState);
+
+  // ? useHydrateAtoms wouldn't fire after router.replace(router.asPath)
+  // ?  so we need to update client store by ourself
+  useLayoutEffect(() => {
+    if (data.board) {
+      setBoard(data);
+    }
+  }, [data, data.board, setBoard]);
+
+  if (!board) {
+    return (
+      <h1 style={{ textAlign: 'center' }}>
+        Wrong board or you have no access to the board
+      </h1>
+    );
+  }
 
   return (
     <section className="boards">
@@ -59,7 +74,10 @@ export async function getServerSideProps({
     } catch (e) {
       return {
         props: {
-          data: null,
+          data: {
+            board: null,
+            lists: [],
+          },
         },
       };
     }
@@ -67,7 +85,10 @@ export async function getServerSideProps({
 
   return {
     props: {
-      board: null,
+      data: {
+        board: null,
+        lists: [],
+      },
     },
   };
 }

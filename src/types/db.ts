@@ -36,6 +36,11 @@ export namespace TBoardNS {
     >;
   }
 
+  export interface ISingleBoard {
+    board: IBoard | null;
+    lists: TListNS.TList[];
+  }
+
   export type TDeletingBoard = TypeOf<typeof deletingBoardSchema>;
   export type TCreatingBoard = TypeOf<typeof creatingBoardSchema>;
 

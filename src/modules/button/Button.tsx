@@ -19,7 +19,6 @@ export const StyledButton = styled.button<{ style: React.CSSProperties }>`
   position: relative;
 
   cursor: pointer;
-  background-color: unset;
   border: 1px solid transparent;
   -webkit-touch-callout: none;
   -webkit-user-select: none;

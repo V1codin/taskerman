@@ -39,7 +39,7 @@ export const deleteBoard = (boardId: string) => {
 };
 
 export const getBoardById = (boardId: string, token: string | undefined) => {
-  return fetcher<{ data: IBoard }>(
+  return fetcher<{ data: TBoardNS.ISingleBoard }>(
     `${BASE_URL}${API_SINGLE_BOARD_URL}?boardId=${boardId}`,
     {
       method: 'GET',
