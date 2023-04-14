@@ -11,7 +11,7 @@ import { isDev, MONGO_DB_NAME } from '@/utils/constants';
 
 export const authOptions: NextAuthOptions = {
   session: {
-    strategy: 'jwt',
+    strategy: 'database',
     maxAge: Number(process.env['JWT_OPT_EXPIRE_SECONDS']),
   },
   jwt: {
