@@ -1,12 +1,11 @@
-import mongoProvider from '@/libs/db/mongo';
-
-import { authService } from '@/libs/auth.service';
+import { dbConnect } from '@/libs/db/connect';
 import { boardService } from '@/libs/boards.service';
 import { BadRequestError, ServerResponseError } from '@/libs/error.service';
 import { listService } from '@/libs/lists.service';
-import { checkSessionToken } from '@/libs/sessionTokenChecker';
 import type { TError } from '@/types/state';
 import type { NextApiResponse, NextApiRequest } from 'next/types';
+import { getUserByRequest } from '@/libs/getUserByRequest';
+import { authService } from '@/libs/auth.service';
 
 export default async function handler(
   req: NextApiRequest,
@@ -17,10 +16,9 @@ export default async function handler(
       throw new BadRequestError();
     }
 
-    const token = await checkSessionToken(req);
-    const issuerId = token.user.id;
-
     const { method } = req;
+    await dbConnect();
+
     if (method === 'GET') {
       const { boardId } = req.query;
 
@@ -29,7 +27,9 @@ export default async function handler(
       }
 
       try {
-        const isValidUser = await mongoProvider.isValidUserForGettingBoardUtils(
+        const issuerId = await getUserByRequest(req);
+
+        const isValidUser = await authService.isValidUserForGettingBoard(
           issuerId,
           boardId,
         );
@@ -42,6 +42,7 @@ export default async function handler(
         }
 
         const board = await boardService.getBoardById(boardId);
+
         if (!board) {
           throw new ServerResponseError({
             code: 404,
@@ -49,12 +50,11 @@ export default async function handler(
           });
         }
 
-        const result = await authService.getSafeBoardData(board);
         const lists = await listService.getListsByBoardId(board._id);
 
         res.status(200).json({
           data: {
-            board: result,
+            board: board,
             lists,
           },
         });
