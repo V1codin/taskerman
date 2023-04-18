@@ -1,14 +1,21 @@
 import React from 'react';
 import ImageModule from '@/modules/image/Image';
 // @ts-ignore
-import GoogleIcon from '@/assets/google_icon.svg?url';
+import googleIcon from '@/assets/google_icon.svg?url';
+import ButtonWithLoader from '@/modules/button/ButtonWithLoader';
 
-import { TAuthTypes, TUserSignUp, userSignUpSchema } from '@/types/state';
+import { AuthClient, credentialsSignUpSchema } from '@/types/state';
 import { FormWrapper } from '@/modules/formWrapper/FormWrapper';
-import { useForm } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useDebounce } from '@/hooks/hooks';
+import { useDebounce, useToast } from '@/hooks/hooks';
 import { useEffect } from 'react';
+import { useAtom } from 'jotai';
+import { getSetModal } from '@/context/stateManager';
+import { ToastProps } from '@/types/helpers';
+import { useState } from 'react';
+import { signUp } from '@/utils/api/auth';
+import { signIn } from 'next-auth/react';
 
 type SignUpFormProps = {};
 
@@ -19,17 +26,74 @@ const SignUpForm: React.FC<SignUpFormProps> = () => {
     trigger,
     setFocus,
     formState: { errors },
-  } = useForm<TUserSignUp>({
-    resolver: zodResolver(userSignUpSchema),
+  } = useForm<AuthClient.TUserSignUp>({
+    resolver: zodResolver(credentialsSignUpSchema),
   });
+
+  const [, setAuthState] = useAtom(getSetModal);
+
+  const [loader, setLoader] = useState(false);
+
+  const { setToast } = useToast();
+
+  useEffect(() => {
+    setFocus('username', { shouldSelect: true });
+  }, [setFocus]);
+
   const debouncedInputChange = useDebounce(
     (e: React.ChangeEvent<HTMLInputElement>) =>
-      trigger(e.target.name as keyof TUserSignUp),
+      trigger(e.target.name as keyof AuthClient.TUserSignUp),
   );
 
-  const onSubmit = () => {};
-  const oauthHandler = (type: TAuthTypes) => {
-    console.log(type);
+  const onSubmit: SubmitHandler<AuthClient.TUserSignUp> = async (
+    userToSubmit,
+    e,
+  ) => {
+    e?.preventDefault();
+
+    try {
+      setLoader(true);
+      const result = await signUp('credentials', userToSubmit);
+
+      if (!result) {
+        throw new Error('Wrong username or password');
+      }
+
+      setLoader(false);
+
+      setAuthState({
+        isOpen: true,
+        window: {
+          type: 'auth',
+          view: 'login',
+        },
+      });
+
+      setToast({
+        message: `${result.message}. Please sign in`,
+        typeClass: 'notification',
+        timeout: 3000,
+      });
+    } catch (e) {
+      setLoader(false);
+      const newToast: ToastProps = {
+        typeClass: 'conflict',
+        message: e instanceof Error ? e.message : 'Server Error',
+      };
+
+      setToast(newToast);
+    }
+  };
+
+  const oauthHandler = async (type: TAuthTypes) => {
+    try {
+      await signIn(type);
+    } catch (e) {
+      setToast({
+        message: 'Unexpected error',
+        typeClass: 'conflict',
+      });
+    }
   };
 
   useEffect(() => {
@@ -112,17 +176,28 @@ const SignUpForm: React.FC<SignUpFormProps> = () => {
         aria-invalid={Boolean(errors.email)}
       />
       {errors.email && <span className="warning">{errors.email.message}</span>}
-      <button className="btn btn_primary">Sign up</button>
+      <ButtonWithLoader
+        isLoading={loader}
+        attrs={{
+          className: 'btn btn_primary',
+          type: 'submit',
+          disabled: loader,
+        }}
+      >
+        <span>Sign up</span>
+      </ButtonWithLoader>
       <button
         className="btn google__btn btn_secondary"
         type="button"
         data-oauthtype="google"
         onClick={(e) => {
+          e.preventDefault();
+
           const type = e.currentTarget.dataset['oauthtype']! as TAuthTypes;
           oauthHandler(type);
         }}
       >
-        <ImageModule src={GoogleIcon} alt="google" width={20} height={20} />{' '}
+        <ImageModule src={googleIcon} alt="google" width={20} height={20} />{' '}
         Continue with Google
       </button>
     </FormWrapper>

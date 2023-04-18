@@ -1,13 +1,11 @@
 import { ServerResponseError } from '@/libs/error.service';
-
-import type { TError } from '@/types/state';
-import type { NextApiRequest, NextApiResponse } from 'next/types';
-import type { SessionUser } from '@/types/db';
-
 import { dbConnect } from '@/libs/db/connect';
 import { authService } from '@/libs/auth.service';
 import { AUTH_TOKEN_COOKIE_NAME } from '@/utils/constants';
 import { deleteCookie } from 'cookies-next';
+
+import type { NextApiRequest, NextApiResponse } from 'next/types';
+import type { SessionUser } from '@/types/db';
 
 export type TAuthenticatedUser = {
   user: SessionUser;

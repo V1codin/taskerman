@@ -57,7 +57,7 @@ export const getSetToastState: WritableAtom<
 export const modalAtom = atom<IModal<boolean>>(DEFAULT_MODAL_STATE);
 export const getSetModal: WritableAtom<
   IModal<boolean>,
-  [update: IModal<boolean>],
+  [update: IModal<true> | IModal<false>],
   void
 > = atom(
   (get) => get(modalAtom),

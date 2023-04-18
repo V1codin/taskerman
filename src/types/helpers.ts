@@ -6,8 +6,6 @@ export interface IMasks {
   email: RegExp;
 }
 
-export type TOAuth = ['google'];
-
 export type TToasts = 'conflict' | 'warning' | 'notification';
 
 export type ToastComponentProps = {

@@ -9,27 +9,10 @@ import image_4 from '@/assets/info_img4.jpg?url';
 // @ts-ignore
 import image_5 from '@/assets/info_img5.jpg?url';
 
-import { IMasks } from '@/types/helpers';
+import { credentialsSignUpSchema } from '@/types/state';
 
 import { randomUUID } from 'crypto';
-
-export const masks: IMasks = {
-  username: /^[a-zA-Z0-9]{4,16}$/,
-  password: /^(?=.*[0-9])(?=.*[a-zA-Z])(?=\S+$).{4,16}$/,
-  confirmPassword: /^(?=.*[0-9])(?=.*[a-zA-Z])(?=\S+$).{4,16}$/,
-  displayName: /^[A-Z]{1}\w{1,10}\s{1}[A-Z]{1}\w{1,11}$/,
-  email: /^[a-zA-Z\d]{1,15}@[a-z]{1,9}\.{1}([a-z]{2,4}){1}$/,
-};
-
-export const warns = {
-  username: 'Username must be from 4 to 16 numbers of latin characters',
-  password:
-    'Your password must be 4-16 characters, and include at least one number.',
-  displayName:
-    'Enter your name and surname divided by space. First letters are capital :)',
-  confirmPassword: 'Passwords should match',
-  email: 'Invalid email',
-};
+import { TAuthProviderProfiles } from 'next-auth';
 
 export const isLink = (str: string = '') => {
   return /^https:\/\/images\.unsplash\.com\/.{1,}/g.test(str);
@@ -148,4 +131,36 @@ export const fromDate = (time: number, date = Date.now()) => {
 
 export const generateSessionToken = () => {
   return randomUUID?.() ?? generate.uuid();
+};
+
+export const validateNewUserBySchema = (type: TSignUp, body: unknown) => {
+  if (type === 'credentials') {
+    return credentialsSignUpSchema.safeParse(body);
+  }
+
+  // TODO for google auth type etc.
+  return {
+    success: false,
+  };
+};
+
+// ? profile: any because different auth providers send different prop names
+export const getProfileDataOfAuthProvider = (
+  type: TSignUp,
+  profile: TAuthProviderProfiles,
+) => {
+  if (type === 'google') {
+    return {
+      id: profile.sub,
+      displayName: profile.name,
+      email: profile.email,
+      imageURL: profile.picture,
+      nameAlias: `${profile.name} ${profile.email}`,
+      subs: [],
+    };
+  }
+
+  return {
+    id: profile['id'],
+  };
 };

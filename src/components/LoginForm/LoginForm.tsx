@@ -1,16 +1,16 @@
 // @ts-ignore
-import GoogleIcon from '@/assets/google_icon.svg?url';
+import googleIcon from '@/assets/google_icon.svg?url';
 import ActiveLink from '@/modules/activeLink/ActiveLink';
 import ButtonWithLoader from '@/modules/button/ButtonWithLoader';
 import ImageModule from '@/modules/image/Image';
 
 import { userLoginSchema } from '@/types/state';
 import { FormWrapper } from '@/modules/formWrapper/FormWrapper';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ToastProps, TOAuth } from '@/types/helpers';
-import { TUserLogin } from '@/types/state';
+import { ToastProps } from '@/types/helpers';
+import { AuthClient } from '@/types/state';
 import { useDebounce, useToast } from '@/hooks/hooks';
 import { useAtom } from 'jotai';
 import { getSetModal } from '@/context/stateManager';
@@ -25,8 +25,9 @@ const LoginForm: React.FC<LoginFormProps> = () => {
     handleSubmit,
     trigger,
     setFocus,
+
     formState: { errors },
-  } = useForm<TUserLogin>({
+  } = useForm<AuthClient.TUserLogin>({
     resolver: zodResolver(userLoginSchema),
   });
 
@@ -48,10 +49,13 @@ const LoginForm: React.FC<LoginFormProps> = () => {
 
   const debouncedInputChange = useDebounce(
     (e: React.ChangeEvent<HTMLInputElement>) =>
-      trigger(e.target.name as keyof TUserLogin),
+      trigger(e.target.name as keyof AuthClient.TUserLogin),
   );
 
-  const onSubmit: SubmitHandler<TUserLogin> = async (userToSubmit, e) => {
+  const onSubmit: SubmitHandler<AuthClient.TUserLogin> = async (
+    userToSubmit,
+    e,
+  ) => {
     e?.preventDefault();
 
     try {
@@ -86,9 +90,16 @@ const LoginForm: React.FC<LoginFormProps> = () => {
     }
   };
 
-  const oauthHandler = useCallback((type: keyof TOAuth) => {
-    console.log('type: ', type);
-  }, []);
+  const oauthHandler = async (type: TAuthTypes) => {
+    try {
+      await signIn(type);
+    } catch (e) {
+      setToast({
+        message: 'Unexpected error',
+        typeClass: 'conflict',
+      });
+    }
+  };
 
   const signUpLinkClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
@@ -151,11 +162,11 @@ const LoginForm: React.FC<LoginFormProps> = () => {
         type="button"
         data-oauthtype="google"
         onClick={(e) => {
-          const type = e.currentTarget.dataset['oauthtype']! as keyof TOAuth;
+          const type = e.currentTarget.dataset['oauthtype']! as TAuthTypes;
           oauthHandler(type);
         }}
       >
-        <ImageModule src={GoogleIcon} alt="google" width={20} height={20} />{' '}
+        <ImageModule src={googleIcon} alt="google" width={20} height={20} />{' '}
         Continue with Google
       </button>
       <ActiveLink
