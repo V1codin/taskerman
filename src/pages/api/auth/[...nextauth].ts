@@ -1,7 +1,9 @@
 import CredentialsProvider from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
+import encrypt from '@/libs/encrypt.service';
 import NextAuth from 'next-auth';
 
+import { GoogleProfile } from 'next-auth/providers/google';
 import { clientPromise, dbConnect } from '@/libs/db/connect';
 import { NextAuthOptions } from 'next-auth';
 import { MongoDBAdapter } from '@next-auth/mongodb-adapter';
@@ -11,27 +13,39 @@ import {
   MONGO_DB_NAME,
   SESSION_MAX_AGE_DAYS,
 } from '@/utils/constants';
-import { fromDate, generateSessionToken, getAgeInSec } from '@/utils/helpers';
+import {
+  fromDate,
+  generateSessionToken,
+  getAgeInSec,
+  getProfileDataOfAuthProvider,
+} from '@/utils/helpers';
 import { authService } from '@/libs/auth.service';
 
 import { setCookie, getCookie } from 'cookies-next';
 import { NextApiRequest, NextApiResponse } from 'next/types';
 import { decode, encode } from 'next-auth/jwt';
-import { SessionModel } from '@/models/middlewares';
+import { PasswordModel, SessionModel, UserModel } from '@/models/middlewares';
 import { Adapter, AdapterSession } from 'next-auth/adapters';
 import { IUser } from '@/models/users';
 import { SessionUser } from '@/types/db';
 import { IBoard } from '@/models/boards';
+import { AuthClient } from '@/types/state';
+import { ServerResponseError } from '@/libs/error.service';
+
+type Session = { user: SessionUser; session: AdapterSession } | null;
 
 type MyAdapter = Adapter & {
-  _getSessionAndUser(
-    sessionToken: string,
-  ): Promise<{ user: SessionUser; session: AdapterSession } | null>;
+  _getSessionAndUser(sessionToken: string): Promise<Session>;
   _createSession(session: {
     sessionToken: string;
     userId: string;
     expires: Date;
   }): Promise<AdapterSession>;
+
+  _createUser(user: AuthClient.TSignUpBodyReducer<TSignUp>): Promise<{
+    error?: ServerResponseError<any>;
+    data: string | null;
+  }>;
 };
 
 const mongoAdapter: MyAdapter = {
@@ -86,6 +100,58 @@ const mongoAdapter: MyAdapter = {
     await SessionModel.create(session);
 
     return session;
+  },
+
+  async _createUser(user: AuthClient.TSignUpBodyReducer<TSignUp>) {
+    try {
+      await dbConnect();
+
+      const { password, username, displayName, email } = user;
+
+      const isUserExist = await UserModel.findOne({
+        username,
+      });
+
+      if (isUserExist) {
+        throw new ServerResponseError({
+          code: 403,
+          message: 'Error: User with the username already exists',
+        });
+      }
+
+      const createdUser = await UserModel.create({
+        username,
+        displayName,
+        email,
+        nameAlias: `${displayName} ${email}`,
+      });
+
+      const safePW = await encrypt.hash(password);
+
+      await PasswordModel.create({
+        user: createdUser._id,
+        pw: safePW,
+      });
+
+      return {
+        data: 'User was successfully created',
+      };
+    } catch (e) {
+      if (e instanceof ServerResponseError) {
+        return {
+          data: null,
+          error: e,
+        };
+      }
+
+      return {
+        data: null,
+        error: new ServerResponseError({
+          code: 400,
+          message: 'Error: Bad request',
+        }),
+      };
+    }
   },
 };
 
@@ -193,6 +259,7 @@ export const getAuthOptions = (
       },
 
       async session({ session, token }) {
+        console.log('session');
         if (token) {
           session.user = token.user;
           // @ts-ignore
@@ -204,9 +271,13 @@ export const getAuthOptions = (
     useSecureCookies: !isDev(),
     adapter: mongoAdapter,
     providers: [
-      GoogleProvider({
+      GoogleProvider<GoogleProfile>({
         clientSecret: process.env['GOOGLE_CLIENT_S']!,
         clientId: process.env['GOOGLE_CLIENT_ID']!,
+        allowDangerousEmailAccountLinking: true,
+        profile(profile) {
+          return getProfileDataOfAuthProvider('google', profile);
+        },
       }),
       CredentialsProvider({
         id: 'credentials',

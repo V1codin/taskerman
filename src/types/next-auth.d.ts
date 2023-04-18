@@ -1,5 +1,6 @@
 import NextAuth from 'next-auth';
 
+import { GoogleProfile } from 'next-auth/providers/google';
 import { SessionUser } from './db';
 
 declare module 'next-auth/jwt' {
@@ -9,6 +10,9 @@ declare module 'next-auth/jwt' {
 }
 
 declare module 'next-auth' {
+  // TODO add another provider profiles
+  type TAuthProviderProfiles = GoogleProfile;
+
   interface AdapterUser extends SessionUser {}
 
   interface DefaultUser {}

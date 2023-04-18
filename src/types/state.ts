@@ -1,6 +1,25 @@
 import { z } from 'zod';
-import { masks, warns } from '@/utils/helpers';
-import { SessionUser, TUserDataClient } from './db';
+
+import type { SessionUser, TUserDataClient } from './db';
+import type { IMasks } from '@/types/helpers';
+
+const masks: IMasks = {
+  username: /^[a-zA-Z0-9]{4,16}$/,
+  password: /^(?=.*[0-9])(?=.*[a-zA-Z])(?=\S+$).{4,16}$/,
+  confirmPassword: /^(?=.*[0-9])(?=.*[a-zA-Z])(?=\S+$).{4,16}$/,
+  displayName: /^[A-Z]{1}\w{1,10}\s{1}[A-Z]{1}\w{1,11}$/,
+  email: /^[a-zA-Z\d]{1,15}@[a-z]{1,9}\.{1}([a-z]{2,4}){1}$/,
+};
+
+const warns = {
+  username: 'Username must be from 4 to 16 numbers of latin characters',
+  password:
+    'Your password must be 4-16 characters, and include at least one number.',
+  displayName:
+    'Enter your name and surname divided by space. First letters are capital :)',
+  confirmPassword: 'Passwords should match',
+  email: 'Invalid email',
+};
 
 /*
 const Note = z.object({
@@ -14,23 +33,6 @@ const Note = z.object({
 });
 */
 
-/*
-export const signInLoginSchema = z
-  .object({
-    username: z.string().regex(masks.username),
-    password: z.string().regex(masks.password),
-    confirmPassword: z.string(),
-  })
-  .superRefine(({ confirmPassword, password }, ctx) => {
-    if (confirmPassword !== password) {
-      ctx.addIssue({
-        code: 'custom',
-        message: 'Passwords should match',
-      });
-    }
-  });
-  */
-
 export const userLoginSchema = z.object({
   username: z.string().regex(masks.username, {
     message: warns.username,
@@ -40,7 +42,7 @@ export const userLoginSchema = z.object({
   }),
 });
 
-export const userSignUpSchema = z
+export const credentialsSignUpSchema = z
   .object({
     username: z.string().regex(masks.username, {
       message: warns.username,
@@ -63,8 +65,15 @@ export const userSignUpSchema = z
     path: ['confirmPassword'],
   });
 
-export type TUserLogin = z.infer<typeof userLoginSchema>;
-export type TUserSignUp = z.infer<typeof userSignUpSchema>;
+export namespace AuthClient {
+  export type TUserLogin = z.infer<typeof userLoginSchema>;
+  export type TUserSignUp = z.infer<typeof credentialsSignUpSchema>;
+
+  export type TSignUpBodyReducer<T extends TSignUp> = T extends 'credentials'
+    ? TUserSignUp
+    : // TODO body for google auth type etc.
+      never;
+}
 
 export type NoteType = 'info' | 'invite';
 export interface Note {
@@ -82,13 +91,6 @@ export interface State {
   notifications: Note[];
   userInfo: TUserDataClient;
 }
-
-export type TError = {
-  message: string;
-  code: number;
-};
-
-export type TAuthTypes = 'google';
 
 export type TEntities = 'board' | 'list' | 'card';
 
