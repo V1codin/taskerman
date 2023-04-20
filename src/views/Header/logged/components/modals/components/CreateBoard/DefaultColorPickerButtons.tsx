@@ -1,6 +1,4 @@
-import ImageModule from '@/modules/image/Image';
-// @ts-ignore
-import link from '@/assets/link.svg?url';
+import ClipBoardButton from '@/modules/button/ClipBoardButton';
 
 import { DEFAULT_ADD_BOARD_BUTTON_COLORS } from '@/utils/constants';
 import { ChangeEvent, Children, SyntheticEvent } from 'react';
@@ -33,18 +31,7 @@ const DefaultColorPickerButtons: React.FC<DefaultColorPickerButtonsProps> = ({
         }),
       )}
       <li>
-        <button
-          className="menu__btn card_design menu_linkBg"
-          onClick={changeHandlerClick}
-          name="link"
-        >
-          <ImageModule
-            src={link}
-            alt="link bg"
-            className="menu__ico"
-            title="Get link of the background from clipboard"
-          />
-        </button>
+        <ClipBoardButton click={changeHandlerClick} buttonName="link" />
       </li>
       <li>
         <input
@@ -63,4 +50,5 @@ const DefaultColorPickerButtons: React.FC<DefaultColorPickerButtonsProps> = ({
     </ul>
   );
 };
+
 export default DefaultColorPickerButtons;

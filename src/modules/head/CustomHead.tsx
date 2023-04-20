@@ -14,4 +14,5 @@ const CustomHead: React.FC<CustomHeadProps> = ({ title = 'Task Manager' }) => {
     </Head>
   );
 };
+
 export default CustomHead;

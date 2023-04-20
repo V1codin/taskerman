@@ -5,65 +5,30 @@ import {
   PasswordModel,
 } from '@/models/middlewares';
 import { Types } from 'mongoose';
+
 import type { IBoard } from '@/models/boards';
 import type { FilterQuery } from 'mongoose';
-import type { TBoardNS, TListNS } from '@/types/db';
+import type { DataBaseProvider, TBoardNS, TListNS } from '@/types/db';
+import type { TEditableUserProps } from '@/models/users';
 
-interface DataBaseProvider<
-  ParticularDBType extends unknown,
-  TBoardQuery,
-  TUserByName = unknown,
-  TUserById = unknown,
-  TUserIdByUserName = unknown,
-  TBoarById = unknown,
-  TUserBoards = unknown,
-  TCreatedBoard = unknown,
-  TDeletedBoard = unknown,
-  TListsByBoardId = unknown,
-> {
-  getAllBoardsByUserQueryUtils(userId: string): TBoardQuery;
-  isEqualUtils(
-    str1: string | ParticularDBType,
-    str2: string | ParticularDBType,
-  ): boolean;
-  isValidUserForGettingBoardUtils(
-    userId: string,
-    boardId: string,
-  ): Promise<boolean>;
+interface MongoDbProvider
+  extends DataBaseProvider<
+    Types.ObjectId,
+    FilterQuery<IBoard>,
+    ReturnType<typeof UserModel.findOne>,
+    ReturnType<typeof UserModel.findOne>,
+    ReturnType<typeof UserModel.findOne>,
+    Awaited<ReturnType<typeof UserModel.findOne>>,
+    ReturnType<typeof BoardModel.findOne>,
+    ReturnType<typeof BoardModel.find>,
+    // ? unknown because Boards.create is overloading function
+    // ? and ReturnType is not compatible
+    unknown,
+    ReturnType<typeof BoardModel.deleteOne>,
+    ReturnType<typeof ListModel.find>
+  > {}
 
-  getUserHashedPassword(username: string): Promise<string>;
-  getUserByUserName(username: string): TUserByName;
-  getUserById(userId: string | ParticularDBType): TUserById;
-  getUserIdByUserName(username: string): TUserIdByUserName;
-
-  getBoardById(boardId: string | ParticularDBType): TBoarById;
-  getUserBoards(
-    query: TBoardQuery | null,
-    userId?: string | ParticularDBType,
-  ): TUserBoards;
-  createBoard(board: TBoardNS.TCreatingBoard): TCreatedBoard;
-  deleteBoard(boardId: string | ParticularDBType): TDeletedBoard;
-
-  getListsByBoardId(boardId: string | ParticularDBType): TListsByBoardId;
-}
-
-export class MongoDataBaseProvider
-  implements
-    DataBaseProvider<
-      Types.ObjectId,
-      FilterQuery<IBoard>,
-      ReturnType<typeof UserModel.findOne>,
-      ReturnType<typeof UserModel.findOne>,
-      ReturnType<typeof UserModel.findOne>,
-      ReturnType<typeof BoardModel.findOne>,
-      ReturnType<typeof BoardModel.find>,
-      // ? unknown because Boards.create is overloading function
-      // ? and ReturnType is not compatible
-      unknown,
-      ReturnType<typeof BoardModel.deleteOne>,
-      ReturnType<typeof ListModel.find>
-    >
-{
+export class MongoDataBaseProvider implements MongoDbProvider {
   constructor() {}
 
   /*
@@ -101,6 +66,29 @@ export class MongoDataBaseProvider
     }
 
     return id;
+  }
+
+  getUserByIdWithPopulatedSubs(userId: string) {
+    return this.getUserById(userId).populate('subs');
+  }
+
+  async patchUser(userId: string, data: TEditableUserProps) {
+    try {
+      const { acknowledged } = await UserModel.updateOne(
+        {
+          _id: userId,
+        },
+        data,
+      );
+
+      if (acknowledged) {
+        return this.getUserByIdWithPopulatedSubs(userId);
+      }
+
+      throw new Error('Update is failed');
+    } catch (e) {
+      return null;
+    }
   }
 
   async isValidUserForGettingBoardUtils(userId: string, boardId: string) {
@@ -213,6 +201,7 @@ export class MongoDataBaseProvider
 }
 
 const mongoProvider = new MongoDataBaseProvider();
+// TODO TDb type as global type and assign to it current DB provider
 export type TDb = MongoDataBaseProvider;
 export type ParticularDBType = Types.ObjectId;
 

@@ -21,4 +21,5 @@ const LoggedHeader: React.FC<LoggedHeaderProps> = ({ userData }) => {
     </StyledNav>
   );
 };
+
 export default LoggedHeader;

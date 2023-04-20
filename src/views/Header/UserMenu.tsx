@@ -1,13 +1,13 @@
+import { useAtomValue } from 'jotai';
 import DefaultHeader from './default';
 import LoggedHeader from './logged/LoggedHeader';
 
-import { SessionUser } from '@/types/db';
+import { getSetUserStateAtom } from '@/context/stateManager';
 
-type UserMenuProps = {
-  user: SessionUser | null;
-};
+type UserMenuProps = {};
 
-const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
+const UserMenu: React.FC<UserMenuProps> = () => {
+  const user = useAtomValue(getSetUserStateAtom);
   return user ? <LoggedHeader userData={user} /> : <DefaultHeader />;
 };
 

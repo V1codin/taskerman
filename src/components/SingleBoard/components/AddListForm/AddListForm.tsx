@@ -66,4 +66,5 @@ const AddListForm: React.FC<AddListFormProps> = ({ boardId }) => {
     <AddButton onClick={toggleForm} className="menu__btn flex_center" />
   );
 };
+
 export default AddListForm;

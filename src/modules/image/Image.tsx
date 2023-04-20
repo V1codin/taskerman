@@ -31,4 +31,5 @@ const ImageModule: React.FC<ImageModuleProps> = ({
     />
   );
 };
+
 export default ImageModule;

@@ -46,4 +46,5 @@ const ModalForms: React.FC<ModalFormsProps> = ({
 
   return null;
 };
+
 export default ModalForms;

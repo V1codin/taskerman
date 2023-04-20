@@ -65,4 +65,5 @@ const SubscriberSection: React.FC<SubscriberSectionProps> = ({
     </StyledContainer>
   );
 };
+
 export default SubscriberSection;

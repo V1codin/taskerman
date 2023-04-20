@@ -25,9 +25,11 @@ const Avatar: React.FC<AvatarProps> = ({
       height={avatarHeight}
       className={className}
       alt="User avatar"
+      title={displayName}
     />
   ) : (
     <DefaultAccountImage userAliases={{ displayName, username }} />
   );
 };
+
 export default Avatar;

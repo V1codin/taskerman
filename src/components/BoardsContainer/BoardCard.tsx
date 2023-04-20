@@ -79,4 +79,5 @@ const BoardCard: React.FC<BoardCardProps> = ({ _id, bgChecker, bg, title }) => {
     </StyledCard>
   );
 };
+
 export default BoardCard;

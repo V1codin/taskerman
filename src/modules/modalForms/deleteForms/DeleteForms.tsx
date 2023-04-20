@@ -14,4 +14,5 @@ const DeleteForms: React.FC<DeleteFormsProps> = ({ view, data }) => {
 
   return null;
 };
+
 export default DeleteForms;

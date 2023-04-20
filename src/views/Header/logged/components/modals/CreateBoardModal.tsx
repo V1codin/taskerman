@@ -184,4 +184,5 @@ const CreateBoardModal: React.FC<CreateBoardModalProps> = () => {
     </FormWrapper>
   );
 };
+
 export default CreateBoardModal;

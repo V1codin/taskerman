@@ -1,7 +1,7 @@
 import type { NextApiRequest } from 'next';
 import { TBoardNS } from './db';
 
-export type TMethods = 'POST' | 'PUT' | 'DELETE' | 'GET';
+export type TMethods = 'POST' | 'PUT' | 'DELETE' | 'GET' | 'PATCH';
 
 export type TBoardReducerBody = {
   POST: TBoardNS.TCreatingBoard;

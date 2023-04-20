@@ -1,4 +1,4 @@
-import Loader from '@/assets/pulse.svg';
+import Spinner from '@/assets/pulse.svg';
 
 import {
   ContainerProps,
@@ -9,9 +9,15 @@ import {
 type Props = {
   isShown?: boolean;
   styles?: React.CSSProperties;
+  size?: 'm' | 's';
 } & ContainerProps;
 
-const Process: React.FC<Props> = ({ isShown, styles, isBordered }) => {
+const Process: React.FC<Props> = ({
+  isShown,
+  styles,
+  isBordered,
+  size = 'm',
+}) => {
   const wrapperStyles = styles || {};
 
   if (!isShown) {
@@ -20,8 +26,8 @@ const Process: React.FC<Props> = ({ isShown, styles, isBordered }) => {
         isBordered={isBordered}
         style={{ ...wrapperStyles }}
       >
-        <StyledSpinner>
-          <Loader />
+        <StyledSpinner size={size}>
+          <Spinner />
         </StyledSpinner>
       </StyledProcessContainer>
     );
@@ -32,8 +38,8 @@ const Process: React.FC<Props> = ({ isShown, styles, isBordered }) => {
       isBordered={isBordered}
       style={{ ...wrapperStyles }}
     >
-      <StyledSpinner>
-        <Loader />
+      <StyledSpinner size={size}>
+        <Spinner />
       </StyledSpinner>
     </StyledProcessContainer>
   ) : null;

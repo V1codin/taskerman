@@ -41,6 +41,13 @@ body {
 	color: var(--bright-green);
 }
 
+.menu_linkBg {
+	padding: 5px !important;
+	width: 32px;
+	height: 32px;
+	background-color: var(--black-aqua);
+}
+
 `;
 
 export default GlobalStyle;

@@ -15,7 +15,7 @@ import { randomUUID } from 'crypto';
 import { TAuthProviderProfiles } from 'next-auth';
 
 export const isLink = (str: string = '') => {
-  return /^https:\/\/images\.unsplash\.com\/.{1,}/g.test(str);
+  return /^(http|https):\/\/[^ "]+/g.test(str);
 };
 
 export const imagesForInfoDropDown: {

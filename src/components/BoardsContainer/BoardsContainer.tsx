@@ -23,4 +23,5 @@ const BoardsContainer: React.FC<BoardContainerProps> = ({ boards }) => {
     </StyledBoardContainer>
   );
 };
+
 export default BoardsContainer;

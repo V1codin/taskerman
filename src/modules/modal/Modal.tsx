@@ -33,4 +33,5 @@ const Modal: React.FC<ModalProps> = ({ children, isOpen, close }) => {
     </StyledModalContainer>
   ) : null;
 };
+
 export default Modal;

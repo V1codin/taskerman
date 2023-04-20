@@ -60,4 +60,5 @@ const CloseBtn: React.FC<CloseBtnProps> = ({
     </StyledCloseBtn>
   );
 };
+
 export default CloseBtn;

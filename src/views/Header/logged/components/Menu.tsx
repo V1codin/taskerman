@@ -201,4 +201,5 @@ const Menu: React.FC<MenuProps> = ({ user, logout, containerRef }) => {
     </>
   );
 };
+
 export default Menu;

@@ -44,4 +44,5 @@ const Confirm: React.FC<ConfirmProps> = ({ children, accept, decline }) => {
     </FormWrapper>
   );
 };
+
 export default Confirm;

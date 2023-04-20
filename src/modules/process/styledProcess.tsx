@@ -52,6 +52,7 @@ export const StyledProcessContainer = styled.div<
   }
 `;
 
-export const StyledSpinner = styled.div`
-  width: 130px;
+export const StyledSpinner = styled.div<{ size: 'm' | 's' }>`
+  width: ${({ size }) =>
+    size === 'm' ? '130px' : size === 's' ? '35px' : '130px'};
 `;

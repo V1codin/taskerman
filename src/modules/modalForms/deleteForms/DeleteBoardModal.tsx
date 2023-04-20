@@ -73,4 +73,5 @@ const DeleteBoardModal: React.FC<DeleteBoardModalProps> = ({ id, text }) => {
     </Confirm>
   );
 };
+
 export default DeleteBoardModal;
