@@ -12,4 +12,5 @@ type DividerProps = {};
 const Divider: React.FC<DividerProps> = () => {
   return <StyledDivider></StyledDivider>;
 };
+
 export default Divider;

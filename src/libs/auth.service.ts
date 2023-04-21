@@ -1,11 +1,12 @@
 import mongoProvider from '@/db/mongo';
 import encrypt from '@/libs/encrypt.service';
 
-import { BoardModel, SessionModel } from '@/models/middlewares';
+import { SessionModel } from '@/models/middlewares';
 import { TEncryptService } from './encrypt.service';
-import type { TDb } from '@/db/mongo';
 import { IBoard } from '@/models/boards';
 import { dbAdapter } from '@/pages/api/auth/[...nextauth]';
+import type { TDb } from '@/db/mongo';
+import type { TEditableUserProps } from '@/models/users';
 
 interface IAuth {
   db: TDb;
@@ -36,6 +37,10 @@ export class AuthService {
     if (!issuerId || !boardId) return Promise.resolve(false);
 
     return this.db.isValidUserForGettingBoardUtils(issuerId, boardId);
+  }
+
+  patchUser(userId: string, userProps: TEditableUserProps) {
+    return this.db.patchUser(userId, userProps);
   }
 
   async getSessionUser(token?: string) {
@@ -100,20 +105,6 @@ export class AuthService {
       email: result.email,
       imageURL: result.imageURL,
     };
-  }
-  // TODO move getting the query to db provider
-  // ? getUserBoards(userId) -> db.getQueryForUserBoards(userId) -> db.getUserBoards
-  getUserBoards(userId: string) {
-    return BoardModel.find({
-      $or: [
-        {
-          ownerId: userId,
-        },
-        {
-          memberId: userId,
-        },
-      ],
-    }).populate('ownerId');
   }
 
   getUserIdByUserName(username: string) {

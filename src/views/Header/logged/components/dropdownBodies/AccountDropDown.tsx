@@ -75,4 +75,5 @@ const AccountDropDown: React.FC<AccountDropDownProps> = ({
     </DropDown>
   );
 };
+
 export default AccountDropDown;

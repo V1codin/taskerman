@@ -203,4 +203,5 @@ const SignUpForm: React.FC<SignUpFormProps> = () => {
     </FormWrapper>
   );
 };
+
 export default SignUpForm;

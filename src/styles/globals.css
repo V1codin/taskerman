@@ -263,12 +263,12 @@ button:disabled {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--blue);
+  background: var(--pale-blue);
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #b3b3b3;
+  background: var(--blue);
 }
 
 @keyframes fadeIn {

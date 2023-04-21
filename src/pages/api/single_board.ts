@@ -2,10 +2,11 @@ import { dbConnect } from '@/libs/db/connect';
 import { boardService } from '@/libs/boards.service';
 import { BadRequestError, ServerResponseError } from '@/libs/error.service';
 import { listService } from '@/libs/lists.service';
-import type { NextApiResponse, NextApiRequest } from 'next/types';
 import { getUserByRequest } from '@/libs/getUserByRequest';
 import { authService } from '@/libs/auth.service';
 import { TMethods } from '@/types/api';
+
+import type { NextApiResponse, NextApiRequest } from 'next/types';
 
 export default async function handler(
   req: NextApiRequest,

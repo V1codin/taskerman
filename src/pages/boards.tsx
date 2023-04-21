@@ -1,21 +1,54 @@
 import BoardsContainer from '@/components/BoardsContainer/BoardsContainer';
 
-import { getSetBoardsState } from '@/context/stateManager';
-import { useAtom } from 'jotai';
-import { useSession } from 'next-auth/react';
-import { useLayoutEffect } from 'react';
+import { IBoard } from '@/models/boards';
+import { AUTH_TOKEN_COOKIE_NAME } from '@/utils/constants';
+import { GetServerSidePropsContext } from 'next';
+import { dbAdapter } from './api/auth/[...nextauth]';
+import { getBoards } from '@/utils/api/boards';
+import { boardsStateAtom, getSetBoardsState } from '@/context/stateManager';
+import { useAtomValue } from 'jotai';
+import { useHydrateAtoms } from 'jotai/utils';
 
-export default function Boards() {
-  const { data, status } = useSession();
-  const [boards, setBoards] = useAtom(getSetBoardsState);
+type BoardsProps = {
+  boards: IBoard[];
+};
 
-  useLayoutEffect(() => {
-    if (data && data?.user) {
-      setBoards(data.user.subs);
+export default function Boards({ boards }: BoardsProps) {
+  useHydrateAtoms([[getSetBoardsState, boards]]);
+
+  const localBoards = useAtomValue(boardsStateAtom);
+
+  return (
+    <>{localBoards.length > 0 && <BoardsContainer boards={localBoards} />}</>
+  );
+}
+
+export async function getServerSideProps({ req }: GetServerSidePropsContext) {
+  const token = req.cookies[AUTH_TOKEN_COOKIE_NAME];
+
+  const sessionAndUser = await dbAdapter.getSessionAndUser(token || '');
+
+  if (sessionAndUser) {
+    try {
+      const response = await getBoards(sessionAndUser.user.id, token);
+
+      return {
+        props: {
+          boards: response.data,
+        },
+      };
+    } catch (e) {
+      return {
+        props: {
+          boards: [],
+        },
+      };
     }
-  }, [data, setBoards]);
+  }
 
-  if (status !== 'authenticated') return null;
-
-  return <>{boards.length > 0 && <BoardsContainer boards={boards} />}</>;
+  return {
+    props: {
+      boards: [],
+    },
+  };
 }

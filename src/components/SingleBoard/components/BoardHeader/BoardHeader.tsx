@@ -48,4 +48,5 @@ const BoardHeader: React.FC<BoardHeaderProps> = ({
     </StyledSection>
   );
 };
+
 export default BoardHeader;

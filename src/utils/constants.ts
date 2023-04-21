@@ -62,6 +62,7 @@ const API_BOARDS_URL = '/api/boards';
 const API_SINGLE_BOARD_URL = '/api/single_board';
 const API_REQUEST_SESSION_URL = '/api/auth/session';
 const API_SIGNUP_URL = '/api/auth/sign_up';
+const API_USER_UPDATE_URL = '/api/auth/update_user';
 
 const DEFAULT_MODAL_STATE: IModal<false> = {
   isOpen: false,
@@ -69,6 +70,7 @@ const DEFAULT_MODAL_STATE: IModal<false> = {
 };
 
 export {
+  API_USER_UPDATE_URL,
   API_SIGNUP_URL,
   API_REQUEST_SESSION_URL,
   API_SINGLE_BOARD_URL,

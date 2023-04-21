@@ -1,5 +1,5 @@
 import { TypeOf, z } from 'zod';
-import { IUser } from '@/models/users';
+import { IUser, TEditableUserProps } from '@/models/users';
 import {
   BoardServiceCreate,
   BoardServiceGetUserBoards,
@@ -80,7 +80,6 @@ export type TUnsafeBoardProps = '_id';
 export type SessionUser = {
   _id: string;
   id: string;
-  subs: IBoard[];
   displayName?: string;
   imageURL?: string;
   email: string;
@@ -88,3 +87,45 @@ export type SessionUser = {
 };
 
 export type TUserDataClient = TUser;
+
+export interface DataBaseProvider<
+  ParticularDBType extends unknown,
+  TBoardQuery extends unknown,
+  TUserByName extends unknown,
+  TUserById extends unknown,
+  TUserIdByUserName extends unknown,
+  TPatchedUser extends unknown,
+  TBoarById extends unknown,
+  TUserBoards extends unknown,
+  TCreatedBoard extends unknown,
+  TDeletedBoard extends unknown,
+  TUnsubedUserFromBoard extends unknown,
+  TListsByBoardId extends unknown,
+> {
+  getAllBoardsByUserQueryUtils(userId: string): TBoardQuery;
+  isEqualUtils(
+    str1: string | ParticularDBType,
+    str2: string | ParticularDBType,
+  ): boolean;
+  isValidUserForGettingBoardUtils(
+    userId: string,
+    boardId: string,
+  ): Promise<boolean>;
+
+  getUserHashedPassword(username: string): Promise<string>;
+  getUserByUserName(username: string): TUserByName;
+  getUserById(userId: string | ParticularDBType): TUserById;
+  getUserIdByUserName(username: string): TUserIdByUserName;
+  patchUser(userId: string, patch: TEditableUserProps): TPatchedUser;
+
+  getBoardById(boardId: string | ParticularDBType): TBoarById;
+  getUserBoards(
+    query: TBoardQuery | null,
+    userId?: string | ParticularDBType,
+  ): TUserBoards;
+  createBoard(board: TBoardNS.TCreatingBoard): TCreatedBoard;
+  deleteBoard(boardId: string | ParticularDBType): TDeletedBoard;
+  unsubscribeFromBoard(userId: string, board: IBoard): TUnsubedUserFromBoard;
+
+  getListsByBoardId(boardId: string | ParticularDBType): TListsByBoardId;
+}

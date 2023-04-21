@@ -47,4 +47,5 @@ const Account: React.FC<AccountProps> = ({
     </StyledAvatarButton>
   );
 };
+
 export default Account;

@@ -11,6 +11,10 @@ export interface IUser {
   nameAlias: string;
 }
 
+export type TEditableUserProps =
+  | Required<Pick<IUser, 'displayName'>>
+  | Required<Pick<IUser, 'imageURL'>>;
+
 export const UserScheme = new Schema<IUser, Model<IUser>>(
   {
     username: { type: String, unique: true, require: true },
@@ -24,7 +28,10 @@ export const UserScheme = new Schema<IUser, Model<IUser>>(
       type: String,
       default: '',
     },
-    nameAlias: { type: String, require: true },
+    nameAlias: {
+      type: String,
+      require: true,
+    },
   },
   {
     timestamps: true,

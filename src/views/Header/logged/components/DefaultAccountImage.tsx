@@ -37,4 +37,5 @@ const DefaultAccountImage: React.FC<DefaultAccountImageProps> = ({
     : 'N A';
   return <StyledImageContainer>{content}</StyledImageContainer>;
 };
+
 export default DefaultAccountImage;

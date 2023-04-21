@@ -135,6 +135,7 @@ const CreateBoardModal: React.FC<CreateBoardModalProps> = () => {
 
           return newState;
         });
+
         setToast({
           typeClass: 'notification',
           message: `Board titled : ${result.data.title} was created`,
@@ -184,4 +185,5 @@ const CreateBoardModal: React.FC<CreateBoardModalProps> = () => {
     </FormWrapper>
   );
 };
+
 export default CreateBoardModal;

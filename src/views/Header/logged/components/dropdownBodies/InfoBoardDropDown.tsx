@@ -57,4 +57,5 @@ const InfoBoardDropDown: React.FC<InfoBoardDropDownProps> = ({
     </DropDown>
   );
 };
+
 export default InfoBoardDropDown;

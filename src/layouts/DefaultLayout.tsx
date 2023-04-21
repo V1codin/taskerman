@@ -6,7 +6,7 @@ import { useToast } from '@/hooks/hooks';
 import { Process } from '@/modules/process/Process';
 import { useEffect } from 'react';
 import { useSetAtom } from 'jotai';
-import { getSetModal } from '@/context/stateManager';
+import { getSetModal, getSetUserStateAtom } from '@/context/stateManager';
 
 type DefaultLayoutProps = {
   children: React.ReactNode;
@@ -17,6 +17,7 @@ const DefaultLayout: React.FC<DefaultLayoutProps> = ({ children }) => {
 
   const { setToast } = useToast();
   const setModalState = useSetAtom(getSetModal);
+  const setUser = useSetAtom(getSetUserStateAtom);
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -32,8 +33,14 @@ const DefaultLayout: React.FC<DefaultLayoutProps> = ({ children }) => {
           view: 'login',
         },
       });
+
+      return;
     }
-  }, [setModalState, setToast, status]);
+
+    if (status === 'authenticated') {
+      setUser(data.user);
+    }
+  }, [data?.user, setModalState, setToast, setUser, status]);
 
   return status === 'loading' ? (
     <Process
@@ -45,7 +52,7 @@ const DefaultLayout: React.FC<DefaultLayoutProps> = ({ children }) => {
   ) : (
     <>
       <CustomHead />
-      <Header user={data?.user || null} />
+      <Header />
       <main>{children}</main>
     </>
   );

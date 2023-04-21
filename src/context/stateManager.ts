@@ -3,25 +3,90 @@ import { ToastProps } from '@/types/helpers';
 import { EMPTY_TOAST, DEFAULT_MODAL_STATE } from '@/utils/constants';
 import { IModal } from '@/types/state';
 import { IBoard } from '@/models/boards';
-import { TBoardNS } from '@/types/db';
+import { SessionUser, TBoardNS } from '@/types/db';
+
+export const userStateAtom = atom<SessionUser | null>(null);
+export const getSetUserStateAtom: WritableAtom<
+  SessionUser | null,
+  [
+    update:
+      | SessionUser
+      | ((prevValue: SessionUser | null) => SessionUser)
+      | null,
+  ],
+  void
+> = atom(
+  (get) => get(userStateAtom),
+  (_, set, update) => {
+    if (typeof update === 'function') {
+      set(userStateAtom, (prev) => update(prev));
+    } else {
+      set(userStateAtom, update);
+    }
+  },
+);
+
+export const userDisplayNameAtom = atom(
+  (get) => {
+    const val = get(userStateAtom);
+    if (val) {
+      return val['displayName'];
+    }
+
+    return '';
+  },
+  (get, set, update: string) => {
+    const val = get(userStateAtom);
+    if (val) {
+      val['displayName'] = update;
+      set(userStateAtom, {
+        ...val,
+      });
+    }
+  },
+);
+
+export const userImageAtom = atom(
+  (get) => {
+    const val = get(userStateAtom);
+    if (val) {
+      return val['imageURL'];
+    }
+
+    return '';
+  },
+  (get, set, update: string) => {
+    const val = get(userStateAtom);
+    if (val) {
+      val['imageURL'] = update;
+      set(userStateAtom, {
+        ...val,
+      });
+    }
+  },
+);
 
 export const boardsStateAtom = atom<IBoard[]>([]);
-export const getSetBoardsState: WritableAtom<
+export const getSetBoardsState = atom<
   IBoard[],
   [update: IBoard | IBoard[] | ((prevValue: IBoard[]) => IBoard[])],
   void
-> = atom(
+>(
   (get) => get(boardsStateAtom),
-  (_, set, update) => {
+  (get, set, update) => {
+    const prev = get(boardsStateAtom);
+
     if (Array.isArray(update)) {
       set(boardsStateAtom, update);
     } else if (typeof update === 'function') {
-      set(boardsStateAtom, (prev) => update(prev));
-    } else {
-      set(boardsStateAtom, (prev) => {
-        prev.push(update);
+      set(boardsStateAtom, () => {
+        const result = update(prev);
 
-        return prev;
+        return result;
+      });
+    } else {
+      set(boardsStateAtom, () => {
+        return [...prev, update];
       });
     }
   },

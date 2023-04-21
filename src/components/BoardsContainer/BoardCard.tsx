@@ -3,8 +3,8 @@ import deleteIco from '@/assets/plus.svg?url';
 import Router from 'next/router';
 import CloseBtn from '@/modules/button/CloseBtn';
 
-import { useSetAtom } from 'jotai';
-import { getSetModal } from '@/context/stateManager';
+import { useAtomValue, useSetAtom } from 'jotai';
+import { getSetModal, userStateAtom } from '@/context/stateManager';
 import { IBoard } from '@/models/boards';
 import styled from 'styled-components';
 
@@ -26,9 +26,22 @@ type BoardCardProps = IBoard & {
   bgChecker: boolean;
 };
 
-const BoardCard: React.FC<BoardCardProps> = ({ _id, bgChecker, bg, title }) => {
+const BoardCard: React.FC<BoardCardProps> = ({
+  _id,
+  bgChecker,
+  bg,
+  title,
+  owner,
+}) => {
+  const user = useAtomValue(userStateAtom);
   const setModal = useSetAtom(getSetModal);
+
   const deleteBoard = async () => {
+    const modalMessage =
+      user?._id === owner._id
+        ? 'Delete the board, titled'
+        : 'Unsubscribe from the board';
+
     setModal({
       isOpen: true,
       window: {
@@ -36,7 +49,11 @@ const BoardCard: React.FC<BoardCardProps> = ({ _id, bgChecker, bg, title }) => {
         view: 'delete_board',
         data: {
           id: _id,
-          text: title,
+          children: (
+            <h3>
+              {modalMessage} - <span style={{ color: 'red' }}>{title}</span> ?
+            </h3>
+          ),
           entity: 'board',
         },
       },
@@ -79,4 +96,5 @@ const BoardCard: React.FC<BoardCardProps> = ({ _id, bgChecker, bg, title }) => {
     </StyledCard>
   );
 };
+
 export default BoardCard;

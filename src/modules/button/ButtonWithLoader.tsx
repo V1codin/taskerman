@@ -7,6 +7,7 @@ type ButtonWithLoaderProps = {
   children?: JSX.Element | JSX.Element[] | React.ReactNode;
   attrs?: Partial<React.ButtonHTMLAttributes<HTMLButtonElement>>;
   styles?: React.CSSProperties;
+  spinnerSize?: 'm' | 's';
 };
 
 const ButtonWithLoader: React.FC<ButtonWithLoaderProps> = ({
@@ -14,6 +15,7 @@ const ButtonWithLoader: React.FC<ButtonWithLoaderProps> = ({
   children,
   styles,
   attrs,
+  spinnerSize = 'm',
 }) => {
   return (
     <Button
@@ -23,8 +25,9 @@ const ButtonWithLoader: React.FC<ButtonWithLoaderProps> = ({
       }}
       attrs={attrs}
     >
-      {isLoading ? <Process /> : children}
+      {isLoading ? <Process size={spinnerSize} /> : children}
     </Button>
   );
 };
+
 export default ButtonWithLoader;

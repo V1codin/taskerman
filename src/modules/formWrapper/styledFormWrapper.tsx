@@ -85,13 +85,6 @@ export const StyledForm = styled.form`
     margin-top: 10px;
   }
 
-  .menu_linkBg {
-    padding: 5px !important;
-    margin-right: 0 !important;
-    width: 32px;
-    height: 32px;
-    background-color: var(--black-aqua);
-  }
   .color-picker__el {
     cursor: pointer;
     padding: 15px;

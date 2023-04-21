@@ -7,6 +7,14 @@ export interface IBoard {
   title: string;
   bg: string;
   owner: IUser;
+  // TODO add roles to board's members
+  /*
+  ?
+  {
+    member: IUser[],
+    role: TUserRolesForBoard = 'guest' | 'owner' | 'admin';
+  }
+  */
   members: IUser[];
   pendingMembers: Schema.Types.ObjectId[] | IBoard[];
 }

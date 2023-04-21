@@ -2,7 +2,7 @@ type TServerResponseCodes = 500 | 403 | 404 | 400;
 
 type TBoardAuthErrorMessages =
   | 'Error: User with the username already exists'
-  | 'Error: Only board OWNER can delete the board';
+  | 'Error: Only board OWNER can delete the board. Or only SUBSCRIBER can unsubscribe from the board';
 
 type TServerErrorMessages = 'Error: Server does not response';
 type TAuthErrorMessages = 'Error: Unauthorized' | TBoardAuthErrorMessages;
