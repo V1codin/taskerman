@@ -2,7 +2,7 @@ import BoardsContainer from '@/components/BoardsContainer/BoardsContainer';
 
 import { IBoard } from '@/models/boards';
 import { AUTH_TOKEN_COOKIE_NAME } from '@/utils/constants';
-import { GetServerSidePropsContext } from 'next';
+import { GetServerSidePropsContext } from 'next/types';
 import { dbAdapter } from './api/auth/[...nextauth]';
 import { getBoards } from '@/utils/api/boards';
 import { boardsStateAtom, getSetBoardsState } from '@/context/stateManager';

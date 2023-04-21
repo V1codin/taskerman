@@ -1,3 +1,4 @@
+import styled from 'styled-components';
 // @ts-ignore
 import deleteIco from '@/assets/plus.svg?url';
 import Router from 'next/router';
@@ -6,7 +7,6 @@ import CloseBtn from '@/modules/button/CloseBtn';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { getSetModal, userStateAtom } from '@/context/stateManager';
 import { IBoard } from '@/models/boards';
-import styled from 'styled-components';
 
 const StyledCard = styled.div`
   position: relative;

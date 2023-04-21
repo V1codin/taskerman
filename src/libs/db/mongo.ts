@@ -225,7 +225,7 @@ export class MongoDataBaseProvider implements MongoDbProvider {
       },
     );
 
-    return createdBoard;
+    return createdBoard.populate('owner');
   }
 
   createList(list: TListNS.TCreatingList) {

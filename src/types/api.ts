@@ -1,3 +1,4 @@
+import { IBoard } from '@/models/boards';
 import { TBoardNS } from './db';
 import type { NextApiRequest } from 'next';
 
@@ -14,7 +15,7 @@ export type TBoardReducerBody = {
 
 type TBoardReturnType = {
   GET: TBoardNS.TRawUserBoards;
-  POST: TBoardNS.TCreatedBoard;
+  POST: IBoard;
   DELETE: TBoardNS.TDeletingBoard;
 
   PUT: null;

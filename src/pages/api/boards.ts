@@ -1,3 +1,5 @@
+import mongoProvider from '@/libs/db/mongo';
+
 import { dbConnect } from '@/libs/db/connect';
 import { TGetBoardReturnByMethod, TMethods, BoardsRequest } from '@/types/api';
 import { BadRequestError, ServerResponseError } from '@/libs/error.service';
@@ -89,7 +91,7 @@ const boardsReducer = async <TMethod extends TMethods>(
 
       // TODO check issiuer's role -> if 'owner' -> boardService.delete
       // TODO if guest,admin etc -> boardService.unsubscribe
-      if (issuerId !== boardToDelete.owner._id) {
+      if (!mongoProvider.isEqualUtils(issuerId, boardToDelete.owner._id)) {
         const deleted = await boardService.unsubscribe(issuerId, boardToDelete);
 
         if (!deleted.acknowledged) {
