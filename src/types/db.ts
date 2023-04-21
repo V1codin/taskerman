@@ -80,7 +80,6 @@ export type TUnsafeBoardProps = '_id';
 export type SessionUser = {
   _id: string;
   id: string;
-  subs: IBoard[];
   displayName?: string;
   imageURL?: string;
   email: string;
@@ -100,6 +99,7 @@ export interface DataBaseProvider<
   TUserBoards extends unknown,
   TCreatedBoard extends unknown,
   TDeletedBoard extends unknown,
+  TUnsubedUserFromBoard extends unknown,
   TListsByBoardId extends unknown,
 > {
   getAllBoardsByUserQueryUtils(userId: string): TBoardQuery;
@@ -125,6 +125,7 @@ export interface DataBaseProvider<
   ): TUserBoards;
   createBoard(board: TBoardNS.TCreatingBoard): TCreatedBoard;
   deleteBoard(boardId: string | ParticularDBType): TDeletedBoard;
+  unsubscribeFromBoard(userId: string, board: IBoard): TUnsubedUserFromBoard;
 
   getListsByBoardId(boardId: string | ParticularDBType): TListsByBoardId;
 }

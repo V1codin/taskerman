@@ -13,6 +13,39 @@ const boardsReducer = async <TMethod extends TMethods>(
 ): Promise<TGetBoardReturnByMethod<TMethod>> => {
   await dbConnect();
 
+  // ? GET is for getting all boards
+  if (method === 'GET') {
+    const userIdFromQuery = req.query['userId'];
+
+    try {
+      if (!userIdFromQuery || typeof userIdFromQuery !== 'string') {
+        throw new BadRequestError();
+      }
+
+      const boards = await boardService.getUserBoards(userIdFromQuery);
+
+      if (!boards || !boards.length) {
+        throw new ServerResponseError({
+          code: 404,
+          message: 'Error: Document was not found',
+        });
+      }
+
+      return {
+        data: boards,
+      };
+    } catch (e) {
+      if (e instanceof ServerResponseError) {
+        throw e;
+      }
+
+      throw new ServerResponseError({
+        code: 500,
+        message: 'Error: Server does not response',
+      });
+    }
+  }
+
   // ? POST is for creating board
   if (method === 'POST') {
     const parsedBody = creatingBoardSchema.safeParse(req.body);
@@ -46,11 +79,28 @@ const boardsReducer = async <TMethod extends TMethods>(
         });
       }
 
-      if (!boardService.isValidIssuer(issuerId, boardToDelete.owner._id)) {
+      if (!boardService.isValidIssuer(issuerId, boardToDelete)) {
         throw new ServerResponseError({
           code: 403,
-          message: 'Error: Only board OWNER can delete the board',
+          message:
+            'Error: Only board OWNER can delete the board. Or only SUBSCRIBER can unsubscribe from the board',
         });
+      }
+
+      // TODO check issiuer's role -> if 'owner' -> boardService.delete
+      // TODO if guest,admin etc -> boardService.unsubscribe
+      if (issuerId !== boardToDelete.owner._id) {
+        const deleted = await boardService.unsubscribe(issuerId, boardToDelete);
+
+        if (!deleted.acknowledged) {
+          throw new BadRequestError();
+        }
+
+        return {
+          data: {
+            boardId,
+          },
+        };
       }
 
       const deleted = await boardService.delete(boardId);

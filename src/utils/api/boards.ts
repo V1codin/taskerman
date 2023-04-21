@@ -37,3 +37,15 @@ export const getBoardById = (boardId: string, token: string | undefined) => {
     },
   );
 };
+
+export const getBoards = (userId: string, token: string | undefined) => {
+  return fetcher<{ data: IBoard[] }>(
+    `${BASE_URL}${API_BOARDS_URL}?userId=${userId}`,
+    {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+};

@@ -5,7 +5,7 @@ export const StyledProfile = styled.div`
   margin: 0 auto;
   display: grid;
   grid-template-columns: 0.5fr 0.5fr;
-  grid-column-gap: 25px;
+  grid-column-gap: 30px;
 
   & h4,
   h3 {
@@ -33,7 +33,6 @@ export const StyledInputContainer = styled.form`
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  // padding-bottom: 5px;
 
   &:after {
     content: '';
@@ -107,6 +106,7 @@ export const StyledInput = styled.input`
 `;
 
 export const StyledSubsContainer = styled.div`
+  max-height: 75vh;
   display: block;
   width: 100%;
   overflow: auto;
@@ -117,6 +117,7 @@ export const StyledSub = styled.div`
 `;
 
 export const StyledCard = styled.div`
+  position: relative;
   border-radius: 5px;
   margin: 5px auto;
   cursor: pointer;

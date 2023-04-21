@@ -66,15 +66,6 @@ export const userImageAtom = atom(
   },
 );
 
-export const userSubsAtom = atom((get) => {
-  const val = get(userStateAtom);
-  if (val) {
-    return val['subs'];
-  }
-
-  return [];
-});
-
 export const boardsStateAtom = atom<IBoard[]>([]);
 export const getSetBoardsState = atom<
   IBoard[],
@@ -82,16 +73,20 @@ export const getSetBoardsState = atom<
   void
 >(
   (get) => get(boardsStateAtom),
-  (_, set, update) => {
+  (get, set, update) => {
+    const prev = get(boardsStateAtom);
+
     if (Array.isArray(update)) {
       set(boardsStateAtom, update);
     } else if (typeof update === 'function') {
-      set(boardsStateAtom, (prev) => update(prev));
-    } else {
-      set(boardsStateAtom, (prev) => {
-        prev.push(update);
+      set(boardsStateAtom, () => {
+        const result = update(prev);
 
-        return prev;
+        return result;
+      });
+    } else {
+      set(boardsStateAtom, () => {
+        return [...prev, update];
       });
     }
   },

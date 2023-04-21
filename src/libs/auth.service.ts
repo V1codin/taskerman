@@ -1,7 +1,7 @@
 import mongoProvider from '@/db/mongo';
 import encrypt from '@/libs/encrypt.service';
 
-import { BoardModel, SessionModel } from '@/models/middlewares';
+import { SessionModel } from '@/models/middlewares';
 import { TEncryptService } from './encrypt.service';
 import { IBoard } from '@/models/boards';
 import { dbAdapter } from '@/pages/api/auth/[...nextauth]';
@@ -39,10 +39,7 @@ export class AuthService {
     return this.db.isValidUserForGettingBoardUtils(issuerId, boardId);
   }
 
-  patchUser(
-    userId: string,
-    userProps: TEditableUserProps,
-  ): ReturnType<TDb['patchUser']> {
+  patchUser(userId: string, userProps: TEditableUserProps) {
     return this.db.patchUser(userId, userProps);
   }
 
@@ -108,20 +105,6 @@ export class AuthService {
       email: result.email,
       imageURL: result.imageURL,
     };
-  }
-  // TODO move getting the query to db provider
-  // ? getUserBoards(userId) -> db.getQueryForUserBoards(userId) -> db.getUserBoards
-  getUserBoards(userId: string) {
-    return BoardModel.find({
-      $or: [
-        {
-          ownerId: userId,
-        },
-        {
-          memberId: userId,
-        },
-      ],
-    }).populate('ownerId');
   }
 
   getUserIdByUserName(username: string) {

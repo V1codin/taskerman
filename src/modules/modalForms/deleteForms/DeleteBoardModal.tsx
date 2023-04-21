@@ -10,14 +10,21 @@ import { useToast } from '@/hooks/hooks';
 
 type DeleteBoardModalProps = TDeleteModalData;
 
-const DeleteBoardModal: React.FC<DeleteBoardModalProps> = ({ id, text }) => {
+const DeleteBoardModal: React.FC<DeleteBoardModalProps> = ({
+  id,
+  children,
+}) => {
   const setModal = useSetAtom(getSetModal);
   const setBoards = useSetAtom(getSetBoardsState);
   const { setToast } = useToast();
 
   const refreshData = useCallback(
     (boardId: string) => {
-      setBoards((state) => state.filter((item) => item._id !== boardId));
+      setBoards((state) => {
+        const result = state.filter((item) => item._id !== boardId);
+
+        return result;
+      });
     },
     [setBoards],
   );
@@ -62,14 +69,7 @@ const DeleteBoardModal: React.FC<DeleteBoardModalProps> = ({ id, text }) => {
 
   return (
     <Confirm accept={accept} decline={decline}>
-      {text ? (
-        <h3>
-          Delete the board, titled -{' '}
-          <span style={{ color: 'red' }}>{text}</span> ?
-        </h3>
-      ) : (
-        <h3>Confirm the board deleting</h3>
-      )}
+      {children ? children : <h3>Confirm the board deleting</h3>}
     </Confirm>
   );
 };

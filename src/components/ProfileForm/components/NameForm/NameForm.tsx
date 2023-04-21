@@ -1,16 +1,54 @@
 import ButtonWithLoader from '@/modules/button/ButtonWithLoader';
 
 import { StyledInput, StyledInputContainer } from '../../styledProfile';
-import { useAtom } from 'jotai';
-import { ChangeEvent } from 'react';
-import { userDisplayNameAtom } from '@/context/stateManager';
+import { useAtom, useSetAtom } from 'jotai';
+import { ChangeEvent, useState } from 'react';
+import {
+  getSetUserStateAtom,
+  userDisplayNameAtom,
+} from '@/context/stateManager';
+import { useToast } from '@/hooks/hooks';
+import { updateUser } from '@/utils/api/auth';
+
+import type { MouseEvent } from 'react';
 
 type NameFormProps = {};
 
 const NameForm: React.FC<NameFormProps> = () => {
   const [displayName, setDisplayName] = useAtom(userDisplayNameAtom);
+  const setUser = useSetAtom(getSetUserStateAtom);
+  const { setToast } = useToast();
+  const [loader, setLoader] = useState(false);
 
-  const click = () => {};
+  const click = async (e: MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+
+    if (!displayName) {
+      setToast({
+        message: 'Name input should not be empty',
+        typeClass: 'warning',
+      });
+
+      return;
+    }
+
+    try {
+      setLoader(true);
+
+      const response = await updateUser({
+        displayName,
+      });
+      setUser(response.updatedUser);
+
+      setLoader(false);
+    } catch (e) {
+      setLoader(false);
+      setToast({
+        message: 'Failed to update user',
+        typeClass: 'conflict',
+      });
+    }
+  };
 
   const changeHandler = (e: ChangeEvent<HTMLInputElement>) => {
     setDisplayName(e.target.value);
@@ -26,8 +64,11 @@ const NameForm: React.FC<NameFormProps> = () => {
         onChange={changeHandler}
       />
       <ButtonWithLoader
-        isLoading={false}
+        isLoading={loader}
+        spinnerSize="s"
         attrs={{
+          disabled: loader,
+          type: 'submit',
           onClick: click,
           className: 'primary position_left',
         }}

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import type { SessionUser, TUserDataClient } from './db';
+import type { SessionUser } from './db';
 import type { IMasks } from '@/types/helpers';
 
 const masks: IMasks = {
@@ -86,12 +86,6 @@ export interface Note {
   updatedAt: string;
 }
 
-export interface State {
-  isAuthenticated: boolean;
-  notifications: Note[];
-  userInfo: TUserDataClient;
-}
-
 export type TEntities = 'board' | 'list' | 'card';
 
 export type TModalAuth = 'auth';
@@ -111,7 +105,7 @@ export type TAuthModalData = {};
 export type TCreateModalData = {};
 export type TDeleteModalData = {
   id: string;
-  text?: string;
+  children?: React.ReactNode;
   entity: TEntities;
 };
 
@@ -137,4 +131,4 @@ export interface IModal<T extends boolean> {
   window: T extends true ? IModalWindow : null;
 }
 
-export type TUserHeaderProps = Omit<SessionUser, 'subs'>;
+export type TUserHeaderProps = SessionUser;

@@ -28,9 +28,9 @@ import { PasswordModel, SessionModel, UserModel } from '@/models/middlewares';
 import { Adapter, AdapterSession } from 'next-auth/adapters';
 import { IUser } from '@/models/users';
 import { SessionUser } from '@/types/db';
-import { IBoard } from '@/models/boards';
 import { AuthClient } from '@/types/state';
 import { ServerResponseError } from '@/libs/error.service';
+import { WithOptional } from '@/types/utils';
 
 type Session = { user: SessionUser; session: AdapterSession } | null;
 
@@ -63,9 +63,6 @@ const mongoAdapter: MyAdapter = {
 
     const result = await SessionModel.findOne({ sessionToken }).populate({
       path: 'userId',
-      populate: {
-        path: 'subs',
-      },
     });
     if (!result) return null;
 
@@ -77,11 +74,12 @@ const mongoAdapter: MyAdapter = {
       userId: objectedResult._id,
     };
 
-    const populatedUser = objectedResult.userId as IUser;
+    const populatedUser = objectedResult.userId as WithOptional<IUser, 'subs'>;
+
+    delete populatedUser.subs;
 
     const user: SessionUser = {
       ...populatedUser,
-      subs: populatedUser.subs as IBoard[],
       id: populatedUser._id,
     };
 

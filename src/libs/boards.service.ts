@@ -23,8 +23,15 @@ export class BoardsService {
     return this.db.isValidUserForGettingBoardUtils(userId, boardId);
   }
 
-  isValidIssuer(issuerId: string, boardOwnerId: string) {
-    return this.db.isEqualUtils(issuerId, boardOwnerId);
+  isUserBoardSubscriber(userId: string, board: IBoard) {
+    return this.db.isUserBoardSubscriberUtils(userId, board);
+  }
+
+  isValidIssuer(issuerId: string, board: IBoard) {
+    return (
+      this.db.isEqualUtils(issuerId, board.owner._id) ||
+      this.isUserBoardSubscriber(issuerId, board)
+    );
   }
 
   getBoardById(boardId: string | ParticularDBType) {
@@ -35,6 +42,13 @@ export class BoardsService {
     const createdBoard = await this.db.createBoard(board);
 
     return createdBoard;
+  }
+
+  async unsubscribe(userId: string, board: IBoard) {
+    const result = await this.db.unsubscribeFromBoard(userId, board);
+    return {
+      acknowledged: result,
+    };
   }
 
   delete(

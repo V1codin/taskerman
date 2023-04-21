@@ -1,5 +1,5 @@
-import type { NextApiRequest } from 'next';
 import { TBoardNS } from './db';
+import type { NextApiRequest } from 'next';
 
 export type TMethods = 'POST' | 'PUT' | 'DELETE' | 'GET' | 'PATCH';
 
@@ -9,6 +9,7 @@ export type TBoardReducerBody = {
 
   PUT: null;
   GET: null;
+  PATCH: null;
 };
 
 type TBoardReturnType = {
@@ -17,6 +18,7 @@ type TBoardReturnType = {
   DELETE: TBoardNS.TDeletingBoard;
 
   PUT: null;
+  PATCH: null;
 };
 
 type TMethodReturnMap = Record<TMethods, TBoardReturnType[TMethods]>;

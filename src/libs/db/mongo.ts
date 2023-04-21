@@ -25,6 +25,7 @@ interface MongoDbProvider
     // ? and ReturnType is not compatible
     unknown,
     ReturnType<typeof BoardModel.deleteOne>,
+    Promise<true | null>,
     ReturnType<typeof ListModel.find>
   > {}
 
@@ -60,6 +61,12 @@ export class MongoDataBaseProvider implements MongoDbProvider {
     return new Types.ObjectId(str1).equals(str2);
   }
 
+  isUserBoardSubscriberUtils(userId: string, board: IBoard) {
+    return (
+      board.members.findIndex(({ _id }) => this.isEqualUtils(userId, _id)) > -1
+    );
+  }
+
   private getObjectIdFromStringUtils(id: string | ParticularDBType) {
     if (typeof id === 'string') {
       return new Types.ObjectId(id);
@@ -70,6 +77,40 @@ export class MongoDataBaseProvider implements MongoDbProvider {
 
   getUserByIdWithPopulatedSubs(userId: string) {
     return this.getUserById(userId).populate('subs');
+  }
+
+  async unsubscribeFromBoard(userId: string, board: IBoard) {
+    try {
+      await BoardModel.updateOne(
+        {
+          _id: board._id,
+        },
+        {
+          $pull: {
+            members: {
+              $in: [userId],
+            },
+          },
+        },
+      );
+
+      await UserModel.updateOne(
+        {
+          _id: userId,
+        },
+        {
+          $pull: {
+            subs: {
+              $in: [board._id],
+            },
+          },
+        },
+      );
+
+      return true;
+    } catch (e) {
+      return null;
+    }
   }
 
   async patchUser(userId: string, data: TEditableUserProps) {
@@ -161,7 +202,7 @@ export class MongoDataBaseProvider implements MongoDbProvider {
   }
 
   getUserBoards(query: FilterQuery<IBoard>) {
-    return BoardModel.find(query);
+    return BoardModel.find(query).populate('owner');
   }
 
   async createBoard(board: TBoardNS.TCreatingBoard) {
