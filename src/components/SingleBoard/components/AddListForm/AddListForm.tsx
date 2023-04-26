@@ -1,6 +1,6 @@
 import AddButton from '@/modules/button/AddButton';
 import ButtonWithLoader from '@/modules/button/ButtonWithLoader';
-import CloseBtn from '@/modules/button/CloseBtn';
+import CloseButton from '@/modules/button/CloseButton';
 
 import { FormWrapper } from '@/modules/formWrapper/FormWrapper';
 import { ChangeEvent, useState } from 'react';
@@ -50,7 +50,7 @@ const AddListForm: React.FC<AddListFormProps> = ({ boardId }) => {
         >
           Add List
         </ButtonWithLoader>
-        <CloseBtn
+        <CloseButton
           attrs={{
             type: 'button',
             onClick: closeForm,

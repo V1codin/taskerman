@@ -23,7 +23,7 @@ const NameForm: React.FC<NameFormProps> = () => {
   const click = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
-    if (!displayName) {
+    if (!displayName || !displayName.trim()) {
       setToast({
         message: 'Name input should not be empty',
         typeClass: 'warning',

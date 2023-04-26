@@ -1,6 +1,7 @@
 import DropDown from '@/modules/dropdown/DropDown';
 import ImageModule from '@/modules/image/Image';
 import Link from 'next/link';
+import Button from '@/modules/button/Button';
 
 // @ts-ignore
 import logoutIcon from '@/assets/logout.svg?url';
@@ -61,7 +62,12 @@ const AccountDropDown: React.FC<AccountDropDownProps> = ({
         </Link>
       </li>
       <li className="list__body_mt5">
-        <button className="popup__body__el" onClick={logoutHandler}>
+        <Button
+          attrs={{
+            className: 'popup__body__el',
+            onClick: logoutHandler,
+          }}
+        >
           <ImageModule
             src={logoutIcon}
             alt="logout icon"
@@ -70,7 +76,7 @@ const AccountDropDown: React.FC<AccountDropDownProps> = ({
             height={24}
           />
           <span className="el__span">Log out</span>
-        </button>
+        </Button>
       </li>
     </DropDown>
   );

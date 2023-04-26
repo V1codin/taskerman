@@ -20,7 +20,7 @@ export const StyledModalContent = styled.div`
   transform: translate(-50%, 0);
 `;
 
-export const StyledCloseBtn = styled.button`
+export const StyledCloseButton = styled.button`
   position: absolute;
   top: 10px;
   right: 10px;

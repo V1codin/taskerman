@@ -33,7 +33,7 @@ const AvatarForm: React.FC<AvatarFormProps> = () => {
   const click = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
-    if (!state) {
+    if (!state || !state.trim()) {
       setToast({
         message: 'Avatar input should not be empty',
         typeClass: 'warning',

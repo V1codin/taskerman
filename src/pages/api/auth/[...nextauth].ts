@@ -117,6 +117,17 @@ const mongoAdapter: MyAdapter = {
         });
       }
 
+      const isEmailExist = await UserModel.findOne({
+        email,
+      });
+
+      if (isEmailExist) {
+        throw new ServerResponseError({
+          code: 403,
+          message: 'Error: User with the email already exists',
+        });
+      }
+
       const createdUser = await UserModel.create({
         username,
         displayName,
