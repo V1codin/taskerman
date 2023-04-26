@@ -54,6 +54,7 @@ export const StyledDropDown = styled.div<DropDownProps>`
     cursor: pointer;
     padding: 10px 5px;
     border: 1px solid transparent;
+    box-shadow: none;
 
     & > img ~ span {
       margin-left: 5px;

@@ -4,6 +4,7 @@ import { BadRequestError, ServerResponseError } from '@/libs/error.service';
 import { getUserByRequest } from '@/libs/getUserByRequest';
 import { TEditableUserProps } from '@/models/users';
 import { TMethods } from '@/types/api';
+import { updateUserSchema } from '@/types/db';
 import type { NextApiRequest, NextApiResponse } from 'next/types';
 
 export default async function handler(
@@ -23,6 +24,11 @@ export default async function handler(
 
     if (method === 'PATCH') {
       const body = req.body as TEditableUserProps;
+
+      const parsedBody = updateUserSchema.safeParse(body);
+      if (!parsedBody.success) {
+        throw new BadRequestError();
+      }
 
       const updated = await authService.patchUser(issuerId, body);
 

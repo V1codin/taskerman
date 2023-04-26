@@ -1,7 +1,12 @@
 import { atom, WritableAtom } from 'jotai';
 import { ToastProps } from '@/types/helpers';
-import { EMPTY_TOAST, DEFAULT_MODAL_STATE } from '@/utils/constants';
-import { IModal } from '@/types/state';
+import {
+  EMPTY_TOAST,
+  DEFAULT_MODAL_STATE,
+  PROFILE_SUBS_SLIDE_WIDTH,
+  SUBS_SLIDE_HALF,
+} from '@/utils/constants';
+import { IModal, TProfileActiveSub } from '@/types/state';
 import { IBoard } from '@/models/boards';
 import { SessionUser, TBoardNS } from '@/types/db';
 
@@ -66,6 +71,19 @@ export const userImageAtom = atom(
   },
 );
 
+const initialProfileSub: TProfileActiveSub = {
+  containerWidth: 0,
+  coords: 0,
+  index: -1,
+};
+export const getSetProfileSubsActiveAtom: WritableAtom<
+  TProfileActiveSub,
+  [update: TProfileActiveSub],
+  void
+> = atom(initialProfileSub, (_, set, newValue) => {
+  set(getSetProfileSubsActiveAtom, newValue);
+});
+
 export const boardsStateAtom = atom<IBoard[]>([]);
 export const getSetBoardsState = atom<
   IBoard[],
@@ -78,15 +96,64 @@ export const getSetBoardsState = atom<
 
     if (Array.isArray(update)) {
       set(boardsStateAtom, update);
+      const subsNumber = update.length;
+      const containerWidth = subsNumber * PROFILE_SUBS_SLIDE_WIDTH;
+      const toScroll =
+        subsNumber % 2 !== 0
+          ? Math.trunc(containerWidth / 2 / PROFILE_SUBS_SLIDE_WIDTH) *
+            PROFILE_SUBS_SLIDE_WIDTH
+          : subsNumber === 2
+          ? SUBS_SLIDE_HALF
+          : containerWidth / 2 - SUBS_SLIDE_HALF;
+
+      set(getSetProfileSubsActiveAtom, {
+        coords: toScroll,
+        index: 0,
+        containerWidth,
+      });
     } else if (typeof update === 'function') {
       set(boardsStateAtom, () => {
         const result = update(prev);
+
+        const subsNumber = result.length;
+        const containerWidth = subsNumber * PROFILE_SUBS_SLIDE_WIDTH;
+        const toScroll =
+          subsNumber % 2 !== 0
+            ? Math.trunc(containerWidth / 2 / PROFILE_SUBS_SLIDE_WIDTH) *
+              PROFILE_SUBS_SLIDE_WIDTH
+            : subsNumber === 2
+            ? SUBS_SLIDE_HALF
+            : containerWidth / 2 - SUBS_SLIDE_HALF;
+
+        set(getSetProfileSubsActiveAtom, {
+          coords: toScroll,
+          index: 0,
+          containerWidth,
+        });
 
         return result;
       });
     } else {
       set(boardsStateAtom, () => {
-        return [...prev, update];
+        const result = [...prev, update];
+
+        const subsNumber = result.length;
+        const containerWidth = subsNumber * PROFILE_SUBS_SLIDE_WIDTH;
+        const toScroll =
+          subsNumber % 2 !== 0
+            ? Math.trunc(containerWidth / 2 / PROFILE_SUBS_SLIDE_WIDTH) *
+              PROFILE_SUBS_SLIDE_WIDTH
+            : subsNumber === 2
+            ? SUBS_SLIDE_HALF
+            : containerWidth / 2 - SUBS_SLIDE_HALF;
+
+        set(getSetProfileSubsActiveAtom, {
+          coords: toScroll,
+          index: 0,
+          containerWidth,
+        });
+
+        return result;
       });
     }
   },

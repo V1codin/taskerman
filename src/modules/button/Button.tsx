@@ -12,6 +12,35 @@ type ButtonProps = {
   styles?: CSSProperties;
 };
 
+export const StyledButtonWidthIcon = styled.button<{
+  style: React.CSSProperties;
+}>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  min-width: auto;
+  min-height: auto;
+
+  top: 10px;
+  right: 10px;
+
+  &:hover {
+    transform: scale(1.09);
+    box-shadow: none;
+    border-radius: 7px;
+  }
+
+  &:active {
+    background-color: var(--aqua-active);
+  }
+
+  & img {
+    width: 20px;
+    height: 20px;
+  }
+`;
+
 export const StyledButton = styled.button<{ style: React.CSSProperties }>`
   background-color: var(--black-aqua);
   box-shadow: 0 0 5px ${({ theme }) => theme.colors.yellow};

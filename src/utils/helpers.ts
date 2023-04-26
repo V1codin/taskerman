@@ -9,10 +9,11 @@ import image_4 from '@/assets/info_img4.jpg?url';
 // @ts-ignore
 import image_5 from '@/assets/info_img5.jpg?url';
 
-import { credentialsSignUpSchema } from '@/types/state';
+import { TProfileActiveSub, credentialsSignUpSchema } from '@/types/state';
 
 import { randomUUID } from 'crypto';
 import { TAuthProviderProfiles } from 'next-auth';
+import { PROFILE_SUBS_SLIDE_WIDTH, RAINBOW_COLORS } from './constants';
 
 export const isLink = (str: string = '') => {
   return /^(http|https):\/\/[^ "]+/g.test(str);
@@ -162,5 +163,38 @@ export const getProfileDataOfAuthProvider = (
 
   return {
     id: profile['id'],
+  };
+};
+
+export const degreesToRadians = (degrees: number) => {
+  return degrees * (Math.PI / 180);
+};
+
+export const getRainbowColor = (index: number) => {
+  if (index >= RAINBOW_COLORS.length) {
+    return (
+      RAINBOW_COLORS[RAINBOW_COLORS.length - (index % RAINBOW_COLORS.length)] ||
+      RAINBOW_COLORS[0]
+    );
+  }
+
+  return RAINBOW_COLORS[index] || RAINBOW_COLORS[0];
+};
+
+export const getProfileActiveSubByIndex = (
+  index: number,
+  activeSlide: TProfileActiveSub,
+): TProfileActiveSub => {
+  const diff = activeSlide.index - index;
+  const diffSign = Math.sign(diff);
+  const diffAbsolute = Math.abs(diff);
+
+  const newCoords =
+    activeSlide.coords + diffSign * diffAbsolute * PROFILE_SUBS_SLIDE_WIDTH;
+
+  return {
+    containerWidth: activeSlide.containerWidth,
+    coords: newCoords,
+    index,
   };
 };

@@ -4,8 +4,12 @@ export const StyledProfile = styled.div`
   max-width: 980px;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: 0.5fr 0.5fr;
+  grid-template-columns: auto 470px;
   grid-column-gap: 30px;
+
+  & h3 {
+    padding: 5px;
+  }
 
   & h4,
   h3 {
@@ -13,12 +17,15 @@ export const StyledProfile = styled.div`
     text-align: center;
     border-radius: 5px;
     background-color: var(--black-aqua);
-    padding: 5px;
+  }
+  & h4,
+  & .board_title {
+    background-color: #333;
   }
 
-  & h4 {
+  & .board_title {
+    padding: 5px;
     color: #fff;
-    background-color: #333;
   }
 
   @media (max-width: 1100px) {
@@ -106,21 +113,22 @@ export const StyledInput = styled.input`
 `;
 
 export const StyledSubsContainer = styled.div`
+  transition: transform 0.5s;
+  width: auto;
+  position: relative;
   max-height: 75vh;
-  display: block;
-  width: 100%;
-  overflow: auto;
+  display: flex;
 `;
 
 export const StyledSub = styled.div`
   margin-top: 15px;
+  width: 470px;
 `;
 
 export const StyledCard = styled.div`
   position: relative;
   border-radius: 5px;
   margin: 5px auto;
-  cursor: pointer;
   width: 100%;
   min-height: 200px;
 `;
@@ -130,5 +138,26 @@ export const StyledColumn_1 = styled.div`
 `;
 
 export const StyledColumn_2 = styled.div`
+  overflow-x: hidden;
+  padding-bottom: 250px;
+  margin-bottom: -250px;
   grid-column: 2/2;
+`;
+
+export const StyledSubsMap = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+
+  & canvas {
+    cursor: pointer;
+
+    z-index: 5000;
+
+    &:hover {
+      transform: scale(1.5);
+    }
+  }
 `;

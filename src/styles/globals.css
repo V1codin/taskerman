@@ -253,6 +253,10 @@ button:disabled {
   background-color: #808080 !important;
 }
 
+button:disabled:hover {
+  border-radius: 0;
+}
+
 ::-webkit-scrollbar {
   width: 5px;
 }

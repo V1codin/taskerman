@@ -2,7 +2,7 @@ import styled from 'styled-components';
 // @ts-ignore
 import deleteIco from '@/assets/plus.svg?url';
 import Router from 'next/router';
-import CloseBtn from '@/modules/button/CloseBtn';
+import CloseButton from '@/modules/button/CloseButton';
 
 import { useAtomValue, useSetAtom } from 'jotai';
 import { getSetModal, userStateAtom } from '@/context/stateManager';
@@ -77,7 +77,7 @@ const BoardCard: React.FC<BoardCardProps> = ({
       }
       title={title}
     >
-      <CloseBtn
+      <CloseButton
         attrs={{
           onClick: deleteBoard,
           name: _id,

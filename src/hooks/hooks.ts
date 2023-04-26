@@ -94,7 +94,7 @@ const useEscapeCallback = <TProps extends unknown>(
 
 const useOuterCLick = (
   parentRef: MutableRefObject<HTMLElement | null>,
-  callback: (event: MouseEvent) => void,
+  callback: <T extends MouseEvent>(event: T) => void,
 ) => {
   const click = useCallback(
     (e: MouseEvent) => {

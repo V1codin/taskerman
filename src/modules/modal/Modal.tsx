@@ -5,7 +5,7 @@ import plus from '@/assets/plus.svg?url';
 import {
   StyledModalContainer,
   StyledModalOverlay,
-  StyledCloseBtn,
+  StyledCloseButton,
   StyledModalContent,
 } from './styledModal';
 
@@ -19,7 +19,7 @@ const Modal: React.FC<ModalProps> = ({ children, isOpen, close }) => {
   return isOpen ? (
     <StyledModalContainer>
       <StyledModalOverlay onClick={close} />
-      <StyledCloseBtn className="colored" onClick={close}>
+      <StyledCloseButton className="colored" onClick={close}>
         <ImageModule
           src={plus}
           alt="close"
@@ -28,7 +28,7 @@ const Modal: React.FC<ModalProps> = ({ children, isOpen, close }) => {
           height={20}
           draggable={false}
         />
-      </StyledCloseBtn>
+      </StyledCloseButton>
       <StyledModalContent>{children}</StyledModalContent>
     </StyledModalContainer>
   ) : null;

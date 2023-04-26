@@ -1,16 +1,20 @@
 // @ts-ignore
 import deleteIco from '@/assets/plus.svg?url';
-import CloseBtn from '../button/CloseBtn';
+import CloseButton from '../button/CloseButton';
 
 import { StyledDropDown } from './styledDropDown';
 import { useEscapeCallback } from '@/hooks/hooks';
-import { MouseEvent, SyntheticEvent } from 'react';
+import { MouseEvent as ReactMouseEvent, SyntheticEvent } from 'react';
 import { TDropDownMinWidth } from '@/types/helpers';
 
 type DropDownProps = {
   heading?: string;
   close: <
-    T extends KeyboardEvent | MouseEvent | SyntheticEvent<HTMLButtonElement>,
+    T extends
+      | KeyboardEvent
+      | MouseEvent
+      | ReactMouseEvent
+      | SyntheticEvent<HTMLButtonElement>,
   >(
     e: T,
   ) => void;
@@ -32,7 +36,7 @@ const DropDown: React.FC<DropDownProps> = ({
     <StyledDropDown className="colored" minWidth={minWidth}>
       <header className="popup__header">
         <h4 className="popup__article unselectable">{heading || 'List'}</h4>
-        <CloseBtn
+        <CloseButton
           attrs={{
             onClick: close,
             'data-drop-type': dropDownType || '',

@@ -8,7 +8,7 @@ const masks: IMasks = {
   password: /^(?=.*[0-9])(?=.*[a-zA-Z])(?=\S+$).{4,16}$/,
   confirmPassword: /^(?=.*[0-9])(?=.*[a-zA-Z])(?=\S+$).{4,16}$/,
   displayName: /^[A-Z]{1}\w{1,10}\s{1}[A-Z]{1}\w{1,11}$/,
-  email: /^[a-zA-Z\d]{1,15}@[a-z]{1,9}\.{1}([a-z]{2,4}){1}$/,
+  email: /^[a-zA-Z\d_]{1,15}@[a-z]{1,9}\.{1}([a-z]{2,4}){1}$/,
 };
 
 const warns = {
@@ -132,3 +132,9 @@ export interface IModal<T extends boolean> {
 }
 
 export type TUserHeaderProps = SessionUser;
+
+export type TProfileActiveSub = {
+  coords: number;
+  index: number;
+  containerWidth: number;
+};

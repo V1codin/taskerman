@@ -27,6 +27,20 @@ export const deletingBoardSchema = z.object({
   boardId: z.string(),
 });
 
+export const updateUserSchema = z
+  .object({
+    displayName: z.string(),
+    imageURL: z.string(),
+  })
+  .partial()
+  .refine(
+    ({ displayName, imageURL }) =>
+      displayName !== undefined || imageURL !== undefined,
+    {
+      message: 'One of the fields must be defined',
+    },
+  );
+
 export namespace TBoardNS {
   export interface IBoardMember {
     role: TUserRolesForBoard;

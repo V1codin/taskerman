@@ -1,6 +1,7 @@
 type TServerResponseCodes = 500 | 403 | 404 | 400;
 
 type TBoardAuthErrorMessages =
+  | 'Error: User with the email already exists'
   | 'Error: User with the username already exists'
   | 'Error: Only board OWNER can delete the board. Or only SUBSCRIBER can unsubscribe from the board';
 
