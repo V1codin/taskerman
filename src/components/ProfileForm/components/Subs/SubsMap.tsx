@@ -7,12 +7,10 @@ import {
   getSetProfileSubsActiveAtom,
 } from '@/context/stateManager';
 import { useEffect, useMemo, useRef } from 'react';
-import { degreesToRadians, getProfileActiveSubByIndex } from '@/utils/helpers';
+import { clearCanvas, degreesToRadians } from '@/utils/helpers';
 import { StyledSubsMap } from '../../styledProfile';
-import {
-  PROFILE_SUBS_SLIDE_WIDTH,
-  SUBS_MAP_LINE_WIDTH,
-} from '@/utils/constants';
+import { PROFILE_SUBS_SLIDE_WIDTH } from '@/utils/constants';
+import { drawArc, drawArcDivider, getCanvasClick } from './subsMapHelpers';
 import type { MouseEvent as ReactMouseEvent } from 'react';
 
 type SubsMapProps = {};
@@ -60,8 +58,8 @@ const SubsMap: React.FC<SubsMapProps> = () => {
 
     const canvas = canvasRef.current;
 
-    const context = canvas.getContext('2d');
-    context!.clearRect(0, 0, canvas.width, canvas.height);
+    const context = canvas.getContext('2d')!;
+    clearCanvas(context, canvas.width, canvas.height);
 
     const centerX = canvas.width / 2;
     const centerY = canvas.height / 2;
@@ -72,73 +70,26 @@ const SubsMap: React.FC<SubsMapProps> = () => {
       const endAngle = startAngle + arcAngle;
       const color = active.index === index ? '#00FFFF' : 'grey';
 
-      context!.beginPath();
-      context!.arc(centerX, centerY, radius, startAngle, endAngle, false);
-      context!.lineWidth = SUBS_MAP_LINE_WIDTH;
-      context!.strokeStyle = color;
-      context!.stroke();
+      drawArc(context, {
+        centerX,
+        centerY,
+        radius,
+        startAngle,
+        endAngle,
+        color,
+      });
 
-      // ? dividers
-      const x1 =
-        centerX + Math.cos(endAngle) * (radius - SUBS_MAP_LINE_WIDTH / 2);
-      const y1 =
-        centerY + Math.sin(endAngle) * (radius - SUBS_MAP_LINE_WIDTH / 2);
-
-      const dividerAngle = (endAngle * 180) / Math.PI;
-
-      const x2 =
-        x1 + Math.cos((Math.PI * dividerAngle) / 180) * SUBS_MAP_LINE_WIDTH;
-      const y2 =
-        y1 + Math.sin((Math.PI * dividerAngle) / 180) * SUBS_MAP_LINE_WIDTH;
-
-      context!.beginPath();
-      context!.lineWidth = 3;
-      context!.strokeStyle = '#d9d9d9';
-      context!.moveTo(x1, y1);
-      context!.lineTo(x2, y2);
-      context!.stroke();
+      drawArcDivider(context, { centerX, centerY, radius, endAngle });
     });
 
-    const canvasClick = (event: MouseEvent) => {
-      const clickX = event.offsetX;
-      const clickY = event.offsetY;
-
-      const centerX = canvas.width / 2;
-      const centerY = canvas.height / 2;
-
-      const distanceFromCenter = Math.sqrt(
-        Math.pow(clickX - centerX, 2) + Math.pow(clickY - centerY, 2),
-      );
-
-      const segments = subs.length;
-
-      if (
-        distanceFromCenter > radius - radius / 2 / 2 &&
-        distanceFromCenter < radius + radius / 2 / 2
-      ) {
-        // ? + Math.PI / 2 is compensation angle from arcAngle - Math.PI / 2; line 65
-        const angle =
-          Math.atan2(clickY - centerY, clickX - centerX) + Math.PI / 2;
-
-        let index = Math.floor((angle / (2 * Math.PI)) * segments);
-
-        // ? angle on top left quadrant is gonna be from 0 to -1
-        if (index < 0) {
-          index += segments;
-        }
-
-        if (index === segments) {
-          index = segments;
-        }
-
-        if (index === active.index) {
-          return;
-        }
-
-        const newActiveSub = getProfileActiveSubByIndex(index, active);
-        setActive(newActiveSub);
-      }
-    };
+    const canvasClick = getCanvasClick({
+      width: canvas.width,
+      height: canvas.height,
+      active,
+      radius,
+      segmentNumber: subs.length,
+      setActive,
+    });
 
     canvas.addEventListener('click', canvasClick);
 

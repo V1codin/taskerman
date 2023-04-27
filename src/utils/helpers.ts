@@ -198,3 +198,11 @@ export const getProfileActiveSubByIndex = (
     index,
   };
 };
+
+export const clearCanvas = (
+  context: CanvasRenderingContext2D,
+  width: number,
+  height: number,
+) => {
+  context.clearRect(0, 0, width, height);
+};

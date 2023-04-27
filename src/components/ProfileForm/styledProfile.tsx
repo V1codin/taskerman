@@ -153,7 +153,7 @@ export const StyledSubsMap = styled.div`
 
   & canvas {
     cursor: pointer;
-
+    transition: transform 0.2s ease-in-out;
     z-index: 5000;
 
     &:hover {
