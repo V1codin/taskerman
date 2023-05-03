@@ -10,9 +10,7 @@ type BoardHeaderProps = {
   owner: IUser;
 };
 
-const StyledSection = styled.section``;
-
-const StyledBoardContainer = styled.div`
+const StyledSection = styled.section`
   display: flex;
   align-items: center;
   padding: 5px;
@@ -21,6 +19,7 @@ const StyledBoardContainer = styled.div`
   right: 55px;
   top: 67px;
   z-index: 5500;
+  box-shadow: unset !important;
 
   border: 1px solid;
   border-color: ${({ theme }) => theme.colors.brightBlue};
@@ -33,18 +32,16 @@ const BoardHeader: React.FC<BoardHeaderProps> = ({
   owner,
 }) => {
   return (
-    <StyledSection>
-      <StyledBoardContainer className="colored">
-        <h4 className="unselectable" title="Board name">
-          {title}
-        </h4>
-        <Divider />
-        <SubscriberSection members={boardMembers} owner={owner} />
-        <Divider />
-        {/* {currentUser === ownerId ? (
+    <StyledSection className="colored">
+      <h4 className="unselectable" title="Board name">
+        {title}
+      </h4>
+      <Divider />
+      <SubscriberSection members={boardMembers} owner={owner} />
+      <Divider />
+      {/* {currentUser === ownerId ? (
           <Invite ownerId={ownerId} boardId={_id} />
         ) : null} */}
-      </StyledBoardContainer>
     </StyledSection>
   );
 };

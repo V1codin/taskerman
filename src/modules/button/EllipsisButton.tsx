@@ -15,9 +15,18 @@ type EllipsisButtonProps = {
 };
 
 const StyledEllipsisButton = styled(StyledButtonWidthIcon)`
+  transition: all 0.3s;
+
   & img {
     width: 25px;
     height: 25px;
+  }
+
+  &.active {
+    border: 1px solid var(--pale-blue);
+    background-color: var(--aqua-active);
+    box-shadow: none;
+    transform: rotate(90deg);
   }
 
   &:hover {
