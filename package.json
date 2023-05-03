@@ -25,9 +25,6 @@
     "react-hook-form": "^7.43.5",
     "react-is": "^18.2.0",
     "styled-components": "^5.3.9",
-    "swr": "^2.1.0",
-    "ws": "^8.13.0",
-    "yup": "^1.0.2",
     "zod": "^3.21.4"
   },
   "devDependencies": {
