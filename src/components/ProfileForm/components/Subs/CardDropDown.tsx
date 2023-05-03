@@ -17,7 +17,7 @@ const CardDropDown: React.FC<CardDropDownProps> = ({
   useOuterCLick(containerRef, closeDropDown);
 
   return (
-    <DropDown close={closeDropDown} heading="Board options" minWidth="200px">
+    <DropDown close={closeDropDown} heading="Board actions" minWidth="200px">
       {children}
     </DropDown>
   );

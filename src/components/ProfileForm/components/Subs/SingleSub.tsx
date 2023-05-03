@@ -25,6 +25,7 @@ const SingleSub: React.FC<SingleSubProps> = ({ board }) => {
   const setModal = useSetAtom(getSetModal);
   const user = useAtomValue(userStateAtom);
   const [dropDown, setDropDown] = useState('');
+  const [ellipsClass, setEllipsClass] = useState('colored');
   const containerRef = useRef(null);
 
   const bgChecker = isLink(board.bg);
@@ -33,9 +34,11 @@ const SingleSub: React.FC<SingleSubProps> = ({ board }) => {
   const toggleDropDown = (dropDownId: string) => {
     setDropDown((prev) => {
       if (prev !== dropDownId) {
+        setEllipsClass('colored active');
         return dropDownId;
       }
 
+      setEllipsClass('colored');
       return '';
     });
   };
@@ -98,7 +101,7 @@ const SingleSub: React.FC<SingleSubProps> = ({ board }) => {
         <EllipsisButton
           attrs={{
             type: 'button',
-            className: 'colored',
+            className: ellipsClass,
             onClick: toggleDropDownHandler,
             'data-drop-type': board._id,
           }}
