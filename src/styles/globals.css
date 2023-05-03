@@ -36,7 +36,7 @@
 html,
 body {
   max-width: 100vw;
-  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 body {
@@ -130,8 +130,8 @@ li {
   display: flex;
   align-items: flex-start;
   flex-wrap: nowrap;
-  margin: 20px;
-  padding: 15px;
+  margin: 55px auto 0 15px;
+  padding: 0 20px 0 0;
   border-radius: 7px;
 
   animation: fadeIn 1.5s;
@@ -259,6 +259,7 @@ button:disabled:hover {
 
 ::-webkit-scrollbar {
   width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {

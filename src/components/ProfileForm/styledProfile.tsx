@@ -54,8 +54,8 @@ export const StyledInputContainer = styled.form`
   & .position_left {
     margin: 10px 0 0 auto;
   }
-  
-  & .flex { 
+
+  & .flex {
     display: flex;
     align-items: flex-end;
   }
@@ -81,13 +81,15 @@ export const StyledInputContainer = styled.form`
       box-shadow: unset;
     }
 
+    &:disabled {
+      border-radius: 7px;
+    }
+
     @media (max-width: 1100px) {
       width: 100%;
       padding: 10px;
     }
-
-   
-
+  }
 `;
 
 export const StyledInput = styled.input`

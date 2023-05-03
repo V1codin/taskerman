@@ -92,34 +92,6 @@ export const StyledForm = styled.form`
     border: 1px dashed transparent;
   }
 
-  .add__list__btns {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    margin-top: 15px;
-
-    & .primary {
-      font-weight: 500;
-      border-radius: 7px;
-      padding: 5px 10px;
-      background-color: #42a185;
-      color: ${({ theme }) => theme.colors.white};
-
-      &:hover {
-        background-color: #42c185;
-      }
-
-      &:active {
-        box-shadow: unset;
-      }
-    }
-  }
-  .add__list__input {
-    width: 100%;
-    height: 35px;
-  }
-
   .color-picker > li {
     margin-left: 10px;
   }
