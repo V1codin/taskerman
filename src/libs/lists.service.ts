@@ -1,8 +1,8 @@
 import dbProvider from '@/db/mongo';
 
 import { TDb } from '@/db/mongo';
-import { TListNS } from '@/types/db';
 import type { ParticularDBType } from '@/db/mongo';
+import type { TListNS } from '@/types/db';
 
 export class ListsService {
   private readonly db: TDb;
@@ -17,13 +17,12 @@ export class ListsService {
     return result;
   }
 
-  async create(list: TListNS.TCreatingList): Promise<TListNS.TList> {
+  async create(list: TListNS.TCreating): Promise<TListNS.TList> {
     const createdList = await this.db.createList(list);
-
+    const obj = createdList.toJSON();
     const result = {
-      _id: String(createdList._id),
-      title: createdList.title,
-      boardId: String(createdList.boardId),
+      ...obj,
+      board: String(list.board),
       cards: [],
     };
 
@@ -34,4 +33,4 @@ export class ListsService {
 export type TListsService = ListsService;
 
 export const listService = new ListsService(dbProvider);
-// export type TCreatedList = Awaited<ReturnType<typeof listService.create>>;
+export type ListServiceGetBoardLists = typeof listService.getListsByBoardId;

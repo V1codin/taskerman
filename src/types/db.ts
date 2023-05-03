@@ -5,6 +5,7 @@ import {
   BoardServiceGetUserBoards,
 } from '@/libs/boards.service';
 import { IBoard } from '@/models/boards';
+import { ListServiceGetBoardLists } from '@/libs/lists.service';
 
 /*
   | 'cards'
@@ -55,25 +56,38 @@ export namespace TBoardNS {
     lists: TListNS.TList[];
   }
 
-  export type TDeletingBoard = TypeOf<typeof deletingBoardSchema>;
-  export type TCreatingBoard = TypeOf<typeof creatingBoardSchema>;
+  export type TDeleting = TypeOf<typeof deletingBoardSchema>;
+  export type TCreating = TypeOf<typeof creatingBoardSchema>;
 
   export type TCreatedBoard = Awaited<ReturnType<BoardServiceCreate>>;
   export type TRawUserBoards = Awaited<ReturnType<BoardServiceGetUserBoards>>;
 }
 
-const creatingListSchema = z.object({
+export const creatingListSchema = z.object({
   title: z.string(),
-  boardId: z.string(),
+  board: z.string(),
+});
+export const deletingListSchema = z.object({
+  listId: z.string(),
+  boardId: z.string().optional(),
 });
 
 export namespace TListNS {
-  export type TCreatingList = TypeOf<typeof creatingListSchema>;
+  export type TCreating = TypeOf<typeof creatingListSchema>;
   export type TList = {
     _id: string;
     title: string;
-    boardId: string;
-    cards: string[];
+    board: string;
+    cards: TCardNS.TCard[];
+  };
+
+  export type TRawBoardLists = Awaited<ReturnType<ListServiceGetBoardLists>>;
+}
+
+export namespace TCardNS {
+  export type TCard = {
+    _id: string;
+    text: string;
   };
 }
 
@@ -137,7 +151,7 @@ export interface DataBaseProvider<
     query: TBoardQuery | null,
     userId?: string | ParticularDBType,
   ): TUserBoards;
-  createBoard(board: TBoardNS.TCreatingBoard): TCreatedBoard;
+  createBoard(board: TBoardNS.TCreating): TCreatedBoard;
   deleteBoard(boardId: string | ParticularDBType): TDeletedBoard;
   unsubscribeFromBoard(userId: string, board: IBoard): TUnsubedUserFromBoard;
 

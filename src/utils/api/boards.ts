@@ -4,7 +4,7 @@ import { TBoardNS } from '@/types/db';
 import { API_BOARDS_URL, API_SINGLE_BOARD_URL, BASE_URL } from '../constants';
 import { IBoard } from '@/models/boards';
 
-export const createBoard = (board: TBoardNS.TCreatingBoard) => {
+export const createBoard = (board: TBoardNS.TCreating) => {
   return fetcher<{ data: IBoard }>(`${BASE_URL}${API_BOARDS_URL}`, {
     method: 'POST',
     headers: {

@@ -7,10 +7,6 @@ import { CardScheme, ICard } from './cards';
 import { IPassword, PasswordScheme } from './passwords';
 import { ISession, SessionScheme } from './sessions';
 
-// UserScheme.pre('updateOne', function () {
-//   console.log(this);
-// });
-
 BoardScheme.pre('deleteOne', {}, async function (next) {
   const filter = this.getFilter();
   if (filter['_id']) {

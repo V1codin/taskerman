@@ -1,3 +1,4 @@
+import Lists from '@/components/SingleBoard/components/Lists/Lists';
 import BoardHeader from '@/components/SingleBoard/components/BoardHeader/BoardHeader';
 import AddListForm from '@/components/SingleBoard/components/AddListForm/AddListForm';
 
@@ -8,7 +9,7 @@ import { getBoardById } from '@/utils/api/boards';
 import { TBoardNS } from '@/types/db';
 import { useBodyColor } from '@/hooks/hooks';
 import { useSetAtom } from 'jotai';
-import { getSetsingleBoardState } from '@/context/stateManager';
+import { getSetSingleBoardState } from '@/context/stateManager';
 import { useLayoutEffect } from 'react';
 
 type Props = {
@@ -16,10 +17,10 @@ type Props = {
 };
 
 export default function SingleBoard({ data }: Props) {
-  const { board, lists } = data;
+  const { board } = data;
   useBodyColor(board?.bg);
 
-  const setBoard = useSetAtom(getSetsingleBoardState);
+  const setBoard = useSetAtom(getSetSingleBoardState);
 
   // ? useHydrateAtoms wouldn't fire after router.replace(router.asPath)
   // ?  so we need to update client store by ourself
@@ -46,7 +47,7 @@ export default function SingleBoard({ data }: Props) {
       />
 
       <div className="container">
-        {/* <ListsWrapper _boardId={id} /> */}
+        <Lists />
         <AddListForm boardId={board._id} />
       </div>
     </section>
@@ -64,11 +65,11 @@ export async function getServerSideProps({
 
   if (sessionAndUser) {
     try {
-      const response = await getBoardById(boardId || '', token);
+      const boardResponse = await getBoardById(boardId || '', token);
 
       return {
         props: {
-          data: response.data,
+          data: boardResponse.data,
         },
       };
     } catch (e) {

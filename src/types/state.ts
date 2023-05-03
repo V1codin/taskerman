@@ -1,6 +1,5 @@
 import { z } from 'zod';
 
-import type { SessionUser } from './db';
 import type { IMasks } from '@/types/helpers';
 
 const masks: IMasks = {
@@ -31,6 +30,17 @@ const Note = z.object({
   createdAt: string,
   updatedAt: string,
 });
+
+export type NoteType = 'info' | 'invite';
+export interface Note {
+  _id: string;
+  type: NoteType;
+  text: string;
+  recipient: string;
+  inviteToBoardId: string;
+  createdAt: string;
+  updatedAt: string;
+}
 */
 
 export const userLoginSchema = z.object({
@@ -75,22 +85,11 @@ export namespace AuthClient {
       never;
 }
 
-export type NoteType = 'info' | 'invite';
-export interface Note {
-  _id: string;
-  type: NoteType;
-  text: string;
-  recipient: string;
-  inviteToBoardId: string;
-  createdAt: string;
-  updatedAt: string;
-}
+type TEntities = 'board' | 'list' | 'card';
 
-export type TEntities = 'board' | 'list' | 'card';
-
-export type TModalAuth = 'auth';
-export type TModalCreate = 'create';
-export type TModalDelete = 'delete';
+type TModalAuth = 'auth';
+type TModalCreate = 'create';
+type TModalDelete = 'delete';
 
 export type TMenuCreateModalNames = `create_${TEntities}`;
 export type TMenuDeleteModalNames = `delete_${TEntities}`;
@@ -101,8 +100,8 @@ export type TModalForms =
   | TMenuCreateModalNames
   | TMenuDeleteModalNames;
 
-export type TAuthModalData = {};
-export type TCreateModalData = {};
+type TAuthModalData = {};
+type TCreateModalData = {};
 export type TDeleteModalData = {
   id: string;
   children?: React.ReactNode;
@@ -130,8 +129,6 @@ export interface IModal<T extends boolean> {
   isOpen: T;
   window: T extends true ? IModalWindow : null;
 }
-
-export type TUserHeaderProps = SessionUser;
 
 export type TProfileActiveSub = {
   coords: number;

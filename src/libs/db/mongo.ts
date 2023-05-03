@@ -136,6 +136,7 @@ export class MongoDataBaseProvider implements MongoDbProvider {
     const userObj = this.getObjectIdFromStringUtils(userId);
     const boardObj = this.getObjectIdFromStringUtils(boardId);
 
+    // TODO Check for roles. Could be role that allows to get particular board
     const result = await BoardModel.find({
       $or: [
         {
@@ -154,7 +155,7 @@ export class MongoDataBaseProvider implements MongoDbProvider {
 
   getListsByBoardId(boardId: string | ParticularDBType) {
     return ListModel.find({
-      boardId: this.getObjectIdFromStringUtils(boardId),
+      board: this.getObjectIdFromStringUtils(boardId),
     });
   }
 
@@ -205,7 +206,7 @@ export class MongoDataBaseProvider implements MongoDbProvider {
     return BoardModel.find(query).populate('owner');
   }
 
-  async createBoard(board: TBoardNS.TCreatingBoard) {
+  async createBoard(board: TBoardNS.TCreating) {
     const ownerObj = this.getObjectIdFromStringUtils(board.owner);
 
     const boardToCreate = {
@@ -228,7 +229,7 @@ export class MongoDataBaseProvider implements MongoDbProvider {
     return createdBoard.populate('owner');
   }
 
-  createList(list: TListNS.TCreatingList) {
+  createList(list: TListNS.TCreating) {
     return ListModel.create(list);
   }
 

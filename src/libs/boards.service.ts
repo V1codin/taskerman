@@ -38,7 +38,7 @@ export class BoardsService {
     return this.db.getBoardById(boardId);
   }
 
-  async create(board: TBoardNS.TCreatingBoard): Promise<IBoard> {
+  async create(board: TBoardNS.TCreating): Promise<IBoard> {
     const createdBoard = await this.db.createBoard(board);
 
     return createdBoard;

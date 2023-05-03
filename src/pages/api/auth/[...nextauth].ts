@@ -43,7 +43,7 @@ type MyAdapter = Adapter & {
   }): Promise<AdapterSession>;
 
   _createUser(user: AuthClient.TSignUpBodyReducer<TSignUp>): Promise<{
-    error?: ServerResponseError<any>;
+    error?: ServerResponseError<400 | 403>;
     data: string | null;
   }>;
 };

@@ -60,6 +60,9 @@ const EMPTY_TOAST: ToastProps = {
 
 const API_BOARDS_URL = '/api/boards';
 const API_SINGLE_BOARD_URL = '/api/single_board';
+
+const API_LISTS_URL = '/api/lists';
+
 const API_REQUEST_SESSION_URL = '/api/auth/session';
 const API_SIGNUP_URL = '/api/auth/sign_up';
 const API_USER_UPDATE_URL = '/api/auth/update_user';
@@ -84,6 +87,7 @@ const SUBS_SLIDE_HALF = PROFILE_SUBS_SLIDE_WIDTH / 2;
 const SUBS_MAP_LINE_WIDTH = 10;
 
 export {
+  API_LISTS_URL,
   SUBS_MAP_LINE_WIDTH,
   SUBS_SLIDE_HALF,
   PROFILE_SUBS_SLIDE_WIDTH,

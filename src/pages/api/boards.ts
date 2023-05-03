@@ -1,18 +1,18 @@
 import mongoProvider from '@/libs/db/mongo';
 
 import { dbConnect } from '@/libs/db/connect';
-import { TGetBoardReturnByMethod, TMethods, BoardsRequest } from '@/types/api';
 import { BadRequestError, ServerResponseError } from '@/libs/error.service';
 import { TBoardNS, creatingBoardSchema, deletingBoardSchema } from '@/types/db';
 import { boardService } from '@/libs/boards.service';
 import { getUserByRequest } from '@/libs/getUserByRequest';
+import { TBoardsApiNS, TMethods } from '@/types/api';
 import type { NextApiResponse } from 'next';
 
 const boardsReducer = async <TMethod extends TMethods>(
   method: TMethod,
-  req: BoardsRequest,
+  req: TBoardsApiNS.Request,
   issuerId: string,
-): Promise<TGetBoardReturnByMethod<TMethod>> => {
+): Promise<TBoardsApiNS.ResponseType<TMethod>> => {
   await dbConnect();
 
   // ? GET is for getting all boards
@@ -55,7 +55,7 @@ const boardsReducer = async <TMethod extends TMethods>(
       throw new BadRequestError();
     }
 
-    const body = req.body as TBoardNS.TCreatingBoard;
+    const body = req.body as TBoardNS.TCreating;
     const createdBoard = await boardService.create(body);
 
     return {
@@ -69,7 +69,7 @@ const boardsReducer = async <TMethod extends TMethods>(
       throw new BadRequestError();
     }
 
-    const { boardId } = req.body as TBoardNS.TDeletingBoard;
+    const { boardId } = req.body as TBoardNS.TDeleting;
 
     try {
       const boardToDelete = await boardService.getBoardById(boardId);
@@ -129,7 +129,7 @@ const boardsReducer = async <TMethod extends TMethods>(
 };
 
 export default async function handler(
-  req: BoardsRequest,
+  req: TBoardsApiNS.Request,
   res: NextApiResponse<Awaited<ReturnType<typeof boardsReducer>> | TError>,
 ) {
   try {
