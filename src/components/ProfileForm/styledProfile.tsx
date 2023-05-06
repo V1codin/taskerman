@@ -159,7 +159,7 @@ export const StyledSubsMap = styled.div`
     z-index: 5000;
 
     &:hover {
-      transform: scale(1.5);
+      transform: scale(1.3);
     }
   }
 `;
