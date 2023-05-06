@@ -67,6 +67,12 @@ const API_REQUEST_SESSION_URL = '/api/auth/session';
 const API_SIGNUP_URL = '/api/auth/sign_up';
 const API_USER_UPDATE_URL = '/api/auth/update_user';
 
+// TODO server handle the routes
+const API_LIST_UPDATE_URL = '/api/update_list';
+const API_BOARD_UPDATE_URL = '/api/update_board';
+const API_USER_DELETE_URL = '/api/auth/delete_user';
+const API_USER_GET_URL = '/api/auth/user';
+
 const DEFAULT_MODAL_STATE: IModal<false> = {
   isOpen: false,
   window: null,
@@ -87,6 +93,10 @@ const SUBS_SLIDE_HALF = PROFILE_SUBS_SLIDE_WIDTH / 2;
 const SUBS_MAP_LINE_WIDTH = 10;
 
 export {
+  API_LIST_UPDATE_URL,
+  API_BOARD_UPDATE_URL,
+  API_USER_GET_URL,
+  API_USER_DELETE_URL,
   API_LISTS_URL,
   SUBS_MAP_LINE_WIDTH,
   SUBS_SLIDE_HALF,

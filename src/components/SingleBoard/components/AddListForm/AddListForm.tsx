@@ -4,11 +4,11 @@ import CloseButton from '@/modules/button/CloseButton';
 
 import { useToast } from '@/hooks/hooks';
 import { FormWrapper } from '@/modules/formWrapper/FormWrapper';
-import { createList } from '@/utils/api/lists';
 import { ChangeEvent, FormEvent, useState } from 'react';
 import { StyledButtonsContainer } from './styledAddListForm';
 import { useSetAtom } from 'jotai';
 import { addListOfSingleBoardState } from '@/context/stateManager';
+import { api } from '@/utils/api/api';
 
 type AddListFormProps = {
   boardId: string;
@@ -47,7 +47,7 @@ const AddListForm: React.FC<AddListFormProps> = ({ boardId }) => {
     try {
       setLoader(true);
 
-      const result = await createList({
+      const result = await api.create('list', {
         title,
         board: boardId,
       });

@@ -5,12 +5,12 @@ import AddListForm from '@/components/SingleBoard/components/AddListForm/AddList
 import { GetServerSidePropsContext } from 'next';
 import { AUTH_TOKEN_COOKIE_NAME } from '@/utils/constants';
 import { dbAdapter } from '../api/auth/[...nextauth]';
-import { getBoardById } from '@/utils/api/boards';
 import { TBoardNS } from '@/types/db';
 import { useBodyColor } from '@/hooks/hooks';
 import { useSetAtom } from 'jotai';
 import { getSetSingleBoardState } from '@/context/stateManager';
 import { useLayoutEffect } from 'react';
+import { api } from '@/utils/api/api';
 
 type Props = {
   data: TBoardNS.ISingleBoard;
@@ -65,7 +65,16 @@ export async function getServerSideProps({
 
   if (sessionAndUser) {
     try {
-      const boardResponse = await getBoardById(boardId || '', token);
+      const boardResponse = await api.read(
+        'board',
+        {
+          boardId: boardId || '',
+        },
+        null,
+        {
+          token: token || '',
+        },
+      );
 
       return {
         props: {

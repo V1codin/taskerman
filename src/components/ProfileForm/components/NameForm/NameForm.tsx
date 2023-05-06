@@ -8,7 +8,7 @@ import {
   userDisplayNameAtom,
 } from '@/context/stateManager';
 import { useToast } from '@/hooks/hooks';
-import { updateUser } from '@/utils/api/auth';
+import { api } from '@/utils/api/api';
 
 import type { MouseEvent } from 'react';
 
@@ -35,9 +35,10 @@ const NameForm: React.FC<NameFormProps> = () => {
     try {
       setLoader(true);
 
-      const response = await updateUser({
+      const response = await api.update('user', {
         displayName,
       });
+
       setUser(response.updatedUser);
 
       setLoader(false);

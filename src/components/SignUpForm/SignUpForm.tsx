@@ -14,8 +14,8 @@ import { useAtom } from 'jotai';
 import { getSetModal } from '@/context/stateManager';
 import { ToastProps } from '@/types/helpers';
 import { useState } from 'react';
-import { signUp } from '@/utils/api/auth';
 import { signIn } from 'next-auth/react';
+import { api } from '@/utils/api/api';
 
 type SignUpFormProps = {};
 
@@ -53,7 +53,11 @@ const SignUpForm: React.FC<SignUpFormProps> = () => {
 
     try {
       setLoader(true);
-      const result = await signUp('credentials', userToSubmit);
+
+      const result = await api.create('user', {
+        authType: 'credentials',
+        userData: userToSubmit,
+      });
 
       if (!result) {
         throw new Error('Wrong username or password');

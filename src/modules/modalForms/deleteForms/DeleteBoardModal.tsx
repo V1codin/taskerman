@@ -2,11 +2,11 @@ import Confirm from '@/modules/confirm/Confirm';
 
 import { getSetBoardsState, getSetModal } from '@/context/stateManager';
 import { TDeleteModalData } from '@/types/state';
-import { deleteBoard } from '@/utils/api/boards';
 import { useSetAtom } from 'jotai';
 import { SyntheticEvent, useCallback } from 'react';
 import { ServerResponseError } from '@/libs/error.service';
 import { useToast } from '@/hooks/hooks';
+import { api } from '@/utils/api/api';
 
 type DeleteBoardModalProps = TDeleteModalData;
 
@@ -33,7 +33,9 @@ const DeleteBoardModal: React.FC<DeleteBoardModalProps> = ({
     async (e: SyntheticEvent<HTMLElement>) => {
       e.preventDefault();
       try {
-        await deleteBoard(id);
+        await api.delete('board', {
+          boardId: id,
+        });
         refreshData(id);
 
         setModal({

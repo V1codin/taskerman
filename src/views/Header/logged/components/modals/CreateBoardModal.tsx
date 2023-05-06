@@ -18,7 +18,7 @@ import { useToast } from '@/hooks/hooks';
 import { useSession } from 'next-auth/react';
 import { getSetBoardsState } from '@/context/stateManager';
 import { useSetAtom } from 'jotai';
-import { createBoard } from '@/utils/api/boards';
+import { api } from '@/utils/api/api';
 
 type CreateBoardModalProps = {};
 
@@ -121,7 +121,7 @@ const CreateBoardModal: React.FC<CreateBoardModalProps> = () => {
 
         setIsLoading(true);
 
-        const result = await createBoard({
+        const result = await api.create('board', {
           bg: form.bg,
           members: [],
           pendingMembers: [],

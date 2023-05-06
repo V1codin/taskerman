@@ -6,6 +6,8 @@ import {
 } from '@/libs/boards.service';
 import { IBoard } from '@/models/boards';
 import { ListServiceGetBoardLists } from '@/libs/lists.service';
+import { RequireAtLeastOne } from './utils';
+import { AuthClient } from './state';
 
 /*
   | 'cards'
@@ -43,6 +45,19 @@ export const updateUserSchema = z
   );
 
 export namespace TBoardNS {
+  // !NOT IMPLEMENTED
+  export type TUpdating = null;
+
+  export type TDeleting = TypeOf<typeof deletingBoardSchema>;
+  export type TCreating = TypeOf<typeof creatingBoardSchema>;
+  export type TGetting =
+    | {
+        boardId: string;
+      }
+    | {
+        userId: string;
+      };
+
   export interface IBoardMember {
     role: TUserRolesForBoard;
     member: Pick<
@@ -55,9 +70,6 @@ export namespace TBoardNS {
     board: IBoard | null;
     lists: TListNS.TList[];
   }
-
-  export type TDeleting = TypeOf<typeof deletingBoardSchema>;
-  export type TCreating = TypeOf<typeof creatingBoardSchema>;
 
   export type TCreatedBoard = Awaited<ReturnType<BoardServiceCreate>>;
   export type TRawUserBoards = Awaited<ReturnType<BoardServiceGetUserBoards>>;
@@ -73,7 +85,15 @@ export const deletingListSchema = z.object({
 });
 
 export namespace TListNS {
+  // !NOT IMPLEMENTED
+  export type TUpdating = null;
+
   export type TCreating = TypeOf<typeof creatingListSchema>;
+  export type TDeleting = TypeOf<typeof deletingListSchema>;
+  export type TGetting = {
+    boardId: string;
+  };
+
   export type TList = {
     _id: string;
     title: string;
@@ -89,6 +109,31 @@ export namespace TCardNS {
     _id: string;
     text: string;
   };
+}
+
+// TODO move all user relative types to the namespace
+export namespace TUserNS {
+  type TUserPropToSearch = {
+    id: string;
+    username: string;
+    displayName: string;
+    email: string;
+  };
+
+  export type TCreating = {
+    authType: TSignUp;
+    userData: AuthClient.TSignUpBodyReducer<TSignUp>;
+  };
+
+  type UpdateAvailableProps = Pick<SessionUser, 'imageURL' | 'displayName'>;
+  export type TUpdating = RequireAtLeastOne<
+    UpdateAvailableProps,
+    'imageURL' | 'displayName'
+  >;
+  export type TGetting = RequireAtLeastOne<
+    TUserPropToSearch,
+    keyof TUserPropToSearch
+  >;
 }
 
 export type TUser = {

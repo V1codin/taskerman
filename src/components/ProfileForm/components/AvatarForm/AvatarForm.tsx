@@ -7,7 +7,7 @@ import { useToast } from '@/hooks/hooks';
 import { ChangeEvent, useLayoutEffect, useState } from 'react';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { getSetUserStateAtom, userImageAtom } from '@/context/stateManager';
-import { updateUser } from '@/utils/api/auth';
+import { api } from '@/utils/api/api';
 
 import type { MouseEvent } from 'react';
 
@@ -45,7 +45,7 @@ const AvatarForm: React.FC<AvatarFormProps> = () => {
     try {
       setLoader(true);
 
-      const response = await updateUser({
+      const response = await api.update('user', {
         imageURL: state,
       });
       setUser(response.updatedUser);

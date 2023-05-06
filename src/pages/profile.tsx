@@ -3,11 +3,11 @@ import ProfileForm from '@/components/ProfileForm/ProfileForm';
 import { useSession } from 'next-auth/react';
 import { dbAdapter } from './api/auth/[...nextauth]';
 import { AUTH_TOKEN_COOKIE_NAME } from '@/utils/constants';
-import { getBoards } from '@/utils/api/boards';
 import { GetServerSidePropsContext } from 'next/types';
 import { IBoard } from '@/models/boards';
 import { getSetBoardsState } from '@/context/stateManager';
 import { useHydrateAtoms } from 'jotai/utils';
+import { api } from '@/utils/api/api';
 
 type ProfileProps = {
   boards: IBoard[];
@@ -33,7 +33,16 @@ export async function getServerSideProps({ req }: GetServerSidePropsContext) {
 
   if (sessionAndUser) {
     try {
-      const response = await getBoards(sessionAndUser.user.id, token);
+      const response = await api.read(
+        'board',
+        {
+          userId: sessionAndUser.user.id,
+        },
+        [0, 0],
+        {
+          token: token || '',
+        },
+      );
 
       return {
         props: {
