@@ -6,7 +6,8 @@
     "dev": "next dev -p 8080",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "_lint": "npx eslint \"src/**/*.{js,jsx,ts,tsx}\""
   },
   "dependencies": {
     "@hookform/resolvers": "^3.1.0",
