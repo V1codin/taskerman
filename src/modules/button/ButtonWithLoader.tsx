@@ -7,7 +7,7 @@ import { Process } from '../process/Process';
 import type { CustomButtonAttrs } from './Button';
 import type { PropsWithChildren } from 'react';
 
-const defaultClasses = cls('relative');
+const defaultClasses = 'relative';
 
 type ButtonWithLoaderProps = {
   isLoading: boolean;

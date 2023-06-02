@@ -7,14 +7,14 @@ import CloseButton from '../button/CloseButton';
 import { ModalForm } from './Forms';
 import { getSetModal } from '@/context/stateManager';
 import { useAtom } from 'jotai';
-import { useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useEscapeKeyCallback } from '@/hooks/useEscapeKeyCallback';
 
 type ModalProps = {};
 
 const Modal: React.FC<ModalProps> = () => {
   const [modalState, setModalState] = useAtom(getSetModal);
-  const firstElementRef = useRef(null);
+  const firstElementRef = useRef<HTMLDivElement | null>(null);
 
   const close = useCallback(() => {
     setModalState({
@@ -24,6 +24,10 @@ const Modal: React.FC<ModalProps> = () => {
   }, [setModalState]);
 
   useEscapeKeyCallback(close, null, modalState.isOpen);
+
+  useEffect(() => {
+    firstElementRef.current?.focus();
+  }, [modalState.isOpen]);
 
   return modalState.isOpen ? (
     <FocusTrap

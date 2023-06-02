@@ -18,7 +18,7 @@ import {
   generateSessionToken,
   getAgeInSec,
   getProfileDataOfAuthProvider,
-} from '@/utils/helpers';
+} from '../server.helpers';
 import { authService } from '@/libs/auth.service';
 
 import { decode, encode } from 'next-auth/jwt';
@@ -262,6 +262,7 @@ export const getAuthOptions = (method?: TMethods | string): NextAuthOptions => {
     adapter: mongoAdapter,
     providers: [
       GoogleProvider<GoogleProfile>({
+        checks: 'pkce',
         clientSecret: process.env['GOOGLE_CLIENT_S']!,
         clientId: process.env['GOOGLE_CLIENT_ID']!,
         allowDangerousEmailAccountLinking: true,

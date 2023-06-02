@@ -1,7 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   webpack(config) {
-    config.experiments = { ...config.experiments, topLevelAwait: true };
+    config.experiments = {
+      ...config.experiments,
+      topLevelAwait: true,
+    };
 
     const fileLoaderRule = config.module.rules.find((rule) =>
       rule.test?.test?.('.svg'),

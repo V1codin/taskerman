@@ -39,7 +39,7 @@ class Http implements HttpProtocol {
 
   private getJsonTypeHeaders() {
     return {
-      'Content-type': 'application/json; charset=utf-8',
+      'Content-Type': 'application/json; charset=utf-8',
     };
   }
 
@@ -71,34 +71,47 @@ class Http implements HttpProtocol {
     };
   }
 
-  private getUrl(
-    pagination: ApiNS.TPagination,
-    type: ApiNS.TEntities,
-    data: ApiNS.TGetData<ApiNS.TEntities>,
-  ) {
-    const parsed = Object.entries(data).reduce((acc, [key, prop]) => {
+  private getUrlParamsFromObj(data: Record<string, string>) {
+    return Object.entries(data).reduce((acc, [key, prop]) => {
       return (acc += `?${key}=${prop}`);
     }, '');
+  }
 
+  private getReadUrl(
+    pagination: ApiNS.TPagination,
+    type: TEntities,
+    additionalParams: string = '',
+  ) {
     if (!pagination) {
-      return this.urls[type].GET['single'] + parsed;
+      return this.urls[type].GET['single'] + additionalParams;
     }
 
     // TODO handle pagination on the server
     return (
       this.urls[type].GET['paginated'] +
-      parsed +
+      additionalParams +
       `&pagination=${pagination[0]}-${pagination[1]}`
     );
   }
 
+  private getUrl<TEntity extends TEntities>(
+    type: TEntity,
+    method: keyof HttpNS.TUrl,
+  ) {
+    if (typeof this.urls[type][method] === 'string') {
+      return this.urls[type][method];
+    }
+    return this.urls[type][method] as HttpNS.TGetUrls;
+  }
+
   read<TResult extends unknown>(
-    type: ApiNS.TEntities,
-    data: ApiNS.TGetData<ApiNS.TEntities>,
+    type: TEntities,
+    data: ApiNS.TGetData<TEntities>,
     pagination: ApiNS.TPagination,
     authProps: CurrentAuthProps,
   ) {
-    const url = this.getUrl(pagination, type, data);
+    const additionalParams = this.getUrlParamsFromObj(data);
+    const url = this.getReadUrl(pagination, type, additionalParams);
     const options = this.getFetcherOptions('GET');
 
     options.headers['Authorization'] = this.getAuthHeaders(authProps);
@@ -106,8 +119,8 @@ class Http implements HttpProtocol {
   }
 
   create<TResult extends unknown>(
-    type: ApiNS.TEntities,
-    data: ApiNS.TCreateData<ApiNS.TEntities>,
+    type: TEntities,
+    data: ApiNS.TCreateData<TEntities>,
   ) {
     const url = this.urls[type].POST;
     const options = this.getFetcherOptions('POST', data);
@@ -116,18 +129,19 @@ class Http implements HttpProtocol {
   }
 
   delete<TResult extends unknown>(
-    type: ApiNS.TEntities,
-    data: ApiNS.TDeleteData<ApiNS.TEntities>,
+    type: TEntities,
+    data: ApiNS.TDeleteData<TEntities>,
   ) {
-    const url = this.urls[type].DELETE;
-    const options = this.getFetcherOptions('DELETE', data);
+    const additionalParams = this.getUrlParamsFromObj(data || {});
+    const url = this.getUrl(type, 'DELETE') + additionalParams;
+    const options = this.getFetcherOptions('DELETE');
 
     return this.fetch<TResult>(url, options);
   }
 
   update<TResult extends unknown>(
-    type: ApiNS.TEntities,
-    data: ApiNS.TUpdateData<ApiNS.TEntities>,
+    type: TEntities,
+    data: ApiNS.TUpdateData<TEntities>,
   ) {
     const url = this.urls[type].PATCH;
 
@@ -143,7 +157,7 @@ class Api {
     this.protocol = dataTransfer;
   }
 
-  read<T extends ApiNS.TEntities, TResult extends ApiNS.IReturnType[T]['read']>(
+  read<T extends TEntities, TResult extends ApiNS.IReturnType[T]['read']>(
     type: T,
     data: ApiNS.TGetData<T>,
     pagination: ApiNS.TPagination,
@@ -152,24 +166,24 @@ class Api {
     return this.protocol.read<TResult, T>(type, data, pagination, authProps);
   }
 
-  create<
-    T extends ApiNS.TEntities,
-    TResult extends ApiNS.IReturnType[T]['create'],
-  >(type: T, data: ApiNS.TCreateData<T>) {
+  create<T extends TEntities, TResult extends ApiNS.IReturnType[T]['create']>(
+    type: T,
+    data: ApiNS.TCreateData<T>,
+  ) {
     return this.protocol.create<TResult>(type, data);
   }
 
-  delete<
-    T extends ApiNS.TEntities,
-    TResult extends ApiNS.IReturnType[T]['delete'],
-  >(type: T, data: ApiNS.TDeleteData<T>) {
+  delete<T extends TEntities, TResult extends ApiNS.IReturnType[T]['delete']>(
+    type: T,
+    data: ApiNS.TDeleteData<T>,
+  ) {
     return this.protocol.delete<TResult>(type, data);
   }
 
-  update<
-    T extends ApiNS.TEntities,
-    TResult extends ApiNS.IReturnType[T]['update'],
-  >(type: T, data: ApiNS.TUpdateData<T>) {
+  update<T extends TEntities, TResult extends ApiNS.IReturnType[T]['update']>(
+    type: T,
+    data: ApiNS.TUpdateData<T>,
+  ) {
     return this.protocol.update<TResult>(type, data);
   }
 }

@@ -4,7 +4,7 @@ import { ButtonHTMLAttributes, PropsWithChildren, forwardRef } from 'react';
 
 import type { TButtonDataTypes } from '@/types/utils';
 
-const defaultButtonClasses = cls('p-2 duration-300');
+const defaultButtonClasses = 'p-2 duration-300';
 
 export type CustomButtonAttrs = TButtonDataTypes &
   Partial<ButtonHTMLAttributes<HTMLButtonElement>>;

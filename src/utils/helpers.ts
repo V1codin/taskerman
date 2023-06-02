@@ -9,16 +9,9 @@ import image_4 from '@/assets/info_img4.jpg?url';
 // @ts-ignore
 import image_5 from '@/assets/info_img5.jpg?url';
 
-import { TProfileActiveSub, credentialsSignUpSchema } from '@/types/state';
+import { TProfileActiveSub } from '@/types/state';
 
-import { randomUUID } from 'crypto';
-import { TAuthProviderProfiles } from 'next-auth';
-import {
-  FIRST_MEDIA_POINT_WIDTH,
-  PROFILE_SUBS_SLIDE_WIDTH,
-  RAINBOW_COLORS,
-  SUBS_SLIDE_HALF,
-} from './constants';
+import { PROFILE_SUBS_SLIDE_WIDTH, RAINBOW_COLORS } from './constants';
 
 export const isLink = (str: string = '') => {
   return /^(http|https):\/\/[^ "]+/g.test(str);
@@ -69,27 +62,6 @@ export const reloadSession = () => {
   document.dispatchEvent(event);
 };
 
-type TMaxAgeProps = {
-  days?: number;
-  mins?: number;
-  hours?: number;
-  seconds?: number;
-};
-
-export const getAgeInSec = ({
-  days,
-  mins,
-  hours,
-  seconds,
-}: TMaxAgeProps = {}) => {
-  const daysInSec = days ? days * 60 * 60 * 24 : 0;
-  const minsInSec = mins ? mins * 60 : 0;
-  const hoursInSec = hours ? hours * 60 * 60 : 0;
-  const sec = seconds || 0;
-
-  return daysInSec + minsInSec + hoursInSec + sec;
-};
-
 const isImage = (src: string): Promise<string> => {
   return new Promise((resolve, reject) => {
     const img = document.createElement('img');
@@ -113,62 +85,6 @@ export const getDataFromClipBoard = async () => {
   } catch (e) {
     throw e;
   }
-};
-
-export const generate = {
-  uuid() {
-    return this.uuidv4();
-  },
-  uuidv4() {
-    // @ts-ignore
-    return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, (c) =>
-      (
-        c ^
-        // @ts-ignore
-        (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))
-      ).toString(16),
-    );
-  },
-};
-
-export const fromDate = (time: number, date = Date.now()) => {
-  return new Date(date + time * 1000);
-};
-
-export const generateSessionToken = () => {
-  return randomUUID?.() ?? generate.uuid();
-};
-
-export const validateNewUserBySchema = (type: TSignUp, body: unknown) => {
-  if (type === 'credentials') {
-    return credentialsSignUpSchema.safeParse(body);
-  }
-
-  // TODO for google auth type etc.
-  return {
-    success: false,
-  };
-};
-
-// ? profile: any because different auth providers send different prop names
-export const getProfileDataOfAuthProvider = (
-  type: TSignUp,
-  profile: TAuthProviderProfiles,
-) => {
-  if (type === 'google') {
-    return {
-      id: profile.sub,
-      displayName: profile.name,
-      email: profile.email,
-      imageURL: profile.picture,
-      nameAlias: `${profile.name} ${profile.email}`,
-      subs: [],
-    };
-  }
-
-  return {
-    id: profile['id'],
-  };
 };
 
 export const degreesToRadians = (degrees: number) => {
@@ -210,21 +126,4 @@ export const clearCanvas = (
   height: number,
 ) => {
   context.clearRect(0, 0, width, height);
-};
-
-export const isHorizontalSubsScroll = () =>
-  document.body.clientWidth < FIRST_MEDIA_POINT_WIDTH;
-
-export const getToScrollValueForSubsMap = (
-  subsNumber: number,
-  containerWidth: number,
-) => {
-  if (document?.body?.clientWidth && isHorizontalSubsScroll()) return 0;
-
-  return subsNumber % 2 !== 0
-    ? Math.trunc(containerWidth / 2 / PROFILE_SUBS_SLIDE_WIDTH) *
-        PROFILE_SUBS_SLIDE_WIDTH
-    : subsNumber === 2
-    ? SUBS_SLIDE_HALF
-    : containerWidth / 2 - SUBS_SLIDE_HALF;
 };

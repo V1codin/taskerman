@@ -24,12 +24,13 @@ const DefaultAccountImage: React.FC<DefaultAccountImageProps> = ({
 
   return (
     <div
-      className="flex 
-  justify-center 
-  items-center 
-  text-2xl 
-  rounded-[50%] 
-  w-full h-full text-yellow bg-monokai"
+      className="flex
+      text-center
+      justify-center 
+      items-center 
+      text-lg 
+      rounded-[50%] 
+      w-full h-full text-yellow"
     >
       {content}
     </div>

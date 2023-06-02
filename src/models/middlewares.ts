@@ -2,12 +2,12 @@ import mongoose, { Model, Types } from 'mongoose';
 
 import { BoardScheme, IBoard } from './boards';
 import { IUser, UserScheme } from './users';
-import { IList, ListScheme } from './lists';
-import { CardScheme, ICard } from './cards';
 import { IPassword, PasswordScheme } from './passwords';
 import { ISession, SessionScheme } from './sessions';
 
+// @ts-ignore
 BoardScheme.pre('deleteOne', {}, async function (next) {
+  // @ts-ignore
   const filter = this.getFilter();
   if (filter['_id']) {
     const boardIdObj = new Types.ObjectId(filter['_id']);
@@ -48,14 +48,6 @@ export const BoardModel =
 export const UserModel =
   (mongoose.models['User'] as Model<IUser>) ||
   mongoose.model('User', UserScheme);
-
-export const ListModel =
-  (mongoose.models['List'] as Model<IList>) ||
-  mongoose.model('List', ListScheme);
-
-export const CardModel =
-  (mongoose.models['Card'] as Model<ICard>) ||
-  mongoose.model('Card', CardScheme);
 
 export const PasswordModel =
   (mongoose.models['Password'] as Model<IPassword>) ||

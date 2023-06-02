@@ -4,19 +4,24 @@ import { AUTH_TOKEN_COOKIE_NAME } from '@/utils/constants';
 import { cookies } from 'next/headers';
 import { ServerResponseError } from '@/libs/error.service';
 
-import type { NextApiRequest } from 'next/types';
 import type { SessionUser } from '@/types/db';
 
 export type TAuthenticatedUser = {
   user: SessionUser;
 };
 
-const handler = async (req: NextApiRequest) => {
+const handler = async () => {
   try {
     await dbConnect();
 
     const cookieStore = cookies();
     const token = cookieStore.get(AUTH_TOKEN_COOKIE_NAME)?.value;
+    if (!token) {
+      throw new ServerResponseError({
+        code: 403,
+        message: 'Error: Unauthorized',
+      });
+    }
     const user = await authService.getSessionUser(token);
 
     if (user) {
@@ -25,6 +30,9 @@ const handler = async (req: NextApiRequest) => {
           user,
         }),
         {
+          headers: {
+            'Content-Type': 'application/json',
+          },
           status: 200,
         },
       );
@@ -58,6 +66,9 @@ const handler = async (req: NextApiRequest) => {
       }),
       {
         status: 500,
+        headers: {
+          'Content-Type': 'application/json',
+        },
       },
     );
   }

@@ -1,8 +1,13 @@
 import cls from 'classnames';
 
-import { FormEventHandler, PropsWithChildren, memo } from 'react';
+import {
+  CSSProperties,
+  FormEventHandler,
+  PropsWithChildren,
+  memo,
+} from 'react';
 
-const defaultInputClass = cls(`text-white w-full p-2 mt-2 text-sm
+const defaultInputClass = `text-white w-full p-2 mt-2 text-sm
 bg-transparent
 border-b-[1px]
 border-yellow
@@ -12,25 +17,29 @@ hover:placeholder:text-yellow
 focus:border-bright-blue
 focus:hover:border-yellow
 invalid:border-red
-`);
+`;
 
-const defaultWarningClass = cls(`font-semibold mt-2 text-pink`);
-const defaultFormClasse = cls(
-  'flex flex-col colored items-center flex-wrap px-6 py-4 text-center colored',
-);
+const defaultWarningClass = `font-semibold mt-2 text-pink`;
+const defaultFormClasse =
+  'flex flex-col items-center flex-wrap px-6 py-4 text-center colored designed';
 
 type FormProps = {
   submit: FormEventHandler<HTMLFormElement>;
 
   containerClassNames?: string;
   classNames?: string;
+  styles?: CSSProperties;
 };
 
 const FormWrapper: React.FC<PropsWithChildren<FormProps>> = memo(
-  ({ children, submit, containerClassNames, classNames }) => {
+  ({ children, submit, containerClassNames, classNames, styles }) => {
     return (
       <div className={cls('mx-[auto] my-0', containerClassNames)}>
-        <form onSubmit={submit} className={cls(defaultFormClasse, classNames)}>
+        <form
+          onSubmit={submit}
+          className={cls(defaultFormClasse, classNames)}
+          style={{ ...styles }}
+        >
           {children}
         </form>
       </div>

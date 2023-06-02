@@ -1,17 +1,11 @@
 'use client';
 
 import { atom, WritableAtom } from 'jotai';
-import { focusAtom } from 'jotai-optics';
 import { ToastProps } from '@/types/helpers';
-import {
-  EMPTY_TOAST,
-  DEFAULT_MODAL_STATE,
-  PROFILE_SUBS_SLIDE_WIDTH,
-} from '@/utils/constants';
+import { EMPTY_TOAST, DEFAULT_MODAL_STATE } from '@/utils/constants';
 import { IModal, TProfileActiveSub } from '@/types/state';
 import { IBoard } from '@/models/boards';
-import { SessionUser, TBoardNS, TListNS } from '@/types/db';
-import { getToScrollValueForSubsMap } from '@/utils/helpers';
+import { SessionUser, TBoardNS } from '@/types/db';
 
 export const userStateAtom = atom<SessionUser | null>(null);
 export const getSetUserStateAtom: WritableAtom<
@@ -19,7 +13,7 @@ export const getSetUserStateAtom: WritableAtom<
   [
     update:
       | SessionUser
-      | ((prevValue: SessionUser | null) => SessionUser)
+      | ((prevValue: SessionUser | null) => SessionUser | null)
       | null,
   ],
   void
@@ -74,10 +68,9 @@ export const userImageAtom = atom(
   },
 );
 
-const initialProfileSub: TProfileActiveSub = {
-  containerWidth: 0,
+export const initialProfileSub: TProfileActiveSub = {
   coords: 0,
-  index: -1,
+  index: 0,
 };
 export const getSetProfileSubsActiveAtom: WritableAtom<
   TProfileActiveSub,
@@ -98,45 +91,18 @@ export const getSetBoardsState = atom<
     const prev = get(boardsStateAtom);
 
     if (Array.isArray(update)) {
-      set(boardsStateAtom, update);
-      const subsNumber = update.length;
-      const containerWidth = subsNumber * PROFILE_SUBS_SLIDE_WIDTH;
-      const toScroll = getToScrollValueForSubsMap(subsNumber, containerWidth);
+      if (!update.length) return;
 
-      set(getSetProfileSubsActiveAtom, {
-        coords: toScroll,
-        index: 0,
-        containerWidth,
-      });
+      set(boardsStateAtom, update);
     } else if (typeof update === 'function') {
       set(boardsStateAtom, () => {
         const result = update(prev);
-
-        const subsNumber = result.length;
-        const containerWidth = subsNumber * PROFILE_SUBS_SLIDE_WIDTH;
-        const toScroll = getToScrollValueForSubsMap(subsNumber, containerWidth);
-
-        set(getSetProfileSubsActiveAtom, {
-          coords: toScroll,
-          index: 0,
-          containerWidth,
-        });
 
         return result;
       });
     } else {
       set(boardsStateAtom, () => {
         const result = [...prev, update];
-
-        const subsNumber = result.length;
-        const containerWidth = subsNumber * PROFILE_SUBS_SLIDE_WIDTH;
-        const toScroll = getToScrollValueForSubsMap(subsNumber, containerWidth);
-
-        set(getSetProfileSubsActiveAtom, {
-          coords: toScroll,
-          index: 0,
-          containerWidth,
-        });
 
         return result;
       });
@@ -146,7 +112,6 @@ export const getSetBoardsState = atom<
 
 export const singleBoardStateAtom = atom<TBoardNS.ISingleBoard>({
   board: null,
-  lists: [],
 });
 export const getSetSingleBoardState: WritableAtom<
   TBoardNS.ISingleBoard,
@@ -156,27 +121,6 @@ export const getSetSingleBoardState: WritableAtom<
   (get) => get(singleBoardStateAtom),
   (_, set, update) => {
     set(singleBoardStateAtom, update);
-  },
-);
-export const getListsFromSingleBoardState = focusAtom(
-  singleBoardStateAtom,
-  (optic) => optic.prop('lists'),
-);
-export const addListOfSingleBoardState: WritableAtom<
-  TBoardNS.ISingleBoard,
-  [update: TListNS.TList],
-  void
-> = atom(
-  (get) => get(singleBoardStateAtom),
-  (get, set, update) => {
-    const prev = get(singleBoardStateAtom);
-    const prevLists = prev.lists;
-    const newLists = [...prevLists, update];
-
-    set(getSetSingleBoardState, {
-      ...prev,
-      lists: newLists,
-    });
   },
 );
 

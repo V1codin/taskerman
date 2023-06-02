@@ -1,8 +1,7 @@
 import cls from 'classnames';
 
-const defaultClasses = cls(
-  'px-0 py-3 ml-1 border-l-2 border-solid border-gray_divider',
-);
+const defaultClasses =
+  'px-0 py-3 ml-1 border-l-2 border-solid border-gray_divider';
 
 type DividerProps = {
   classNames?: string;

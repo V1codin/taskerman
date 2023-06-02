@@ -1,7 +1,7 @@
 import { Schema, Model } from 'mongoose';
 import { IUser } from './users';
-import { getAgeInSec } from '@/utils/helpers';
 import { SESSION_MAX_AGE_DAYS } from '@/utils/constants';
+import { getAgeInSec } from '@/libs/server.helpers';
 
 export interface ISession {
   _id: string;

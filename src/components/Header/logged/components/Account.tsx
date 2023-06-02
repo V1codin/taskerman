@@ -1,16 +1,16 @@
 import cls from 'classnames';
 import Avatar from '@/modules/avatar/Avatar';
 
-const defaultContainerClasses = cls(`w-10 h-10
+const defaultContainerClasses = `w-[2.4rem] h-[2.4rem]
 flex justify-center items-center 
-bg-monokai active:shadow-none active:bg-aqua-active
+active:shadow-none 
 [&>img]:rounded-[50%] 
 transition-[0.2s] duration-[ease] 
 border rounded-[50%] 
 border-dashed 
 border-transparent 
 hover:shadow-[0_0_15px_var(--blue)]
-`);
+`;
 
 type AccountProps = {
   imageURL?: string;
@@ -29,7 +29,14 @@ const Account: React.FC<AccountProps> = ({
 }) => {
   return (
     <button
-      className={cls(defaultContainerClasses, classNames)}
+      className={cls(
+        defaultContainerClasses,
+        {
+          'bg-monokai': !imageURL,
+          'active:bg-aqua-active': !imageURL,
+        },
+        classNames,
+      )}
       name="account"
       onClick={onToggle}
       data-drop-type="account"

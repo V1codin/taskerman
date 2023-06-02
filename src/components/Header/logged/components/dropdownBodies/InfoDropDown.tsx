@@ -50,7 +50,7 @@ const InfoDropDown: React.FC<InfoDropDownProps> = ({
           <Image
             src={currentTip.url!}
             alt="info"
-            className="w-80 h-48 colored"
+            className="w-80 h-48 colored designed"
             onClick={changeTip}
             width={350}
             height={200}

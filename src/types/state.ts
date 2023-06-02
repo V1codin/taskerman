@@ -85,8 +85,6 @@ export namespace AuthClient {
       never;
 }
 
-type TEntities = 'board' | 'list' | 'card';
-
 type TModalAuth = 'auth';
 type TModalCreate = 'create';
 type TModalDelete = 'delete';
@@ -133,5 +131,4 @@ export interface IModal<T extends boolean> {
 export type TProfileActiveSub = {
   coords: number;
   index: number;
-  containerWidth: number;
 };

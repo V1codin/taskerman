@@ -3,21 +3,18 @@ import deleteIco from '@/assets/plus.svg?url';
 import CloseButton from '../button/CloseButton';
 import cls from 'classnames';
 
-import { TDropDownMinWidth } from '@/types/helpers';
 import { useEscapeKeyCallback } from '@/hooks/useEscapeKeyCallback';
 
-const defaultContainerClasses = cls(`
-colored absolute 
+const defaultContainerClasses = `
+colored designed absolute 
 z-[8000] pb-1 top-[60px] 
-right-2 min-w-[200px]`);
+right-2 min-w-[200px]`;
 
-const defaultHeaderClasses = cls(
-  `relative rounded-t-md 
+const defaultHeaderClasses = `relative rounded-t-md 
   bg-monokai p-2 
   text-center 
   border-b
-  border-b-bright-blue`,
-);
+  border-b-bright-blue`;
 
 type DropDownProps = {
   heading?: string;
@@ -25,7 +22,6 @@ type DropDownProps = {
   children?: React.ReactNode;
   dropDownType?: string;
   containerClassNames?: string;
-  minWidth?: TDropDownMinWidth;
 };
 
 const DropDown: React.FC<DropDownProps> = ({

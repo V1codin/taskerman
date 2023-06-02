@@ -7,18 +7,17 @@ import plus from '@/assets/plus.svg?url';
 
 import AccountDropDown from './dropdownBodies/AccountDropDown';
 import Account from './Account';
-import Button from '@/modules/button/Button';
 import ImageModule from '@/modules/image/Image';
 import AddBoardDropDown from './dropdownBodies/AddBoardDropDown';
 import InfoDropDown from './dropdownBodies/InfoDropDown';
+import ButtonWithIcon from '@/modules/button/ButtonWithIcon';
 import cls from 'classnames';
 
 import { useState, useCallback } from 'react';
-import { getSetModal } from '@/context/stateManager';
-import { useAtom } from 'jotai';
+import { getSetModal, getSetUserStateAtom } from '@/context/stateManager';
+import { useAtom, useAtomValue } from 'jotai';
 import { signOut } from 'next-auth/react';
 
-import type { SessionUser } from '@/types/db';
 import type {
   SyntheticEvent,
   MouseEvent as IMouseEvent,
@@ -26,9 +25,8 @@ import type {
 } from 'react';
 import type { TMenuCreateModalNames } from '@/types/state';
 
-const defaultMenuButtonClasses = cls(
-  `relative flex items-center 
-  justify-center mr-4 colored
+const defaultMenuButtonClasses = `relative flex items-center 
+  justify-center mr-4 colored designed
   border
   border-transparent
   hover:shadow-max
@@ -37,15 +35,12 @@ const defaultMenuButtonClasses = cls(
   focus:border
   focus:border-pale-blue
   active:bg-aqua-active
-  `,
-);
+  `;
 
-const activeMenuButtonClasses = cls(
-  '!bg-aqua-active !shadow-none !border-pale-blue',
-);
+const activeMenuButtonClasses =
+  '!bg-aqua-active !shadow-none !border-pale-blue';
 
 type MenuProps = {
-  user: SessionUser;
   containerRef: MutableRefObject<HTMLElement | null>;
 };
 
@@ -63,9 +58,10 @@ const defaultDropState: DropState = {
   account: false,
 };
 
-const Menu: React.FC<MenuProps> = ({ user, containerRef }) => {
+const Menu: React.FC<MenuProps> = ({ containerRef }) => {
   const [dropState, setDropState] = useState<DropState>(defaultDropState);
   const [, setModalState] = useAtom(getSetModal);
+  const user = useAtomValue(getSetUserStateAtom);
 
   const logout = useCallback(() => {
     signOut({ redirect: true, callbackUrl: '/' });
@@ -157,8 +153,8 @@ const Menu: React.FC<MenuProps> = ({ user, containerRef }) => {
 
   return (
     <>
-      <Button
-        containerClassNames={cls(
+      <ButtonWithIcon
+        classNames={cls(
           defaultMenuButtonClasses,
           dropState.add && activeMenuButtonClasses,
         )}
@@ -170,7 +166,7 @@ const Menu: React.FC<MenuProps> = ({ user, containerRef }) => {
         }}
       >
         <ImageModule src={plus} alt="add" height={20} width={20} />
-      </Button>
+      </ButtonWithIcon>
       {dropState.add && (
         <AddBoardDropDown
           openModal={openModal}
@@ -179,8 +175,8 @@ const Menu: React.FC<MenuProps> = ({ user, containerRef }) => {
         />
       )}
 
-      <Button
-        containerClassNames={cls(
+      <ButtonWithIcon
+        classNames={cls(
           defaultMenuButtonClasses,
           dropState.info && activeMenuButtonClasses,
         )}
@@ -192,7 +188,7 @@ const Menu: React.FC<MenuProps> = ({ user, containerRef }) => {
         }}
       >
         <ImageModule src={info} alt="info" height={20} width={20} />
-      </Button>
+      </ButtonWithIcon>
 
       {dropState.info && (
         <InfoDropDown
@@ -200,10 +196,10 @@ const Menu: React.FC<MenuProps> = ({ user, containerRef }) => {
           containerRef={containerRef}
         />
       )}
-      <Button
-        containerClassNames={cls(
+      <ButtonWithIcon
+        classNames={cls(
           defaultMenuButtonClasses,
-          dropState.info && activeMenuButtonClasses,
+          dropState.note && activeMenuButtonClasses,
         )}
         attrs={{
           'data-drop-type': 'note',
@@ -218,7 +214,7 @@ const Menu: React.FC<MenuProps> = ({ user, containerRef }) => {
           </div>
         )}
         <ImageModule src={note} alt="note" height={20} width={20} />
-      </Button>
+      </ButtonWithIcon>
       {/*
       .note {
         width: 450px;
@@ -243,18 +239,28 @@ const Menu: React.FC<MenuProps> = ({ user, containerRef }) => {
         />
       )}
       */}
-      <Account
-        imageURL={user.imageURL}
-        username={user.username}
-        displayName={user.displayName}
-        onToggle={toggleDropDown}
-      />
-      {dropState.account && (
-        <AccountDropDown
-          closeDropDown={closeAccountDropDown}
-          logoutHandler={logout}
-          containerRef={containerRef}
-        />
+      {user && (
+        <>
+          <Account
+            classNames={cls(
+              dropState.account && '!shadow-none !border-pale-blue',
+              {
+                '!bg-aqua-active': !user.imageURL && dropState.account,
+              },
+            )}
+            imageURL={user.imageURL}
+            username={user.username}
+            displayName={user.displayName}
+            onToggle={toggleDropDown}
+          />
+          {dropState.account && (
+            <AccountDropDown
+              closeDropDown={closeAccountDropDown}
+              logoutHandler={logout}
+              containerRef={containerRef}
+            />
+          )}
+        </>
       )}
     </>
   );

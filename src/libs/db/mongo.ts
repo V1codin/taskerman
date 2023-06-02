@@ -1,32 +1,28 @@
-import {
-  BoardModel,
-  UserModel,
-  ListModel,
-  PasswordModel,
-} from '@/models/middlewares';
+import { BoardModel, UserModel, PasswordModel } from '@/models/middlewares';
 import { Types } from 'mongoose';
 
+import type { IUser } from '@/models/users';
 import type { IBoard } from '@/models/boards';
 import type { FilterQuery } from 'mongoose';
-import type { DataBaseProvider, TBoardNS, TListNS } from '@/types/db';
+import type { DataBaseProvider, TBoardNS } from '@/types/db';
 import type { TEditableUserProps } from '@/models/users';
 
 interface MongoDbProvider
   extends DataBaseProvider<
     Types.ObjectId,
     FilterQuery<IBoard>,
-    ReturnType<typeof UserModel.findOne>,
+    Promise<IUser | null>,
     ReturnType<typeof UserModel.findOne>,
     ReturnType<typeof UserModel.findOne>,
     Awaited<ReturnType<typeof UserModel.findOne>>,
-    ReturnType<typeof BoardModel.findOne>,
-    ReturnType<typeof BoardModel.find>,
+    Promise<string | null>,
+    Promise<IBoard | null>,
+    IBoard[],
     // ? unknown because Boards.create is overloading function
     // ? and ReturnType is not compatible
     unknown,
     ReturnType<typeof BoardModel.deleteOne>,
-    Promise<true | null>,
-    ReturnType<typeof ListModel.find>
+    Promise<true | null>
   > {}
 
 export class MongoDataBaseProvider implements MongoDbProvider {
@@ -153,21 +149,15 @@ export class MongoDataBaseProvider implements MongoDbProvider {
     return result.length > 0;
   }
 
-  getListsByBoardId(boardId: string | ParticularDBType) {
-    return ListModel.find({
-      board: this.getObjectIdFromStringUtils(boardId),
-    });
-  }
-
   async getUserHashedPassword(username: string) {
     try {
       const user = await this.getUserByUserName(username);
+
       if (!user) {
         return '';
       }
-      const obj = user.toObject();
       const result = await PasswordModel.findOne({
-        user: obj,
+        user: new Types.ObjectId(user._id),
       });
 
       return result?.pw || '';
@@ -176,10 +166,56 @@ export class MongoDataBaseProvider implements MongoDbProvider {
     }
   }
 
-  getUserByUserName(username: string) {
-    return UserModel.findOne({
+  async getUserByUserName(username: string) {
+    const user = await UserModel.findOne({
       username,
     }).populate('subs');
+
+    if (!user) {
+      return null;
+    }
+
+    const obj = user.toObject();
+    try {
+      const result = JSON.parse(JSON.stringify(obj)) as IUser;
+
+      return result;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  async getBoardTitleById(boardId: string | ParticularDBType) {
+    const board = await BoardModel.findOne({
+      _id: this.getObjectIdFromStringUtils(boardId),
+    });
+
+    if (!board) return null;
+
+    return board.title;
+  }
+
+  async getBoardById(boardId: string | ParticularDBType) {
+    try {
+      const board = await BoardModel.findOne({
+        _id: this.getObjectIdFromStringUtils(boardId),
+      })
+        .populate('owner')
+        .populate('members');
+
+      if (!board) {
+        return null;
+      }
+
+      const obj = board.toObject();
+      const result = JSON.parse(JSON.stringify(obj)) as IBoard;
+
+      return result;
+    } catch (e) {
+      console.error('', e);
+
+      return null;
+    }
   }
 
   getUserById(userId: string | ParticularDBType) {
@@ -194,16 +230,16 @@ export class MongoDataBaseProvider implements MongoDbProvider {
     });
   }
 
-  getBoardById(boardId: string | ParticularDBType) {
-    return BoardModel.findOne({
-      _id: this.getObjectIdFromStringUtils(boardId),
-    })
-      .populate('owner')
-      .populate('members');
-  }
+  /**
+   * UNSAFE.
+   * Uses JSON.parse
+   * So wrap the function call into try/catch
+   */
+  async getUserBoards(query: FilterQuery<IBoard>) {
+    const found = await BoardModel.find(query).populate('owner');
+    const result = JSON.parse(JSON.stringify(found)) as IBoard[];
 
-  getUserBoards(query: FilterQuery<IBoard>) {
-    return BoardModel.find(query).populate('owner');
+    return result;
   }
 
   async createBoard(board: TBoardNS.TCreating) {
@@ -227,10 +263,6 @@ export class MongoDataBaseProvider implements MongoDbProvider {
     );
 
     return createdBoard.populate('owner');
-  }
-
-  createList(list: TListNS.TCreating) {
-    return ListModel.create(list);
   }
 
   deleteBoard(

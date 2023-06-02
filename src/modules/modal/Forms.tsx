@@ -1,7 +1,10 @@
 import LoginForm from './modalForms/authForms/LoginForm';
+import DeleteBoardForm from './modalForms/boardForms/DeleteBoardForm';
+import CreateBoardForm from './modalForms/boardForms/CreateBoardForm';
 
 import type {
   IModalWindow,
+  TDeleteModalData,
   /*
   TAuthForms,
   TMenuCreateModalNames,
@@ -14,57 +17,41 @@ type FormProps = {
 };
 
 export const ModalForm: React.FC<FormProps> = ({ modalMeta }) => {
-  const { type, view } = modalMeta;
+  const { type, view, data } = modalMeta;
   if (!type) return null;
 
   if (type === 'auth') {
     if (view === 'login') {
       return <LoginForm />;
     }
-
     /*
     if (view === 'signup'){
       return <SignUpForm />
     }
     */
-  }
 
-  /*
-  .color-picker {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    margin-top: 10px;
-  }
-
-  .color-picker__el {
-    cursor: pointer;
-    padding: 15px;
-
-    border: 1px dashed transparent;
-  }
-
-  .color-picker > li {
-    margin-left: 10px;
-  }
-  .color-picker > li:first-of-type {
-    margin-left: 0;
-  }
-
-  if (type === 'create') {
-    //? prop text is not needed in this component so far
-    return <CreateForms view={view as TMenuCreateModalNames} />;
+    // !
+    return null;
   }
 
   if (type === 'delete') {
-    return (
-      <DeleteForms
-        view={view as TMenuDeleteModalNames}
-        data={data as TDeleteModalData}
-      />
-    );
+    if (view === 'delete_board') {
+      return <DeleteBoardForm {...(data as TDeleteModalData)} />;
+    }
+
+    // !
+    return null;
   }
-  */
+
+  if (type === 'create') {
+    if (view === 'create_board') {
+      //? prop text is not needed in this component so far
+      return <CreateBoardForm />;
+    }
+
+    // !
+    return null;
+  }
 
   return null;
 };

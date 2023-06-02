@@ -5,7 +5,6 @@ import {
   BoardServiceGetUserBoards,
 } from '@/libs/boards.service';
 import { IBoard } from '@/models/boards';
-import { ListServiceGetBoardLists } from '@/libs/lists.service';
 import { RequireAtLeastOne } from './utils';
 import { AuthClient } from './state';
 
@@ -68,47 +67,10 @@ export namespace TBoardNS {
 
   export interface ISingleBoard {
     board: IBoard | null;
-    lists: TListNS.TList[];
   }
 
   export type TCreatedBoard = Awaited<ReturnType<BoardServiceCreate>>;
   export type TRawUserBoards = Awaited<ReturnType<BoardServiceGetUserBoards>>;
-}
-
-export const creatingListSchema = z.object({
-  title: z.string(),
-  board: z.string(),
-});
-export const deletingListSchema = z.object({
-  listId: z.string(),
-  boardId: z.string().optional(),
-});
-
-export namespace TListNS {
-  // !NOT IMPLEMENTED
-  export type TUpdating = null;
-
-  export type TCreating = TypeOf<typeof creatingListSchema>;
-  export type TDeleting = TypeOf<typeof deletingListSchema>;
-  export type TGetting = {
-    boardId: string;
-  };
-
-  export type TList = {
-    _id: string;
-    title: string;
-    board: string;
-    cards: TCardNS.TCard[];
-  };
-
-  export type TRawBoardLists = Awaited<ReturnType<ListServiceGetBoardLists>>;
-}
-
-export namespace TCardNS {
-  export type TCard = {
-    _id: string;
-    text: string;
-  };
 }
 
 // TODO move all user relative types to the namespace
@@ -168,12 +130,12 @@ export interface DataBaseProvider<
   TUserById extends unknown,
   TUserIdByUserName extends unknown,
   TPatchedUser extends unknown,
-  TBoarById extends unknown,
+  TBoardTitleById extends unknown,
+  TBoardDById extends unknown,
   TUserBoards extends unknown,
   TCreatedBoard extends unknown,
   TDeletedBoard extends unknown,
   TUnsubedUserFromBoard extends unknown,
-  TListsByBoardId extends unknown,
 > {
   getAllBoardsByUserQueryUtils(userId: string): TBoardQuery;
   isEqualUtils(
@@ -191,14 +153,13 @@ export interface DataBaseProvider<
   getUserIdByUserName(username: string): TUserIdByUserName;
   patchUser(userId: string, patch: TEditableUserProps): TPatchedUser;
 
-  getBoardById(boardId: string | ParticularDBType): TBoarById;
+  getBoardTitleById(boardId: string | ParticularDBType): TBoardTitleById;
+  getBoardById(boardId: string | ParticularDBType): TBoardDById;
   getUserBoards(
     query: TBoardQuery | null,
     userId?: string | ParticularDBType,
-  ): TUserBoards;
+  ): Promise<TUserBoards>;
   createBoard(board: TBoardNS.TCreating): TCreatedBoard;
   deleteBoard(boardId: string | ParticularDBType): TDeletedBoard;
   unsubscribeFromBoard(userId: string, board: IBoard): TUnsubedUserFromBoard;
-
-  getListsByBoardId(boardId: string | ParticularDBType): TListsByBoardId;
 }

@@ -60,7 +60,7 @@ const AccountDropDown: React.FC<AccountDropDownProps> = ({
             width={24}
             height={24}
           />
-          <span>My Boards</span>
+          <span className="ml-1">My Boards</span>
         </Link>
       </DropDownElement>
       <DropDownElement>

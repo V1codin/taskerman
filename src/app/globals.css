@@ -103,13 +103,23 @@ button {
   text-shadow: 2px 2px 10px #cecece;
 }
 
-.colored {
-  background-color: var(--black-aqua);
+.designed {
   box-shadow: 0 0 5px var(--yellow);
   border-radius: 7px;
   transition: 0.2s ease;
   animation: fadeIn 1s;
   animation-fill-mode: forwards;
+}
+
+.colored {
+  background-color: var(--black-aqua);
+}
+
+.ellipsis_active {
+  border: 1px solid var(--pale-blue);
+  background-color: var(--aqua-active);
+  box-shadow: none;
+  transform: rotate(90deg);
 }
 
 .unselectable {
@@ -185,14 +195,38 @@ button {
   animation: spin 1s ease-in-out infinite;
 }
 
+.card__btn {
+  cursor: pointer;
+  padding: 0.5rem;
+  width: 100%;
+  background-color: var(--pale-green);
+  border: none;
+  color: var(--yellow);
+  font-size: 1em;
+  font-weight: bold;
+  transition: all linear 0.2s;
+
+  position: absolute;
+  bottom: 0;
+  margin: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 43px;
+  overflow: auto;
+}
+.card__btn:hover {
+  background-color: #71c74f;
+}
+.card__btn:active {
+  background-color: var(--yellow);
+  color: var(--monokai);
+}
+
 button:disabled {
   cursor: not-allowed;
   color: #ffffff49;
   background-color: #808080 !important;
-}
-
-button:disabled:hover {
-  border-radius: 0;
 }
 
 ::-webkit-scrollbar {

@@ -6,10 +6,7 @@ export const useOuterClick = (
 ) => {
   const click = useCallback(
     (e: MouseEvent) => {
-      if (
-        e.type === 'click' &&
-        !parentRef.current?.contains(e.target as Node)
-      ) {
+      if (e.target instanceof Node && !parentRef.current?.contains(e.target)) {
         callback(e);
       }
     },

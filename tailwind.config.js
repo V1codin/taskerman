@@ -8,26 +8,38 @@ module.exports = {
   ],
   theme: {
     extend: {
+      screens: {
+        mobile: {
+          max: '576px',
+        },
+        laptop: {
+          max: '976px',
+        },
+        desktop: {
+          max: '1280px',
+        },
+      },
       colors: {
         overlay: '#3a3a3ab3',
+        'dark-grey': '#333030',
         monokai: '#272822',
+        'alpha-black': '#333333a1',
         'black-aqua': '#091921',
         'aqua-active': '#133d52',
         'black-aqua_op': '#091921d5',
         'black-aqua_hard_op': '#09192171',
         'popup-overlay': '#946666de',
-
         pink: '#ff105e',
         'pale-green': '#67b04b',
+        'pale-bright-green': '#71c74f',
         'bright-green': '#55d725',
         'bright-blue': '#42c5e4',
         blue: '#4343ff',
         'blue-second': '#2727fe',
+        'pale-bright-blue': '#98A7F5',
         'pale-blue': '#69abad',
         yellow: ' #e0fd4d',
-
         'glowing-yellow': '#d8ff13',
-
         gray: '#cccccc',
         gray_divider: '#858585',
         'hover-blue': '#102936',

@@ -1,9 +1,11 @@
-import mongoProvider from '@/db/mongo';
+import dbProvider from '@/db/mongo';
 import encrypt from '@/libs/encrypt.service';
 
+import { ServerResponseError } from './error.service';
+import { cookies } from 'next/headers';
+import { AUTH_TOKEN_COOKIE_NAME } from '@/utils/constants';
 import { SessionModel } from '@/models/middlewares';
 import { TEncryptService } from './encrypt.service';
-import { IBoard } from '@/models/boards';
 import { dbAdapter } from './db/adapter';
 
 import type { TDb } from '@/db/mongo';
@@ -67,6 +69,32 @@ export class AuthService {
     return sessionAndUser?.user;
   }
 
+  async getUserByRequest(incomingToken?: string): Promise<string> {
+    const token = incomingToken || cookies().get(AUTH_TOKEN_COOKIE_NAME)?.value;
+
+    if (!token) {
+      throw new ServerResponseError({
+        code: 403,
+        message: 'Error: Unauthorized',
+      });
+    }
+
+    try {
+      const userAndSession = await dbAdapter.getSessionAndUser(token as string);
+
+      if (!userAndSession?.user.id) {
+        throw new Error();
+      }
+
+      return userAndSession.user.id;
+    } catch (e) {
+      throw new ServerResponseError({
+        code: 403,
+        message: 'Error: Unauthorized',
+      });
+    }
+  }
+
   async authorizeWithCredentials(credentials: {
     username: string;
     password: string;
@@ -88,23 +116,9 @@ export class AuthService {
     if (!userFromBD) {
       throw new Error('Wrong username or password');
     }
-
-    // TODO move logic to db provider
-    // ? toObj is mongo method
-    const result = userFromBD.toObject();
-
-    const subs = result.subs as IBoard[];
-
-    result._id = String(result._id);
-
     return {
-      id: result._id,
-      _id: result._id,
-      username: result.username,
-      subs,
-      displayName: result.displayName,
-      email: result.email,
-      imageURL: result.imageURL,
+      id: userFromBD._id,
+      ...userFromBD,
     };
   }
 
@@ -114,6 +128,6 @@ export class AuthService {
 }
 
 export const authService = new AuthService({
-  db: mongoProvider,
+  db: dbProvider,
   encrypter: encrypt,
 });

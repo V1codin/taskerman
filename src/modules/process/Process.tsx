@@ -7,8 +7,7 @@ type Props = {
   isBordered?: boolean;
 };
 
-const defaultContainerClasses = cls(
-  `flex justify-center 
+const defaultContainerClasses = `flex justify-center 
   border-transparent
   items-center 
   border-[1px] 
@@ -18,8 +17,7 @@ const defaultContainerClasses = cls(
   left-2/4
   translate-x-[-50%]
   translate-y-[-50%]
-  rounded-[50%]`,
-);
+  rounded-[50%]`;
 
 const Process: React.FC<Props> = ({ isShown, isBordered, size = 'w-9' }) => {
   return isShown ? (

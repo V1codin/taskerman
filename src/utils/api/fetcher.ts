@@ -17,11 +17,18 @@ export default async function fetcher<TResult extends unknown>(
       return data as TResult;
     }
 
-    const castedData = data as TError;
+    if (typeof data.code === 'number') {
+      const castedData = data as TError;
+
+      throw new ServerResponseError({
+        code: castedData.code,
+        message: castedData.message,
+      });
+    }
 
     throw new ServerResponseError({
-      code: castedData.code,
-      message: castedData.message,
+      code: 500,
+      message: 'Error: Server does not response',
     });
   } catch (e) {
     if (e instanceof ServerResponseError) {

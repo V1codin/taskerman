@@ -9,7 +9,7 @@ type FocusTrapProps = {
   firstElementRef?: MutableRefObject<HTMLElement | null>;
 };
 
-const defaultClassNames = cls('');
+const defaultClassNames = '';
 
 const FocusTrap: React.FC<PropsWithChildren<FocusTrapProps>> = ({
   children,
@@ -21,14 +21,26 @@ const FocusTrap: React.FC<PropsWithChildren<FocusTrapProps>> = ({
   useEffect(() => {
     const container = containerRef.current;
 
+    const focusout = (ev: FocusEvent) => {
+      if (!ev.relatedTarget || !container!.contains(ev.relatedTarget as Node)) {
+        const innerChild =
+          firstElementRef?.current || (container?.firstChild as HTMLElement);
+        innerChild?.focus();
+      }
+    };
     const focusin = (ev: FocusEvent) => {
-      if (!container!.contains(ev.relatedTarget as Node)) {
+      if (
+        (ev.relatedTarget instanceof Node &&
+          !container!.contains(ev.relatedTarget)) ||
+        !ev.relatedTarget
+      ) {
         const innerChild =
           firstElementRef?.current || (container?.firstChild as HTMLElement);
         innerChild?.focus();
       }
     };
 
+    window.addEventListener('focusout', focusout);
     window.addEventListener('focusin', focusin);
 
     if (container) {
@@ -39,6 +51,7 @@ const FocusTrap: React.FC<PropsWithChildren<FocusTrapProps>> = ({
 
     return () => {
       window.removeEventListener('focusin', focusin);
+      window.removeEventListener('focusout', focusout);
     };
   });
 

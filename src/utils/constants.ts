@@ -15,18 +15,26 @@ const DEFAULT_ADD_BOARD_BUTTON_COLORS = [
   {
     name: '#003b5c',
     backgroundColor: '#003b5c',
+    classes:
+      'cursor-pointer p-4 border border-dashed border-transparent colored designed active:shadow-none !bg-[#003b5c] hover:shadow-[0_0_5px_#42c5e4]',
   },
   {
     name: '#7e2861',
     backgroundColor: '#7e2861',
+    classes:
+      'cursor-pointer p-4 border border-dashed border-transparent colored designed active:shadow-none !bg-[#7e2861] hover:shadow-[0_0_5px_#42c5e4]',
   },
   {
     name: '#27461c',
     backgroundColor: '#27461c',
+    classes:
+      'cursor-pointer p-4 border border-dashed border-transparent colored designed active:shadow-none !bg-[#27461c] hover:shadow-[0_0_5px_#42c5e4]',
   },
   {
     name: '#4e2118',
     backgroundColor: '#4e2118',
+    classes:
+      'cursor-pointer p-4 border border-dashed border-transparent colored designed active:shadow-none !bg-[#4e2118] hover:shadow-[0_0_5px_#42c5e4]',
   },
 ];
 
@@ -35,7 +43,8 @@ const authFormTypeSignup = 'signup';
 
 const isDev = () => process.env.NODE_ENV === 'development';
 
-const BASE_URL = isDev() ? 'http://localhost:3000' : process.env['BASE_URL'];
+const PORT = '8080';
+const BASE_URL = isDev() ? `http://localhost:${PORT}` : process.env['BASE_URL'];
 const DOMAIN = isDev() ? '.localhost' : process.env['DOMAIN'];
 
 const MONGO_DB_NAME = isDev() ? 'Local_Trello' : process.env['DB_NAME'];
@@ -88,11 +97,11 @@ const RAINBOW_COLORS = [
   '#800080',
 ] as const;
 
-const PROFILE_SUBS_SLIDE_WIDTH = 470;
+const PROFILE_SUBS_SLIDE_WIDTH = 465;
 const SUBS_SLIDE_HALF = PROFILE_SUBS_SLIDE_WIDTH / 2;
 const SUBS_MAP_LINE_WIDTH = 10;
 
-const FIRST_MEDIA_POINT_WIDTH = 1100;
+const FIRST_MEDIA_POINT_WIDTH = 975;
 
 export {
   FIRST_MEDIA_POINT_WIDTH,

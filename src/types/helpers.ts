@@ -23,5 +23,3 @@ export type TCSSMeasurementValue =
   | `${number}em`
   | `${number}%`
   | `${number}rem`;
-
-export type TDropDownMinWidth = TCSSMeasurementValue;

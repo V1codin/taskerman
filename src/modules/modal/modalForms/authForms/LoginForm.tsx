@@ -14,7 +14,7 @@ import {
 import { useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useAtom } from 'jotai';
+import { useSetAtom } from 'jotai';
 import { getSetModal } from '@/context/stateManager';
 import { signIn } from 'next-auth/react';
 import { useDebounce } from '@/hooks/useDebounce';
@@ -40,7 +40,7 @@ const LoginForm: React.FC<LoginFormProps> = () => {
   });
   const { refresh } = useRouter();
 
-  const [, setAuthState] = useAtom(getSetModal);
+  const setModalState = useSetAtom(getSetModal);
 
   const [loader, setLoader] = useState(false);
 
@@ -78,7 +78,7 @@ const LoginForm: React.FC<LoginFormProps> = () => {
         throw new Error('Wrong username or password');
       }
 
-      setAuthState({
+      setModalState({
         isOpen: false,
         window: null,
       });
@@ -108,7 +108,7 @@ const LoginForm: React.FC<LoginFormProps> = () => {
 
   const signUpLinkClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
-    setAuthState({
+    setModalState({
       isOpen: true,
       window: {
         type: 'auth',
@@ -157,13 +157,19 @@ const LoginForm: React.FC<LoginFormProps> = () => {
         attrs={{
           disabled: loader,
         }}
-        classNames="font-bold w-full mt-4 h-11 bg-pale-green text-white hover:bg-[#71c74f] active:bg-green-500"
+        classNames="font-bold w-full mt-4 h-11
+        rounded-md
+        bg-pale-green 
+        text-white 
+        hover:bg-pale-bright-green 
+        active:bg-green-500"
       >
         <span>Log in</span>
       </ButtonWithLoader>
 
       <ButtonWithIcon
         classNames="w-full mt-4 h-11 justify-evenly
+        rounded-md
         font-bold
         bg-white
         text-blue-second
@@ -171,6 +177,7 @@ const LoginForm: React.FC<LoginFormProps> = () => {
         hover:text-white
         focus:bg-blue-second
         focus:text-white
+        active:bg-pale-bright-blue
         "
         attrs={{
           'data-oauthtype': 'google',

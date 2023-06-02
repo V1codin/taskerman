@@ -4,13 +4,12 @@ import Button from './Button';
 import { CustomButtonAttrs } from './Button';
 import { PropsWithChildren, forwardRef } from 'react';
 
-const defaultButtonWithIconClasses = cls('flex items-center duration-300');
+const defaultButtonWithIconClasses = 'flex items-center duration-300';
 
 type ButtonWithIconProps = {
   classNames?: string;
   attrs?: {} & CustomButtonAttrs;
 };
-
 
 const ButtonWithIcon = forwardRef<
   HTMLButtonElement,

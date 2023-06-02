@@ -2,12 +2,14 @@ import './globals.css';
 import Header from '@/components/Header/Header';
 import Toast from '@/modules/toast/Toast';
 import Modal from '@/modules/modal/Modal';
-import NextAuthProvider from '@/components/SessionProvider/NextAuthProvider';
+import SessionProvider from '@/providers/SessionProvider/SessionProvider';
+import StateProvider from '@/providers/StateProvider/StateProvider';
 
 import { AUTH_TOKEN_COOKIE_NAME } from '@/utils/constants';
 import { Inter } from 'next/font/google';
 import { cookies } from 'next/headers';
 import { authService } from '@/libs/auth.service';
+import { boardService } from '@/libs/boards.service';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -28,13 +30,19 @@ export default async function RootLayout({ children }: Props) {
     sessionToken?.value || '',
   );
 
+  const boards = await boardService.getSafeUserBoards(sessionUser?._id || '');
+
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Header user={sessionUser} />
-        <Modal />
-        <Toast />
-        <NextAuthProvider>{children}</NextAuthProvider>
+        <StateProvider user={sessionUser} boards={boards}>
+          <SessionProvider>
+            <Header />
+            <Modal />
+            <Toast />
+            {children}
+          </SessionProvider>
+        </StateProvider>
       </body>
     </html>
   );
