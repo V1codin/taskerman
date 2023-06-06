@@ -1,14 +1,14 @@
 'use client';
 import ButtonWithLoader from '@/modules/button/ButtonWithLoader';
 
-import { useAtom, useSetAtom } from 'jotai';
+import { useAtomValue, useSetAtom } from 'jotai';
 import { useState } from 'react';
 import {
+  getSetToastState,
   getSetUserStateAtom,
   userDisplayNameAtom,
 } from '@/context/stateManager';
 import { api } from '@/utils/api/api';
-import { useToast } from '@/hooks/useToast';
 
 import type { ChangeEvent } from 'react';
 import type { MouseEvent } from 'react';
@@ -16,9 +16,10 @@ import type { MouseEvent } from 'react';
 type NameFormProps = {};
 
 const NameForm: React.FC<NameFormProps> = () => {
-  const [displayName, setDisplayName] = useAtom(userDisplayNameAtom);
+  const displayName = useAtomValue(userDisplayNameAtom);
+  const [localDisplayName, setLocalDisplayName] = useState(displayName);
   const setUser = useSetAtom(getSetUserStateAtom);
-  const { setToast } = useToast();
+  const setToast = useSetAtom(getSetToastState);
   const [loader, setLoader] = useState(false);
 
   const click = async (e: MouseEvent<HTMLButtonElement>) => {
@@ -52,7 +53,7 @@ const NameForm: React.FC<NameFormProps> = () => {
   };
 
   const changeHandler = (e: ChangeEvent<HTMLInputElement>) => {
-    setDisplayName(e.target.value);
+    setLocalDisplayName(e.target.value);
   };
 
   return (
@@ -98,7 +99,7 @@ const NameForm: React.FC<NameFormProps> = () => {
         "
         type="text"
         placeholder="Enter your full name"
-        value={displayName}
+        value={localDisplayName}
         name="displayName"
         onChange={changeHandler}
       />

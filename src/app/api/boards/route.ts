@@ -121,7 +121,7 @@ export async function DELETE(req: Request) {
     const { searchParams } = new URL(req.url);
     const boardId = searchParams.get('boardId') || '';
 
-    const boardToDelete = await boardService.getBoardById(boardId);
+    const boardToDelete = await boardService.getSafeBoardById(boardId);
 
     if (!boardToDelete) {
       throw new ServerResponseError({

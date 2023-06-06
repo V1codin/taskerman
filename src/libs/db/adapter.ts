@@ -20,21 +20,21 @@ import {
   getProfileDataOfAuthProvider,
 } from '../server.helpers';
 import { authService } from '@/libs/auth.service';
-
 import { decode, encode } from 'next-auth/jwt';
 import { PasswordModel, SessionModel, UserModel } from '@/models/middlewares';
 import { Adapter, AdapterSession } from 'next-auth/adapters';
 import { IUser } from '@/models/users';
 import { SessionUser } from '@/types/db';
-import { AuthClient } from '@/types/state';
 import { ServerResponseError } from '@/libs/error.service';
 import { WithOptional } from '@/types/utils';
-import { TMethods } from '@/types/api';
 
-type Session = { user: SessionUser; session: AdapterSession } | null;
+import type { TMethods } from '@/types/api';
+import type { AuthClient } from '@/types/state';
+
+type Session = { user: SessionUser; session: AdapterSession };
 
 type MyAdapter = Adapter & {
-  _getSessionAndUser(sessionToken: string): Promise<Session>;
+  _getSessionAndUser(sessionToken: string): Promise<Session | null>;
   _createSession(session: {
     sessionToken: string;
     userId: string;
@@ -60,35 +60,42 @@ const mongoAdapter: MyAdapter = {
   async _getSessionAndUser(sessionToken: string) {
     await dbConnect();
 
-    const result = await SessionModel.findOne({ sessionToken }).populate({
-      path: 'userId',
-    });
-    if (!result) return null;
+    try {
+      const result = await SessionModel.findOne({ sessionToken }).populate({
+        path: 'userId',
+      });
+      if (!result) return null;
 
-    const objectedResult = result.toObject();
+      const objectedResult = result.toObject();
 
-    const session: AdapterSession = {
-      expires: objectedResult.expires,
-      sessionToken: objectedResult.sessionToken,
-      userId: String(objectedResult._id),
-    };
+      const session: AdapterSession = {
+        expires: objectedResult.expires,
+        sessionToken: objectedResult.sessionToken,
+        userId: String(objectedResult._id),
+      };
 
-    const populatedUser = objectedResult.userId as WithOptional<IUser, 'subs'>;
+      const populatedUser = objectedResult.userId as WithOptional<
+        IUser,
+        'subs'
+      >;
 
-    //? for converting data for passing from server component to client component
-    populatedUser._id = String(populatedUser._id);
+      //? for converting data for passing from server component to client component
+      populatedUser._id = String(populatedUser._id);
 
-    delete populatedUser.subs;
+      delete populatedUser.subs;
 
-    const user: SessionUser = {
-      ...populatedUser,
-      id: populatedUser._id,
-    };
+      const user: SessionUser = {
+        ...populatedUser,
+        id: populatedUser._id,
+      };
 
-    return {
-      user,
-      session,
-    };
+      return {
+        user,
+        session,
+      };
+    } catch (e) {
+      return null;
+    }
   },
 
   async _createSession(session: {

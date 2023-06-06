@@ -5,6 +5,14 @@ import { IUser, UserScheme } from './users';
 import { IPassword, PasswordScheme } from './passwords';
 import { ISession, SessionScheme } from './sessions';
 
+BoardScheme.pre('save', async function (next) {
+  this.members.push({
+    user: this.owner,
+    role: 'owner',
+  });
+  return next();
+});
+
 // @ts-ignore
 BoardScheme.pre('deleteOne', {}, async function (next) {
   // @ts-ignore

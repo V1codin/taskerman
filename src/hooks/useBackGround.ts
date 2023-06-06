@@ -1,8 +1,33 @@
-import { useEffect } from 'react';
-import { getBodyRef } from '@/utils/constants';
-import { isLink } from '@/utils/helpers';
+// import { useEffect } from 'react';
+// import { getBodyRef } from '@/utils/constants';
+
+import { isLink } from '@/libs/server.helpers';
 
 export const useBackGround = (background?: string) => {
+  const linkChecker = isLink(background);
+
+  if (!background) return {};
+
+  const style = {} as Pick<
+    CSSStyleDeclaration,
+    'backgroundImage' | 'background' | 'backgroundRepeat' | 'backgroundSize'
+  >;
+
+  if (!linkChecker) {
+    style.backgroundImage = 'none';
+    style.background = background;
+  } else {
+    style.background = '';
+    style.backgroundRepeat = 'no-repeat';
+    style.backgroundSize = 'cover';
+    style.backgroundImage = `url(${background})`;
+  }
+
+  return style;
+};
+
+/*
+export const _useBackGround = (background?: string) => {
   const bodyRef = getBodyRef()!;
   const linkChecker = isLink(background);
 
@@ -27,3 +52,4 @@ export const useBackGround = (background?: string) => {
     };
   }, [background, linkChecker, bodyRef]);
 };
+*/

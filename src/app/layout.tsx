@@ -2,7 +2,6 @@ import './globals.css';
 import Header from '@/components/Header/Header';
 import Toast from '@/modules/toast/Toast';
 import Modal from '@/modules/modal/Modal';
-import SessionProvider from '@/providers/SessionProvider/SessionProvider';
 import StateProvider from '@/providers/StateProvider/StateProvider';
 
 import { AUTH_TOKEN_COOKIE_NAME } from '@/utils/constants';
@@ -36,12 +35,10 @@ export default async function RootLayout({ children }: Props) {
     <html lang="en">
       <body className={inter.className}>
         <StateProvider user={sessionUser} boards={boards}>
-          <SessionProvider>
-            <Header />
-            <Modal />
-            <Toast />
-            {children}
-          </SessionProvider>
+          <Header />
+          <Modal />
+          <Toast />
+          {children}
         </StateProvider>
       </body>
     </html>

@@ -40,12 +40,16 @@ export class BoardsService {
     );
   }
 
-  getBoardById(boardId: string | ParticularDBType) {
+  getSafeBoardById(boardId: string | ParticularDBType) {
     return this.db.getBoardById(boardId);
   }
 
   getBoardTitleById(boardId: string | ParticularDBType) {
     return this.db.getBoardTitleById(boardId);
+  }
+
+  getBoardBackgroundById(boardId: string | ParticularDBType) {
+    return this.db.getBoardBackgroundById(boardId);
   }
 
   async create(board: TBoardNS.TCreating): Promise<IBoard> {

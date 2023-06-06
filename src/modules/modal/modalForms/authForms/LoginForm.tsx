@@ -15,10 +15,9 @@ import { useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useSetAtom } from 'jotai';
-import { getSetModal } from '@/context/stateManager';
+import { getSetModal, getSetToastState } from '@/context/stateManager';
 import { signIn } from 'next-auth/react';
 import { useDebounce } from '@/hooks/useDebounce';
-import { useToast } from '@/hooks/useToast';
 import { userLoginSchema } from '@/types/state';
 import { useRouter } from 'next/navigation';
 
@@ -44,7 +43,7 @@ const LoginForm: React.FC<LoginFormProps> = () => {
 
   const [loader, setLoader] = useState(false);
 
-  const { setToast } = useToast();
+  const setToast = useSetAtom(getSetToastState);
 
   useEffect(() => {
     setFocus('username', { shouldSelect: true });

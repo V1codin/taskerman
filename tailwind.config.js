@@ -41,7 +41,7 @@ module.exports = {
         yellow: ' #e0fd4d',
         'glowing-yellow': '#d8ff13',
         gray: '#cccccc',
-        gray_divider: '#858585',
+        'deep-gray': '#858585',
         'hover-blue': '#102936',
       },
       backgroundImage: {

@@ -13,6 +13,7 @@ import InfoDropDown from './dropdownBodies/InfoDropDown';
 import ButtonWithIcon from '@/modules/button/ButtonWithIcon';
 import cls from 'classnames';
 
+import { useRouter } from 'next/navigation';
 import { useState, useCallback } from 'react';
 import { getSetModal, getSetUserStateAtom } from '@/context/stateManager';
 import { useAtom, useAtomValue } from 'jotai';
@@ -27,6 +28,7 @@ import type { TMenuCreateModalNames } from '@/types/state';
 
 const defaultMenuButtonClasses = `relative flex items-center 
   justify-center mr-4 colored designed
+  mobile:mr-2
   border
   border-transparent
   hover:shadow-max
@@ -62,6 +64,7 @@ const Menu: React.FC<MenuProps> = ({ containerRef }) => {
   const [dropState, setDropState] = useState<DropState>(defaultDropState);
   const [, setModalState] = useAtom(getSetModal);
   const user = useAtomValue(getSetUserStateAtom);
+  const { push } = useRouter();
 
   const logout = useCallback(() => {
     signOut({ redirect: true, callbackUrl: '/' });
@@ -88,6 +91,11 @@ const Menu: React.FC<MenuProps> = ({ containerRef }) => {
     },
     [],
   );
+
+  const accountDoubleClick = useCallback(() => {
+    push('/profile');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const closeDropDown = (
     e:
@@ -252,6 +260,7 @@ const Menu: React.FC<MenuProps> = ({ containerRef }) => {
             username={user.username}
             displayName={user.displayName}
             onToggle={toggleDropDown}
+            doubleClick={accountDoubleClick}
           />
           {dropState.account && (
             <AccountDropDown

@@ -18,6 +18,7 @@ type AccountProps = {
   username?: string;
   classNames?: string;
   onToggle: (e: React.MouseEvent<HTMLElement, MouseEvent>) => void;
+  doubleClick?: () => void;
 };
 
 const Account: React.FC<AccountProps> = ({
@@ -26,6 +27,7 @@ const Account: React.FC<AccountProps> = ({
   username,
   classNames,
   onToggle,
+  doubleClick,
 }) => {
   return (
     <button
@@ -39,6 +41,7 @@ const Account: React.FC<AccountProps> = ({
       )}
       name="account"
       onClick={onToggle}
+      onDoubleClick={doubleClick}
       data-drop-type="account"
     >
       <Avatar

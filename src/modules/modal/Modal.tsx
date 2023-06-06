@@ -32,7 +32,7 @@ const Modal: React.FC<ModalProps> = () => {
   return modalState.isOpen ? (
     <FocusTrap
       containerClassNames={cls(
-        'w-screen h-screen absolute top-0 left-0 z-[8000]',
+        'w-screen h-screen absolute top-0 left-0 z-[5000]',
       )}
       firstElementRef={firstElementRef}
     >

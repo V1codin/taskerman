@@ -1,3 +1,6 @@
+import cls from 'classnames';
+
+const defaultContainerClasses = `flex flex-wrap mx-auto my-0 bg-none mobile:block`;
 
 export const metadata = {
   title: 'Tasker Boards',
@@ -9,5 +12,5 @@ type Props = {
 };
 
 export default async function BoardsLayout({ children }: Props) {
-  return <>{children}</>;
+  return <div className={cls(defaultContainerClasses)}>{children}</div>;
 }

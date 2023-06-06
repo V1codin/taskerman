@@ -3,6 +3,10 @@ import { randomUUID } from 'crypto';
 
 import type { TAuthProviderProfiles } from 'next-auth';
 
+export const isLink = (str: string = '') => {
+  return /^(http|https):\/\/[^ "]+/g.test(str);
+};
+
 export const generate = {
   uuid() {
     return this.uuidv4();

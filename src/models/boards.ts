@@ -2,20 +2,19 @@ import { Schema, Model } from 'mongoose';
 
 import { IUser } from './users';
 
+export type TUserBoardRoles = 'guest' | 'owner' | 'admin' | 'member';
+
+export interface IBoardMember {
+  role: TUserBoardRoles;
+  user: IUser;
+}
+
 export interface IBoard {
   _id: string;
   title: string;
   bg: string;
   owner: IUser;
-  // TODO add roles to board's members
-  /*
-  ?
-  {
-    member: IUser[],
-    role: TUserRolesForBoard = 'guest' | 'owner' | 'admin';
-  }
-  */
-  members: IUser[];
+  members: IBoardMember[];
   pendingMembers: Schema.Types.ObjectId[] | IBoard[];
 }
 
@@ -25,8 +24,14 @@ export const BoardScheme = new Schema<IBoard, Model<IBoard>, IBoardMethods>(
   {
     members: [
       {
-        type: Schema.Types.ObjectId,
-        ref: 'User',
+        user: {
+          type: Schema.Types.ObjectId,
+          ref: 'User',
+        },
+        role: {
+          type: String,
+          default: 'guest',
+        },
       },
     ],
     title: { type: String, required: true },

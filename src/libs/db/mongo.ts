@@ -16,6 +16,7 @@ interface MongoDbProvider
     ReturnType<typeof UserModel.findOne>,
     Awaited<ReturnType<typeof UserModel.findOne>>,
     Promise<string | null>,
+    Promise<string | null>,
     Promise<IBoard | null>,
     IBoard[],
     // ? unknown because Boards.create is overloading function
@@ -45,7 +46,7 @@ export class MongoDataBaseProvider implements MongoDbProvider {
         {
           owner: userObj,
         },
-        { members: userObj },
+        { 'members.user': { $in: [userObj] } },
       ],
     };
   }
@@ -59,13 +60,20 @@ export class MongoDataBaseProvider implements MongoDbProvider {
 
   isUserBoardSubscriberUtils(userId: string, board: IBoard) {
     return (
-      board.members.findIndex(({ _id }) => this.isEqualUtils(userId, _id)) > -1
+      board.members.findIndex(({ user: { _id } }) =>
+        this.isEqualUtils(userId, _id),
+      ) > -1
     );
   }
 
   private getObjectIdFromStringUtils(id: string | ParticularDBType) {
     if (typeof id === 'string') {
-      return new Types.ObjectId(id);
+      const strSize = id.length;
+      if (strSize === 24) {
+        return new Types.ObjectId(id);
+      }
+
+      return null;
     }
 
     return id;
@@ -195,13 +203,23 @@ export class MongoDataBaseProvider implements MongoDbProvider {
     return board.title;
   }
 
+  async getBoardBackgroundById(boardId: string | ParticularDBType) {
+    const board = await BoardModel.findOne({
+      _id: this.getObjectIdFromStringUtils(boardId),
+    });
+
+    if (!board) return null;
+
+    return board.bg;
+  }
+
   async getBoardById(boardId: string | ParticularDBType) {
     try {
       const board = await BoardModel.findOne({
         _id: this.getObjectIdFromStringUtils(boardId),
       })
         .populate('owner')
-        .populate('members');
+        .populate('members.user');
 
       if (!board) {
         return null;
@@ -212,8 +230,6 @@ export class MongoDataBaseProvider implements MongoDbProvider {
 
       return result;
     } catch (e) {
-      console.error('', e);
-
       return null;
     }
   }

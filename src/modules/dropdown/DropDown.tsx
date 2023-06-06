@@ -7,7 +7,7 @@ import { useEscapeKeyCallback } from '@/hooks/useEscapeKeyCallback';
 
 const defaultContainerClasses = `
 colored designed absolute 
-z-[8000] pb-1 top-[60px] 
+z-[4000] pb-1 top-[60px] 
 right-2 min-w-[200px]`;
 
 const defaultHeaderClasses = `relative rounded-t-md 

@@ -28,7 +28,10 @@ const Avatar: React.FC<AvatarProps> = ({
       title={displayName}
     />
   ) : (
-    <DefaultAccountImage userAliases={{ displayName, username }} />
+    <DefaultAccountImage
+      userAliases={{ displayName, username }}
+      classNames={className}
+    />
   );
 };
 

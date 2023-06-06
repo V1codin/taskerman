@@ -1,4 +1,7 @@
+import cls from 'classnames';
+
 type DefaultAccountImageProps = {
+  classNames?: string;
   userAliases: {
     displayName?: string;
     username?: string;
@@ -6,6 +9,7 @@ type DefaultAccountImageProps = {
 };
 
 const DefaultAccountImage: React.FC<DefaultAccountImageProps> = ({
+  classNames,
   userAliases: { displayName, username },
 }) => {
   const content = displayName
@@ -24,13 +28,15 @@ const DefaultAccountImage: React.FC<DefaultAccountImageProps> = ({
 
   return (
     <div
-      className="flex
-      text-center
-      justify-center 
-      items-center 
-      text-lg 
-      rounded-[50%] 
-      w-full h-full text-yellow"
+      className={cls(
+        `flex
+        text-center
+        justify-center 
+        items-center 
+        rounded-[50%] 
+        w-full h-full text-yellow`,
+        classNames,
+      )}
     >
       {content}
     </div>

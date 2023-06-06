@@ -14,11 +14,13 @@ import {
   useCallback,
 } from 'react';
 import { getDataFromClipBoard } from '@/utils/helpers';
-import { useSession } from 'next-auth/react';
-import { getSetBoardsState } from '@/context/stateManager';
-import { useSetAtom } from 'jotai';
+import {
+  getSetBoardsState,
+  getSetToastState,
+  getSetUserStateAtom,
+} from '@/context/stateManager';
+import { useAtomValue, useSetAtom } from 'jotai';
 import { api } from '@/utils/api/api';
-import { useToast } from '@/hooks/useToast';
 
 type CreateBoardModalProps = {};
 
@@ -37,9 +39,9 @@ const CreateBoardForm: React.FC<CreateBoardModalProps> = () => {
     style: CSSProperties;
   }>(defaultFormState);
 
-  const { setToast } = useToast();
+  const user = useAtomValue(getSetUserStateAtom);
+  const setToast = useSetAtom(getSetToastState);
   const [isLoading, setIsLoading] = useState(false);
-  const { data, status } = useSession();
   const updateBoards = useSetAtom(getSetBoardsState);
 
   const updateForm = useCallback(
@@ -115,7 +117,7 @@ const CreateBoardForm: React.FC<CreateBoardModalProps> = () => {
     async (e: BaseSyntheticEvent) => {
       e.preventDefault();
       try {
-        if (status !== 'authenticated') {
+        if (!user) {
           throw new Error('Please log into your account');
         }
 
@@ -130,7 +132,7 @@ const CreateBoardForm: React.FC<CreateBoardModalProps> = () => {
           members: [],
           pendingMembers: [],
           title: form.title,
-          owner: data?.user.id!,
+          owner: user?.id!,
         });
 
         setForm(defaultFormState);
@@ -141,7 +143,6 @@ const CreateBoardForm: React.FC<CreateBoardModalProps> = () => {
         });
 
         setToast({
-          timeout: 2000,
           typeClass: 'notification',
           message: `Board titled : ${result.data.title} was created`,
         });
@@ -154,7 +155,7 @@ const CreateBoardForm: React.FC<CreateBoardModalProps> = () => {
         setIsLoading(false);
       }
     },
-    [data?.user.id, form.bg, form.title, setToast, status, updateBoards],
+    [user, form.title, form.bg, updateBoards, setToast],
   );
 
   return (

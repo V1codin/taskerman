@@ -26,8 +26,8 @@ const SubsMap: React.FC<SubsMapProps> = () => {
     () => degreesToRadians(Math.round(360 / subs.length)),
     [subs.length],
   );
-  const [isSubsMapDisplayed, setIsSubsMapDisplayed] = useState(false);
   const [active, setActive] = useAtom(getSetProfileSubsActiveAtom);
+  const [isSubsMapDisplayed, setIsSubsMapDisplayed] = useState(false);
 
   useEffect(() => {
     const resize = () => {
@@ -138,8 +138,8 @@ const SubsMap: React.FC<SubsMapProps> = () => {
             height={100}
             className="cursor-pointer 
               transition-all duration-200 ease-in-out 
-              z-[5000] hover:scale-125 
-              laptop:sticky laptop:top-4 laptop:z-[5100]"
+              z-[3200] hover:scale-125 
+              laptop:sticky laptop:top-4 laptop:z-[3250]"
           />
           <RightButton
             attrs={{

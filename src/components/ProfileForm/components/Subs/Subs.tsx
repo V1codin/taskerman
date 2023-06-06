@@ -2,6 +2,7 @@
 
 import SingleSub from './SingleSub';
 import SubsMap from './SubsMap';
+import cls from 'classnames';
 
 import { useAtom, useAtomValue } from 'jotai';
 import {
@@ -9,14 +10,96 @@ import {
   getSetProfileSubsActiveAtom,
   initialProfileSub,
 } from '@/context/stateManager';
-import { useEffect } from 'react';
-import { FIRST_MEDIA_POINT_WIDTH } from '@/utils/constants';
+import { useEffect, useRef, useState } from 'react';
+import {
+  FIRST_MEDIA_POINT_WIDTH,
+  PROFILE_SUBS_SLIDE_WIDTH,
+} from '@/utils/constants';
+
+import type { MouseEvent as ReactMouseEvent } from 'react';
 
 type SubsIteratorProps = {};
 
 const SubsIterator: React.FC<SubsIteratorProps> = () => {
   const subs = useAtomValue(boardsStateAtom);
   const [activeSlide, setActive] = useAtom(getSetProfileSubsActiveAtom);
+  const subsLengthRef = useRef<number>(subs.length);
+  const [isSubsMapDisplayed, setIsSubsMapDisplayed] = useState(false);
+
+  const [isMouseSlideStart, setIsMouseSlideStart] = useState(false);
+  const [mouseSlideCoords, setMouseSlideCoords] = useState(0);
+
+  const mouseDown = (e: ReactMouseEvent<HTMLDivElement, MouseEvent>) => {
+    setIsMouseSlideStart(true);
+    setMouseSlideCoords(e.pageX);
+  };
+
+  const mouseUp = (e: ReactMouseEvent<HTMLDivElement, MouseEvent>) => {
+    setIsMouseSlideStart(false);
+
+    const direction = Math.sign(e.pageX - mouseSlideCoords);
+
+    if (direction < 0) {
+      if (activeSlide.index >= subs.length - 1) {
+        return;
+      }
+    }
+
+    if (direction > 0) {
+      if (activeSlide.index <= 0) {
+        return;
+      }
+    }
+
+    const rawIndex = activeSlide.index - direction;
+    const newIndex = Math.abs(rawIndex);
+
+    const coords = PROFILE_SUBS_SLIDE_WIDTH * direction;
+    setActive({
+      coords: activeSlide.coords + coords,
+      index: newIndex,
+    });
+  };
+
+  useEffect(() => {
+    const resize = () => {
+      if (window.innerWidth < FIRST_MEDIA_POINT_WIDTH) {
+        setIsSubsMapDisplayed(false);
+      } else {
+        setIsSubsMapDisplayed(true);
+      }
+    };
+
+    resize();
+    window.addEventListener('resize', resize);
+    return () => {
+      window.removeEventListener('resize', resize);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (subsLengthRef.current === subs.length || !isSubsMapDisplayed) {
+      return;
+    }
+
+    if (subsLengthRef.current < subs.length) {
+      setActive({
+        index: subs.length - 1,
+        coords: (subs.length - 1) * PROFILE_SUBS_SLIDE_WIDTH * -1,
+      });
+    }
+
+    if (subsLengthRef.current >= subs.length) {
+      if (activeSlide.index === subs.length) {
+        setActive({
+          index: subs.length - 1,
+          coords: (subs.length - 1) * PROFILE_SUBS_SLIDE_WIDTH * -1,
+        });
+      }
+    }
+
+    subsLengthRef.current = subs.length;
+  }, [activeSlide.index, isSubsMapDisplayed, setActive, subs.length]);
 
   useEffect(() => {
     const resize = () => {
@@ -37,7 +120,10 @@ const SubsIterator: React.FC<SubsIteratorProps> = () => {
 
   return (
     <div
-      className="mt-2  
+      onMouseDown={mouseDown}
+      onMouseUp={mouseUp}
+      className={cls(
+        `mt-2  
       relative 
       desktop:mt-2 
       laptop:overflow-visible
@@ -47,10 +133,11 @@ const SubsIterator: React.FC<SubsIteratorProps> = () => {
       duration-500 
       grid
       grid-flow-col
-      auto-cols-[465px]
-      "
+      auto-cols-[465px]`,
+      )}
       style={{
         transform: `translate(${activeSlide.coords}px, 0)`,
+        cursor: isMouseSlideStart ? 'grabbing' : 'grab',
       }}
     >
       {subs.map((board) => {

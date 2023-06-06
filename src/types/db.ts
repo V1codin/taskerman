@@ -1,12 +1,12 @@
 import { TypeOf, z } from 'zod';
-import { IUser, TEditableUserProps } from '@/models/users';
-import {
+import type { IUser, TEditableUserProps } from '@/models/users';
+import type {
   BoardServiceCreate,
   BoardServiceGetUserBoards,
 } from '@/libs/boards.service';
-import { IBoard } from '@/models/boards';
-import { RequireAtLeastOne } from './utils';
-import { AuthClient } from './state';
+import type { IBoard, TUserBoardRoles } from '@/models/boards';
+import type { RequireAtLeastOne } from './utils';
+import type { AuthClient } from './state';
 
 /*
   | 'cards'
@@ -58,7 +58,7 @@ export namespace TBoardNS {
       };
 
   export interface IBoardMember {
-    role: TUserRolesForBoard;
+    role: TUserBoardRoles;
     member: Pick<
       SessionUser,
       'displayName' | 'imageURL' | 'email' | 'username'
@@ -108,8 +108,6 @@ export type TUser = {
   nameAlias: string;
 };
 
-export type TUserRolesForBoard = 'guest' | 'owner' | 'admin';
-
 export type TUnsafeBoardProps = '_id';
 
 export type SessionUser = {
@@ -130,6 +128,7 @@ export interface DataBaseProvider<
   TUserById extends unknown,
   TUserIdByUserName extends unknown,
   TPatchedUser extends unknown,
+  TBoardBackgroundById extends unknown,
   TBoardTitleById extends unknown,
   TBoardDById extends unknown,
   TUserBoards extends unknown,
@@ -153,6 +152,9 @@ export interface DataBaseProvider<
   getUserIdByUserName(username: string): TUserIdByUserName;
   patchUser(userId: string, patch: TEditableUserProps): TPatchedUser;
 
+  getBoardBackgroundById(
+    boardId: string | ParticularDBType,
+  ): TBoardBackgroundById;
   getBoardTitleById(boardId: string | ParticularDBType): TBoardTitleById;
   getBoardById(boardId: string | ParticularDBType): TBoardDById;
   getUserBoards(

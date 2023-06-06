@@ -114,7 +114,6 @@ export const getProfileActiveSubByIndex = (
     activeSlide.coords + diffSign * diffAbsolute * PROFILE_SUBS_SLIDE_WIDTH;
 
   return {
-    containerWidth: activeSlide.containerWidth,
     coords: newCoords,
     index,
   };

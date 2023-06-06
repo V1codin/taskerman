@@ -6,11 +6,14 @@ import ClipBoardButton from '@/modules/button/ClipBoardButton';
 import { getDataFromClipBoard } from '@/utils/helpers';
 import { ChangeEvent, useLayoutEffect, useState } from 'react';
 import { useAtomValue, useSetAtom } from 'jotai';
-import { getSetUserStateAtom, userImageAtom } from '@/context/stateManager';
+import {
+  getSetToastState,
+  getSetUserStateAtom,
+  userImageAtom,
+} from '@/context/stateManager';
 import { api } from '@/utils/api/api';
 
 import type { MouseEvent } from 'react';
-import { useToast } from '@/hooks/useToast';
 
 type AvatarFormProps = {};
 
@@ -18,7 +21,7 @@ const AvatarForm: React.FC<AvatarFormProps> = () => {
   const image = useAtomValue(userImageAtom);
   const setUser = useSetAtom(getSetUserStateAtom);
   const [state, setState] = useState(image || '');
-  const { setToast } = useToast();
+  const setToast = useSetAtom(getSetToastState);
   const [loader, setLoader] = useState(false);
 
   useLayoutEffect(() => {

@@ -1,7 +1,10 @@
 import Confirm from '@/modules/confirm/Confirm';
 
-import { getSetBoardsState, getSetModal } from '@/context/stateManager';
-import { useToast } from '@/hooks/useToast';
+import {
+  getSetBoardsState,
+  getSetModal,
+  getSetToastState,
+} from '@/context/stateManager';
 import { ServerResponseError } from '@/libs/error.service';
 import { TDeleteModalData } from '@/types/state';
 import { api } from '@/utils/api/api';
@@ -15,7 +18,7 @@ type DeleteBoardFormProps = TDeleteModalData;
 const DeleteBoardForm: React.FC<DeleteBoardFormProps> = ({ id, children }) => {
   const setModal = useSetAtom(getSetModal);
   const setBoards = useSetAtom(getSetBoardsState);
-  const { setToast } = useToast();
+  const setToast = useSetAtom(getSetToastState);
   const [isLoading, setIsLoading] = useState(false);
 
   const refreshData = useCallback(

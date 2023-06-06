@@ -1,6 +1,5 @@
 'use client';
 
-import cls from 'classnames';
 import BoardCard from './BoardCard';
 
 import { useAtomValue, useSetAtom } from 'jotai';
@@ -17,8 +16,6 @@ import { isLink } from '@/utils/helpers';
 import { useCallback } from 'react';
 
 import type { IBoard } from '@/models/boards';
-
-const defaultContainerClasses = `flex flex-wrap mx-auto my-0 bg-none`;
 
 type BoardContainerProps = {};
 
@@ -57,7 +54,7 @@ const BoardsContainer: React.FC<BoardContainerProps> = () => {
   if (!boards.length) return null;
 
   return (
-    <div className={cls(defaultContainerClasses)}>
+    <>
       {boards.map((board, index) => {
         const bgChecker = isLink(board.bg);
 
@@ -73,7 +70,7 @@ const BoardsContainer: React.FC<BoardContainerProps> = () => {
           />
         );
       })}
-    </div>
+    </>
   );
 };
 

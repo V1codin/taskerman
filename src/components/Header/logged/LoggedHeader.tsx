@@ -10,7 +10,10 @@ const LoggedHeader: React.FC<LoggedHeaderProps> = () => {
   const navRef = useRef<HTMLElement | null>(null);
 
   return (
-    <nav className="flex items-center fixed right-10 z-[7000]" ref={navRef}>
+    <nav
+      className="flex items-center fixed right-10 z-[3200] mobile:right-3"
+      ref={navRef}
+    >
       <Menu containerRef={navRef} />
     </nav>
   );

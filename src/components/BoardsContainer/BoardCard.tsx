@@ -7,7 +7,7 @@ import Link from 'next/link';
 import type { IBoard } from '@/models/boards';
 import type { MouseEvent } from 'react';
 
-const defaultContainerClasses = `relative mt-2 mr-0 mb-0 ml-4 overflow-auto cursor-pointer w-56 h-[150px]`;
+const defaultContainerClasses = `relative mt-2 mr-0 mb-0 ml-4 overflow-auto cursor-pointer w-56 h-[150px] mobile:mx-[auto] mobile:w-3/4`;
 
 type BoardCardProps = IBoard & {
   bgChecker: boolean;

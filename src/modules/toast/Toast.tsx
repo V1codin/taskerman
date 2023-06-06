@@ -2,15 +2,37 @@
 
 import cls from 'classnames';
 
-import { useAtomValue } from 'jotai';
+import { useAtom } from 'jotai';
 import { getSetToastState } from '@/context/stateManager';
+import { useEffect, useRef } from 'react';
 
 const Toast: React.FC<{}> = ({}) => {
-  const currentToast = useAtomValue(getSetToastState);
+  const [toast, setToast] = useAtom(getSetToastState);
+  const timeout = useRef<NodeJS.Timeout | null>(null);
 
-  return currentToast.message ? (
-    <div className={cls('toast', currentToast.typeClass)}>
-      <h4>{currentToast.message}</h4>
+  useEffect(() => {
+    if (!toast.message) {
+      return;
+    }
+
+    if (timeout.current) {
+      clearTimeout(timeout.current);
+    }
+
+    const resetToast = () => {
+      setToast({
+        message: '',
+      });
+    };
+
+    const time = toast.timeout || 2000;
+
+    timeout.current = setTimeout(resetToast, time);
+  }, [setToast, toast.message, toast.timeout]);
+
+  return toast.message ? (
+    <div className={cls('toast', toast.typeClass)}>
+      <h4>{toast.message}</h4>
     </div>
   ) : null;
 };
