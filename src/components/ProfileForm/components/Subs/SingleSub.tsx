@@ -5,6 +5,7 @@ import boardIcon from '@/assets/board_colored.svg?url';
 // @ts-ignore
 import binIcon from '@/assets/bin.svg?url';
 import SubButtons from './SubButtons';
+import cls from 'classnames';
 
 import {
   DeleteBoardMessage,
@@ -18,14 +19,21 @@ import { useCallback, useRef } from 'react';
 import type { IBoard } from '@/models/boards';
 import Link from 'next/link';
 
+import { BOARD_SUBS_TITLE_SLICE_INDEX } from '@/utils/constants';
+
 type SingleSubProps = {
   board: IBoard;
+  classNames?: string;
 };
 
-const SingleSub: React.FC<SingleSubProps> = ({ board }) => {
+const SingleSub: React.FC<SingleSubProps> = ({ board, classNames }) => {
   const user = useAtomValue(userStateAtom);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const setModal = useSetAtom(getSetModal);
+
+  const title =
+    board.title.slice(0, BOARD_SUBS_TITLE_SLICE_INDEX) +
+    `${board.title.length >= BOARD_SUBS_TITLE_SLICE_INDEX ? '...' : ''}`;
 
   const bgChecker = isLink(board.bg);
 
@@ -67,7 +75,8 @@ const SingleSub: React.FC<SingleSubProps> = ({ board }) => {
   return (
     <div
       key={board._id}
-      className="w-[465px] laptop:mt-2 laptop:w-full 
+      className={cls(
+        `w-[465px] laptop:mt-2 laptop:w-full 
       laptop:flex
       laptop:flex-col
       laptop:items-center
@@ -79,14 +88,11 @@ const SingleSub: React.FC<SingleSubProps> = ({ board }) => {
       laptop:after:border-b
       laptop:after:border-l
       laptop:after:border-r
-    laptop:after:border-pale-blue
-      "
+    laptop:after:border-pale-blue`,
+        classNames,
+      )}
     >
-      <Link
-        href={`/board/${board._id}`}
-        title="Go to the board"
-        className="flex self-start"
-      >
+      <Link href={`/board/${board._id}`} className="flex self-start">
         <h4
           className="rounded-md bg-[#333] 
         text-white font-bold px-3 py-1 w-full
@@ -97,8 +103,9 @@ const SingleSub: React.FC<SingleSubProps> = ({ board }) => {
         laptop:self-start
         "
           id={board._id}
+          title={`Go to the board (${board.title})`}
         >
-          {board.title}
+          {title}
         </h4>
       </Link>
       <div

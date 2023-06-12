@@ -4,6 +4,23 @@ import { BoardScheme, IBoard } from './boards';
 import { IUser, UserScheme } from './users';
 import { IPassword, PasswordScheme } from './passwords';
 import { ISession, SessionScheme } from './sessions';
+import { TUserNS } from '@/types/db';
+
+UserScheme.pre('updateOne', async function (next) {
+  const update = this.getUpdate() as ReturnType<typeof this.getUpdate> &
+    TUserNS.TUpdating;
+
+  if (update && update.displayName) {
+    const doc = await this.model.findOne(this.getQuery());
+    if (doc) {
+      const email = doc?.email ? ` ${doc?.email}` : '';
+
+      this.set('nameAlias', update.displayName + email);
+    }
+  }
+
+  next();
+});
 
 BoardScheme.pre('save', async function (next) {
   this.members.push({
@@ -17,28 +34,20 @@ BoardScheme.pre('save', async function (next) {
 BoardScheme.pre('deleteOne', {}, async function (next) {
   // @ts-ignore
   const filter = this.getFilter();
-  if (filter['_id']) {
-    const boardIdObj = new Types.ObjectId(filter['_id']);
-    // ? remove the board ref from owner
-    await UserModel.updateOne(
-      {
-        subs: boardIdObj,
-      },
-      { $pull: { subs: boardIdObj } },
-    );
 
-    // ? remove the board ref from members
-    const board = await BoardModel.findOne({
-      _id: boardIdObj,
-    });
+  // @ts-ignore
+  const doc = await this.model.findOne(this.getQuery()).populate('members');
 
-    if (board?.members.length) {
-      for (let i = 0; i < board.members.length; i++) {
-        const memberObj = board.members[i];
+  if (doc) {
+    const boardIdObj = new Types.ObjectId(doc._id);
+
+    if (doc?.members.length) {
+      for (let i = 0; i < doc.members.length; i++) {
+        const memberObj = doc.members[i];
 
         await UserModel.updateOne(
           {
-            _id: memberObj,
+            _id: memberObj.user,
           },
           { $pull: { subs: boardIdObj } },
         );

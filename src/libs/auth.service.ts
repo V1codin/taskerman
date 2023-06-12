@@ -69,7 +69,7 @@ export class AuthService {
     return sessionAndUser?.user;
   }
 
-  async getUserByRequest(incomingToken?: string): Promise<string> {
+  async getUserIdByRequest(incomingToken?: string): Promise<string> {
     const token = incomingToken || cookies().get(AUTH_TOKEN_COOKIE_NAME)?.value;
 
     if (!token) {
@@ -120,6 +120,10 @@ export class AuthService {
       id: userFromBD._id,
       ...userFromBD,
     };
+  }
+
+  getUsersByAlias(alias: string) {
+    return this.db.getUsersByAlias(alias);
   }
 
   getUserIdByUserName(username: string) {

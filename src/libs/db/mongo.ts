@@ -15,6 +15,7 @@ interface MongoDbProvider
     ReturnType<typeof UserModel.findOne>,
     ReturnType<typeof UserModel.findOne>,
     Awaited<ReturnType<typeof UserModel.findOne>>,
+    Promise<IUser[] | null>,
     Promise<string | null>,
     Promise<string | null>,
     Promise<IBoard | null>,
@@ -28,6 +29,12 @@ interface MongoDbProvider
 
 export class MongoDataBaseProvider implements MongoDbProvider {
   constructor() {}
+
+  getUserAliasRegexQueryUtils(alias: string): FilterQuery<IUser> {
+    return {
+      nameAlias: { $regex: alias, $options: 'i' },
+    };
+  }
 
   /*
   ? Util methods for changing DataProvider but save request data API
@@ -190,6 +197,18 @@ export class MongoDataBaseProvider implements MongoDbProvider {
       return result;
     } catch (e) {
       return null;
+    }
+  }
+
+  async getUsersByAlias(alias: string) {
+    try {
+      const query = this.getUserAliasRegexQueryUtils(alias);
+
+      const result = await UserModel.find(query);
+
+      return result;
+    } catch (e) {
+      return [];
     }
   }
 

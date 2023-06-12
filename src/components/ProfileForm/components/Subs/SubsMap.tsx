@@ -9,7 +9,7 @@ import {
 } from '@/context/stateManager';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  FIRST_MEDIA_POINT_WIDTH,
+  LAPTOP_MEDIA_POINT_WIDTH,
   PROFILE_SUBS_SLIDE_WIDTH,
 } from '@/utils/constants';
 import { clearCanvas, degreesToRadians } from '@/utils/helpers';
@@ -31,7 +31,7 @@ const SubsMap: React.FC<SubsMapProps> = () => {
 
   useEffect(() => {
     const resize = () => {
-      if (window.innerWidth < FIRST_MEDIA_POINT_WIDTH) {
+      if (window.innerWidth < LAPTOP_MEDIA_POINT_WIDTH) {
         setIsSubsMapDisplayed(false);
       } else {
         setIsSubsMapDisplayed(true);

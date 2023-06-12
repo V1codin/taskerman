@@ -11,12 +11,9 @@ type Props = {
   params: { boardId: string };
 };
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  await dbConnect();
-  const title = await boardService.getBoardTitleById(params.boardId);
-
+export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: title || 'Board',
+    title: 'Board',
     description: 'App for creating tasks and assignin them to people',
   };
 }

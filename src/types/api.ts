@@ -34,7 +34,7 @@ export namespace TBoardsApiNS {
 }
 
 export namespace ApiNS {
-  export type TPagination = [number, number] | null;
+  export type TPagination = [number, number?] | null;
   export type TActions = 'create' | 'delete' | 'update' | 'read';
 
   export type TGetData<T extends TEntities> = T extends 'board'
@@ -77,7 +77,7 @@ export namespace ApiNS {
 
   interface IUserReturn extends Record<keyof TActions, unknown> {
     read: {
-      data: SessionUser;
+      data: SessionUser[];
     };
     create: {
       message: string;
@@ -94,30 +94,6 @@ export namespace ApiNS {
     board: IBoardReturn;
     user: IUserReturn;
   }
-}
-
-export interface Protocol<TAuthProps extends unknown> {
-  read<TResult extends unknown, TEntity extends TEntities>(
-    type: TEntity,
-    data: ApiNS.TGetData<TEntity>,
-    pagination: ApiNS.TPagination,
-    authProps: TAuthProps,
-  ): Promise<TResult>;
-
-  create<TResult extends unknown>(
-    type: TEntities,
-    data: ApiNS.TCreateData<TEntities>,
-  ): Promise<TResult>;
-
-  delete<TResult extends unknown>(
-    type: TEntities,
-    data: ApiNS.TDeleteData<TEntities>,
-  ): Promise<TResult>;
-
-  update<TResult extends unknown>(
-    type: TEntities,
-    data: ApiNS.TUpdateData<TEntities>,
-  ): Promise<TResult>;
 }
 
 export namespace HttpNS {
@@ -140,7 +116,40 @@ export namespace HttpNS {
 
   export interface IUrls {
     board: TUrl;
-    list: TUrl;
     user: TUrl;
   }
+}
+
+// * CurrentAuthProps could be null if it is not needed in another protocol impl
+export type CurrentAuthProps = HttpNS.TAuthProps;
+export interface RequestConfig {
+  authProps?: CurrentAuthProps;
+  pagination?: ApiNS.TPagination;
+  additionalPath?: string;
+}
+
+export type HttpProtocol = Protocol;
+export type CurrentProtocol = HttpProtocol;
+
+export interface Protocol {
+  read<TResult extends unknown, TEntity extends TEntities>(
+    type: TEntity,
+    data: ApiNS.TGetData<TEntity>,
+    getConfig: RequestConfig,
+  ): Promise<TResult>;
+
+  create<TResult extends unknown>(
+    type: TEntities,
+    data: ApiNS.TCreateData<TEntities>,
+  ): Promise<TResult>;
+
+  delete<TResult extends unknown>(
+    type: TEntities,
+    data: ApiNS.TDeleteData<TEntities>,
+  ): Promise<TResult>;
+
+  update<TResult extends unknown>(
+    type: TEntities,
+    data: ApiNS.TUpdateData<TEntities>,
+  ): Promise<TResult>;
 }

@@ -1,10 +1,11 @@
 import Spinner from '@/assets/pulse.svg';
 import cls from 'classnames';
 
-type Props = {
+type ProcessProps = {
   isShown?: boolean;
   size?: string;
   isBordered?: boolean;
+  classNames?: string;
 };
 
 const defaultContainerClasses = `flex justify-center 
@@ -19,10 +20,15 @@ const defaultContainerClasses = `flex justify-center
   translate-y-[-50%]
   rounded-[50%]`;
 
-const Process: React.FC<Props> = ({ isShown, isBordered, size = 'w-9' }) => {
+const Process: React.FC<ProcessProps> = ({
+  isShown,
+  isBordered,
+  classNames,
+  size = 'w-9',
+}) => {
   return isShown ? (
     <div
-      className={cls(defaultContainerClasses, {
+      className={cls(defaultContainerClasses, classNames, {
         '!border-pale-green': isBordered === true,
       })}
     >

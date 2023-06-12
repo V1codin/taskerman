@@ -3,8 +3,6 @@ import fetcher from './fetcher';
 import {
   API_BOARDS_URL,
   API_BOARD_UPDATE_URL,
-  API_LISTS_URL,
-  API_LIST_UPDATE_URL,
   API_SIGNUP_URL,
   API_SINGLE_BOARD_URL,
   API_USER_DELETE_URL,
@@ -15,24 +13,25 @@ import {
   isServer,
 } from '../constants';
 
-import type { ApiNS, HttpNS, Protocol, TMethods } from '@/types/api';
+import type {
+  ApiNS,
+  CurrentProtocol,
+  HttpNS,
+  HttpProtocol,
+  RequestConfig,
+  TMethods,
+} from '@/types/api';
 
 type TFetch = <JSON extends unknown>(
   input: RequestInfo,
   init?: RequestInit,
 ) => Promise<JSON> | never;
 
-// * CurrentAuthProps could be null if it is not needed in another protocol impl
-type CurrentAuthProps = HttpNS.TAuthProps;
-
-type HttpProtocol = Protocol<CurrentAuthProps>;
-type CurrentProtocol = HttpProtocol;
-
-class Http implements HttpProtocol {
+class HttpService<TFetcher extends TFetch> implements HttpProtocol {
   private urls: HttpNS.IUrls;
-  private fetch: TFetch;
+  private readonly fetch: TFetcher;
 
-  constructor(urls: HttpNS.IUrls, fetcher: TFetch) {
+  constructor(urls: HttpNS.IUrls, fetcher: TFetcher) {
     this.urls = urls;
     this.fetch = fetcher;
   }
@@ -43,7 +42,11 @@ class Http implements HttpProtocol {
     };
   }
 
-  private getAuthHeaders(authProps: HttpNS.TAuthProps) {
+  private getAuthHeaders(authProps?: HttpNS.TAuthProps) {
+    if (!authProps) {
+      return '';
+    }
+
     if (authProps && authProps.token) {
       return `Bearer ${authProps.token}`;
     }
@@ -71,26 +74,36 @@ class Http implements HttpProtocol {
     };
   }
 
-  private getUrlParamsFromObj(data: Record<string, string>) {
+  private getUrlParamsFromObj(data: Record<string, string> | null): string {
+    if (!data) {
+      return '';
+    }
+
     return Object.entries(data).reduce((acc, [key, prop]) => {
       return (acc += `?${key}=${prop}`);
     }, '');
   }
 
   private getReadUrl(
-    pagination: ApiNS.TPagination,
     type: TEntities,
     additionalParams: string = '',
+    additionalPath: string = '',
+    pagination?: ApiNS.TPagination,
   ) {
     if (!pagination) {
-      return this.urls[type].GET['single'] + additionalParams;
+      return this.urls[type].GET['single'] + additionalPath + additionalParams;
     }
 
+    // ? if there is no end point of pagination
+    // ? make request of all boards that belong to requesting user
+    const start = pagination[0];
+    const end = typeof pagination[1] !== 'undefined' ? pagination[1] : '';
     // TODO handle pagination on the server
     return (
       this.urls[type].GET['paginated'] +
+      additionalPath +
       additionalParams +
-      `&pagination=${pagination[0]}-${pagination[1]}`
+      `&pagination=${start}-${end}`
     );
   }
 
@@ -107,14 +120,20 @@ class Http implements HttpProtocol {
   read<TResult extends unknown>(
     type: TEntities,
     data: ApiNS.TGetData<TEntities>,
-    pagination: ApiNS.TPagination,
-    authProps: CurrentAuthProps,
+    getConfig: RequestConfig = {},
   ) {
     const additionalParams = this.getUrlParamsFromObj(data);
-    const url = this.getReadUrl(pagination, type, additionalParams);
+
+    const url = this.getReadUrl(
+      type,
+      additionalParams,
+      getConfig.additionalPath,
+      getConfig.pagination,
+    );
     const options = this.getFetcherOptions('GET');
 
-    options.headers['Authorization'] = this.getAuthHeaders(authProps);
+    options.headers['Authorization'] = this.getAuthHeaders(getConfig.authProps);
+
     return this.fetch<TResult>(url, options);
   }
 
@@ -157,13 +176,15 @@ class Api {
     this.protocol = dataTransfer;
   }
 
-  read<T extends TEntities, TResult extends ApiNS.IReturnType[T]['read']>(
-    type: T,
-    data: ApiNS.TGetData<T>,
-    pagination: ApiNS.TPagination,
-    authProps: CurrentAuthProps,
+  read<
+    TRequestEntity extends TEntities,
+    TResult extends ApiNS.IReturnType[TRequestEntity]['read'],
+  >(
+    type: TRequestEntity,
+    data: ApiNS.TGetData<TRequestEntity>,
+    getConfig: RequestConfig = {},
   ) {
-    return this.protocol.read<TResult, T>(type, data, pagination, authProps);
+    return this.protocol.read<TResult, TRequestEntity>(type, data, getConfig);
   }
 
   create<T extends TEntities, TResult extends ApiNS.IReturnType[T]['create']>(
@@ -188,7 +209,7 @@ class Api {
   }
 }
 
-const http = new Http(
+const http = new HttpService(
   {
     board: {
       DELETE: `${BASE_URL}${API_BOARDS_URL}`,
@@ -197,14 +218,6 @@ const http = new Http(
       GET: {
         single: `${BASE_URL}${API_SINGLE_BOARD_URL}`,
         paginated: `${BASE_URL}${API_BOARDS_URL}`,
-      },
-    },
-    list: {
-      POST: `${BASE_URL}${API_LISTS_URL}`,
-      DELETE: `${BASE_URL}${API_LISTS_URL}`,
-      PATCH: `${BASE_URL}${API_LIST_UPDATE_URL}`,
-      GET: {
-        single: `${BASE_URL}${API_LISTS_URL}`,
       },
     },
     user: {

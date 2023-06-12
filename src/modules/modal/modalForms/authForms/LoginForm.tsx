@@ -17,8 +17,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useSetAtom } from 'jotai';
 import { getSetModal, getSetToastState } from '@/context/stateManager';
 import { signIn } from 'next-auth/react';
-import { useDebounce } from '@/hooks/useDebounce';
 import { userLoginSchema } from '@/types/state';
+import { debounce } from '@/utils/helpers';
 import { useRouter } from 'next/navigation';
 
 import type { ToastProps } from '@/types/helpers';
@@ -53,7 +53,7 @@ const LoginForm: React.FC<LoginFormProps> = () => {
     refresh();
   };
 
-  const debouncedInputChange = useDebounce(
+  const debouncedInputChange = debounce(
     (e: React.ChangeEvent<HTMLInputElement>) =>
       trigger(e.target.name as keyof AuthClient.TUserLogin),
   );

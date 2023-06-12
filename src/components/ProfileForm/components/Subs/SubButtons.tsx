@@ -14,7 +14,7 @@ import ButtonWithIcon from '@/modules/button/ButtonWithIcon';
 import cls from 'classnames';
 
 import { MutableRefObject, useCallback, useEffect, useState } from 'react';
-import { FIRST_MEDIA_POINT_WIDTH } from '@/utils/constants';
+import { LAPTOP_MEDIA_POINT_WIDTH } from '@/utils/constants';
 import { listInnerActiveElementDefaultClass } from '@/components/Header/logged/components/dropdownBodies/DropDownElement';
 
 import type { IBoard } from '@/models/boards';
@@ -42,7 +42,7 @@ const SubButtons: React.FC<SubButtonsProps> = ({
 
   useEffect(() => {
     const resize = () => {
-      setIsDesktop(window.innerWidth > FIRST_MEDIA_POINT_WIDTH);
+      setIsDesktop(window.innerWidth > LAPTOP_MEDIA_POINT_WIDTH);
     };
 
     resize();

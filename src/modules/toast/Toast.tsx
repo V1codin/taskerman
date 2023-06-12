@@ -6,7 +6,9 @@ import { useAtom } from 'jotai';
 import { getSetToastState } from '@/context/stateManager';
 import { useEffect, useRef } from 'react';
 
-const Toast: React.FC<{}> = ({}) => {
+type ToastProps = {};
+
+const Toast: React.FC<ToastProps> = ({}) => {
   const [toast, setToast] = useAtom(getSetToastState);
   const timeout = useRef<NodeJS.Timeout | null>(null);
 

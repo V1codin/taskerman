@@ -319,6 +319,26 @@ button:disabled {
   content: '';
 }
 
+.dropdown_members {
+  align-items: center;
+  display: grid;
+  grid-template-areas:
+    'name avatar'
+    'email avatar';
+}
+.dropdown_members_name {
+  justify-self: self-start;
+  grid-area: name;
+}
+.dropdown_members_email {
+  justify-self: self-start;
+  grid-area: email;
+}
+.dropdown_members_avatar {
+  justify-self: center;
+  grid-area: avatar;
+}
+
 @keyframes shimmer {
   100% {
     transform: translateX(100%);

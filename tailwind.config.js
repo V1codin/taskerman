@@ -43,6 +43,7 @@ module.exports = {
         gray: '#cccccc',
         'deep-gray': '#858585',
         'hover-blue': '#102936',
+        'disabled-grey': '#ffffff49',
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',

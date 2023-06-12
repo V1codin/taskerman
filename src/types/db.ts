@@ -80,6 +80,7 @@ export namespace TUserNS {
     username: string;
     displayName: string;
     email: string;
+    nameAlias: string;
   };
 
   export type TCreating = {
@@ -128,6 +129,7 @@ export interface DataBaseProvider<
   TUserById extends unknown,
   TUserIdByUserName extends unknown,
   TPatchedUser extends unknown,
+  TUsersByAlias extends unknown,
   TBoardBackgroundById extends unknown,
   TBoardTitleById extends unknown,
   TBoardDById extends unknown,
@@ -151,6 +153,7 @@ export interface DataBaseProvider<
   getUserById(userId: string | ParticularDBType): TUserById;
   getUserIdByUserName(username: string): TUserIdByUserName;
   patchUser(userId: string, patch: TEditableUserProps): TPatchedUser;
+  getUsersByAlias(alias: string): TUsersByAlias;
 
   getBoardBackgroundById(
     boardId: string | ParticularDBType,

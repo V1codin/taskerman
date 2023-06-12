@@ -7,7 +7,7 @@ import { useEscapeKeyCallback } from '@/hooks/useEscapeKeyCallback';
 
 const defaultContainerClasses = `
 colored designed absolute 
-z-[4000] pb-1 top-[60px] 
+z-[4000] top-[60px] 
 right-2 min-w-[200px]`;
 
 const defaultHeaderClasses = `relative rounded-t-md 
@@ -22,6 +22,7 @@ type DropDownProps = {
   children?: React.ReactNode;
   dropDownType?: string;
   containerClassNames?: string;
+  listClassNames?: string;
 };
 
 const DropDown: React.FC<DropDownProps> = ({
@@ -30,24 +31,27 @@ const DropDown: React.FC<DropDownProps> = ({
   children,
   dropDownType,
   containerClassNames,
+  listClassNames,
 }) => {
-  useEscapeKeyCallback(close);
+  useEscapeKeyCallback(close, null, true);
 
   return (
     <div className={cls(defaultContainerClasses, containerClassNames)}>
-      <header className={cls(defaultHeaderClasses)}>
-        <h4 className="text-pale-green font-bold unselectable">
-          {heading || 'List'}
-        </h4>
-        <CloseButton
-          click={close}
-          classNames={cls('top-[2px] right-[5px]')}
-          attrs={{
-            'data-drop-type': dropDownType || '',
-          }}
-        />
-      </header>
-      {children && <ul className="text-[0.8em] p-1">{children}</ul>}
+      {heading && (
+        <header className={cls(defaultHeaderClasses)}>
+          <h4 className="text-pale-green font-bold unselectable">{heading}</h4>
+          <CloseButton
+            click={close}
+            classNames={cls('top-[2px] right-[5px]')}
+            attrs={{
+              'data-drop-type': dropDownType || '',
+            }}
+          />
+        </header>
+      )}
+      {children && (
+        <ul className={cls('text-[0.8em] p-1', listClassNames)}>{children}</ul>
+      )}
     </div>
   );
 };

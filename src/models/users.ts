@@ -15,7 +15,9 @@ export type TEditableUserProps =
   | Required<Pick<IUser, 'displayName'>>
   | Required<Pick<IUser, 'imageURL'>>;
 
-export const UserScheme = new Schema<IUser, Model<IUser>>(
+interface IUserMethods {}
+
+export const UserScheme = new Schema<IUser, Model<IUser>, IUserMethods>(
   {
     username: { type: String, unique: true, require: true },
     displayName: {
