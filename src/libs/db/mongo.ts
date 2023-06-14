@@ -1,8 +1,9 @@
 import { BoardModel, UserModel, PasswordModel } from '@/models/middlewares';
+import { ServerResponseError } from '../error.service';
 import { Types } from 'mongoose';
 
 import type { IUser } from '@/models/users';
-import type { IBoard } from '@/models/boards';
+import type { IBoard, IBoardMember } from '@/models/boards';
 import type { FilterQuery } from 'mongoose';
 import type { DataBaseProvider, TBoardNS } from '@/types/db';
 import type { TEditableUserProps } from '@/models/users';
@@ -19,12 +20,13 @@ interface MongoDbProvider
     Promise<string | null>,
     Promise<string | null>,
     Promise<IBoard | null>,
+    Promise<IBoardMember[]>,
     IBoard[],
     // ? unknown because Boards.create is overloading function
     // ? and ReturnType is not compatible
     unknown,
     ReturnType<typeof BoardModel.deleteOne>,
-    Promise<true | null>
+    Promise<boolean>
   > {}
 
 export class MongoDataBaseProvider implements MongoDbProvider {
@@ -120,20 +122,20 @@ export class MongoDataBaseProvider implements MongoDbProvider {
 
       return true;
     } catch (e) {
-      return null;
+      return false;
     }
   }
 
   async patchUser(userId: string, data: TEditableUserProps) {
     try {
-      const { acknowledged } = await UserModel.updateOne(
+      const { modifiedCount } = await UserModel.updateOne(
         {
           _id: userId,
         },
         data,
       );
 
-      if (acknowledged) {
+      if (modifiedCount > 0) {
         return this.getUserByIdWithPopulatedSubs(userId);
       }
 
@@ -253,6 +255,31 @@ export class MongoDataBaseProvider implements MongoDbProvider {
     }
   }
 
+  async getBoardMembers(boardId: string | ParticularDBType) {
+    try {
+      const board = await BoardModel.findOne({
+        _id: this.getObjectIdFromStringUtils(boardId),
+      }).populate('members');
+
+      if (!board) {
+        throw new ServerResponseError({
+          code: 404,
+          message: 'Error: Document was not found',
+        });
+      }
+
+      return board.members;
+    } catch (e) {
+      if (e instanceof ServerResponseError) {
+        throw e;
+      }
+      throw new ServerResponseError({
+        code: 500,
+        message: 'Error: Server does not response',
+      });
+    }
+  }
+
   getUserById(userId: string | ParticularDBType) {
     return UserModel.findOne({
       _id: this.getObjectIdFromStringUtils(userId),
@@ -298,6 +325,53 @@ export class MongoDataBaseProvider implements MongoDbProvider {
     );
 
     return createdBoard.populate('owner');
+  }
+
+  async getUserRole(boardId: string, userId: string) {
+    try {
+      const result = await BoardModel.findOne({
+        _id: boardId,
+      });
+
+      if (!result) {
+        return '';
+      }
+
+      const member = result.members.find(
+        (member) => String(member.user._id) === userId,
+      );
+
+      const role = member?.role || '';
+
+      return role;
+    } catch (e) {
+      return '';
+    }
+  }
+
+  addBoardMember(
+    boardId: string,
+    members: Record<keyof Pick<IBoardMember, 'role' | 'user'>, string>[],
+  ) {
+    const mappedMembers = members.map((member) => {
+      const user = this.getObjectIdFromStringUtils(member.user);
+      return {
+        ...member,
+        user,
+      };
+    });
+    return BoardModel.updateOne(
+      {
+        _id: boardId,
+      },
+      {
+        $push: {
+          members: {
+            $each: mappedMembers,
+          },
+        },
+      },
+    );
   }
 
   deleteBoard(

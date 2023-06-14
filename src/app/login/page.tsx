@@ -1,12 +1,12 @@
-import ProfileForm from '@/components/ProfileForm/ProfileForm';
-
 import { authService } from '@/libs/auth.service';
 import { dbConnect } from '@/libs/db/connect';
 import { AUTH_TOKEN_COOKIE_NAME } from '@/utils/constants';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
-export default async function Profile() {
+import LoginForm from '@/modules/modal/modalForms/authForms/LoginForm';
+
+export default async function Login() {
   await dbConnect();
   const cookieStorage = cookies();
 
@@ -15,9 +15,9 @@ export default async function Profile() {
     sessionToken?.value || '',
   );
 
-  if (!sessionUser) {
-    redirect('/login');
+  if (sessionUser) {
+    redirect('/boards');
   }
 
-  return <ProfileForm />;
+  return <LoginForm />;
 }

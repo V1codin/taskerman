@@ -9,7 +9,7 @@ type TAuthUnion = RedirectableProviderType & OAuthProviderType;
 declare global {
   var _mongoClientPromise: Promise<any> | undefined;
 
-  type TEntities = 'board' | 'user';
+  type TEntities = 'board' | 'user' | 'board_members';
 
   interface IMongoose {
     conn: null | Awaited<Promise<typeof mongoose>>;
@@ -25,7 +25,8 @@ declare global {
   type TBoardAuthErrorMessages =
     | 'Error: User with the email already exists'
     | 'Error: User with the username already exists'
-    | 'Error: Only board OWNER can delete the board. Or only SUBSCRIBER can unsubscribe from the board';
+    | 'Error: Only board OWNER can delete the board. Or only SUBSCRIBER can unsubscribe from the board'
+    | 'Error: You have no permission to perform this action';
 
   type TServerErrorMessages = 'Error: Server does not response';
   type TAuthErrorMessages = 'Error: Unauthorized' | TBoardAuthErrorMessages;

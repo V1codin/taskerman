@@ -4,9 +4,14 @@ import { IUser } from './users';
 
 export type TUserBoardRoles = 'guest' | 'owner' | 'admin' | 'member';
 
+export type TBoardPermissions = {
+  invite_members: boolean;
+};
+
 export interface IBoardMember {
   role: TUserBoardRoles;
   user: IUser;
+  isPending: boolean;
 }
 
 export interface IBoard {
@@ -15,8 +20,25 @@ export interface IBoard {
   bg: string;
   owner: IUser;
   members: IBoardMember[];
-  pendingMembers: Schema.Types.ObjectId[] | IBoard[];
 }
+
+export const BOARD_MEMBER_ROLES_PERMISSIONS: Record<
+  TUserBoardRoles,
+  TBoardPermissions
+> = {
+  guest: {
+    invite_members: false,
+  },
+  owner: {
+    invite_members: true,
+  },
+  admin: {
+    invite_members: true,
+  },
+  member: {
+    invite_members: true,
+  },
+};
 
 interface IBoardMethods {}
 
@@ -32,6 +54,11 @@ export const BoardScheme = new Schema<IBoard, Model<IBoard>, IBoardMethods>(
           type: String,
           default: 'guest',
         },
+        isPending: {
+          type: Boolean,
+          default: true,
+          required: true,
+        },
       },
     ],
     title: { type: String, required: true },
@@ -41,9 +68,6 @@ export const BoardScheme = new Schema<IBoard, Model<IBoard>, IBoardMethods>(
     // ! send board invite -> invited client's ID put to pending.
     // ! agree from invited client -> ID to memberIds
     // ! and boardId to SUBS array of the client
-    pendingMembers: [
-      { type: Schema.Types.ObjectId, ref: 'User', required: true },
-    ],
   },
   {
     timestamps: true,

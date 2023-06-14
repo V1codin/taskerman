@@ -138,7 +138,7 @@ const Members: React.FC<MembersProps> = ({ members, ownerId }) => {
           </>
         )}
       </div>
-      <InviteMembers containerRef={containerRef} />
+      <InviteMembers containerRef={containerRef} members={members} />
     </section>
   );
 };

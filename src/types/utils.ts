@@ -18,4 +18,5 @@ export type CSSMeasurementUnit = 'em' | 'em' | 'px' | 'vw' | 'vh' | '%';
 export type TButtonDataTypes = {
   'data-drop-type'?: string;
   'data-oauthtype'?: TAuthTypes;
+  'data-id'?: string;
 };

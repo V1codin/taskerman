@@ -1,4 +1,9 @@
-import type { IBoard } from '@/models/boards';
+import type {
+  IBoard,
+  IBoardMember,
+  TBoardPermissions,
+  TUserBoardRoles,
+} from '@/models/boards';
 import type { SessionUser, TBoardNS, TUserNS } from './db';
 import type { NextApiRequest } from 'next';
 
@@ -47,6 +52,8 @@ export namespace ApiNS {
     ? TBoardNS.TCreating
     : T extends 'user'
     ? TUserNS.TCreating
+    : T extends 'board_members'
+    ? TBoardMembersNS.TCreating
     : null;
 
   export type TDeleteData<T extends TEntities> = T extends 'board'
@@ -89,11 +96,33 @@ export namespace ApiNS {
       data: null;
     };
   }
+  interface IBoardMembersReturn extends Record<keyof TActions, unknown> {
+    read: {
+      data: IBoardMember[];
+    };
+    create: { message: string; addedMembersIds: string[] };
+    update: IBoardMember;
+
+    // TODO set type
+    delete: {
+      data: null;
+    };
+  }
 
   export interface IReturnType extends Record<TEntities, unknown> {
     board: IBoardReturn;
     user: IUserReturn;
+    board_members: IBoardMembersReturn;
   }
+}
+
+export namespace TBoardMembersNS {
+  export type TCreating = {
+    boardId: string;
+    type: keyof TBoardPermissions;
+    members: string[];
+    role?: TUserBoardRoles;
+  };
 }
 
 export namespace HttpNS {
@@ -117,6 +146,7 @@ export namespace HttpNS {
   export interface IUrls {
     board: TUrl;
     user: TUrl;
+    board_members: TUrl;
   }
 }
 

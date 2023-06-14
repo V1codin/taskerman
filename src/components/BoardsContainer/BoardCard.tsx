@@ -52,6 +52,7 @@ const BoardCard: React.FC<BoardCardProps> = ({
         href={`/board/${_id}`}
         className="card__btn"
         title={`Go to the board ${title}`}
+        prefetch={false}
       >
         {title.length >= BOARD_TITLE_SLICE_INDEX
           ? title.slice(0, BOARD_TITLE_SLICE_INDEX) + '...'

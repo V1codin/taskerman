@@ -3,11 +3,13 @@
 import { useAtom } from 'jotai';
 import { getSetModal } from '@/context/stateManager';
 import { TAuthForms } from '@/types/state';
+import { usePathname } from 'next/navigation';
 
 type DefaultHeaderProps = {};
 
 const DefaultHeader: React.FC<DefaultHeaderProps> = () => {
   const [, setAuthState] = useAtom(getSetModal);
+  const pathname = usePathname();
 
   const openModal = (e: React.MouseEvent<HTMLButtonElement>) => {
     setAuthState({
@@ -18,6 +20,8 @@ const DefaultHeader: React.FC<DefaultHeaderProps> = () => {
       },
     });
   };
+
+  if (pathname === '/login') return null;
 
   return (
     <div className="flex mr-20px">

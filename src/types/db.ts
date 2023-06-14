@@ -43,9 +43,18 @@ export const updateUserSchema = z
     },
   );
 
+export const updatingBoardMembersSchema = z.object({
+  members: z.array(z.string().min(24)),
+  boardId: z.string().min(24),
+  type: z.string(),
+});
+
 export namespace TBoardNS {
-  // !NOT IMPLEMENTED
-  export type TUpdating = null;
+  type UpdateAvailableProps = Pick<IBoard, 'bg' | 'title'>;
+  export type TUpdating = RequireAtLeastOne<
+    UpdateAvailableProps,
+    'bg' | 'title'
+  >;
 
   export type TDeleting = TypeOf<typeof deletingBoardSchema>;
   export type TCreating = TypeOf<typeof creatingBoardSchema>;
@@ -133,6 +142,7 @@ export interface DataBaseProvider<
   TBoardBackgroundById extends unknown,
   TBoardTitleById extends unknown,
   TBoardDById extends unknown,
+  TBoardMembers extends unknown,
   TUserBoards extends unknown,
   TCreatedBoard extends unknown,
   TDeletedBoard extends unknown,
@@ -160,6 +170,7 @@ export interface DataBaseProvider<
   ): TBoardBackgroundById;
   getBoardTitleById(boardId: string | ParticularDBType): TBoardTitleById;
   getBoardById(boardId: string | ParticularDBType): TBoardDById;
+  getBoardMembers(boardId: string | ParticularDBType): TBoardMembers;
   getUserBoards(
     query: TBoardQuery | null,
     userId?: string | ParticularDBType,

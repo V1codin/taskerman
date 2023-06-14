@@ -69,6 +69,15 @@ export class AuthService {
     return sessionAndUser?.user;
   }
 
+  getTokenByReaquestHeaders(requestHeaders: Headers): string {
+    const rawToken = requestHeaders.get('authorization')?.split(' ').pop();
+    const token =
+      (rawToken === 'Bearer' ? '' : rawToken) ||
+      cookies().get(AUTH_TOKEN_COOKIE_NAME)?.value;
+
+    return token || '';
+  }
+
   async getUserIdByRequest(incomingToken?: string): Promise<string> {
     const token = incomingToken || cookies().get(AUTH_TOKEN_COOKIE_NAME)?.value;
 
@@ -80,13 +89,13 @@ export class AuthService {
     }
 
     try {
-      const userAndSession = await dbAdapter.getSessionAndUser(token as string);
+      const user = await this.getSessionUser(token);
 
-      if (!userAndSession?.user.id) {
+      if (!user?.id) {
         throw new Error();
       }
 
-      return userAndSession.user.id;
+      return user.id;
     } catch (e) {
       throw new ServerResponseError({
         code: 403,
@@ -124,6 +133,10 @@ export class AuthService {
 
   getUsersByAlias(alias: string) {
     return this.db.getUsersByAlias(alias);
+  }
+
+  getUserById(userId: string) {
+    return this.db.getUserById(userId);
   }
 
   getUserIdByUserName(username: string) {

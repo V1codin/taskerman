@@ -3,11 +3,9 @@
 import Members from './components/Members';
 import Heading from './components/Heading';
 
-import { useSetAtom } from 'jotai';
-import { getSetSingleBoardState } from '@/context/stateManager';
+import { useMemo } from 'react';
 
 import type { IBoard } from '@/models/boards';
-import { useEffect } from 'react';
 
 type BoardProps = {
   board: IBoard;
@@ -15,19 +13,14 @@ type BoardProps = {
 
 const Board: React.FC<BoardProps> = ({ board }) => {
   const { owner, members } = board;
-  const setSingleBoard = useSetAtom(getSetSingleBoardState);
-
-  useEffect(() => {
-    setSingleBoard({
-      board,
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const filteredMembers = useMemo(() => {
+    return members.filter((item) => item.isPending !== true);
+  }, [members]);
 
   return (
     <>
       <Heading boardTitle={board.title} />
-      <Members members={members} ownerId={owner._id} />
+      <Members members={filteredMembers} ownerId={owner._id} />
 
       <div className="mt-4 flex items-center justify-between flex-wrap">
         <div className="w-1/3 h-48 border border-blue"></div>

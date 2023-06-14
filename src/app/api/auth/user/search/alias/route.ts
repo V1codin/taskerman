@@ -4,8 +4,7 @@ import { NextResponse } from 'next/server';
 
 export async function GET(req: Request) {
   try {
-    const rawToken = req.headers.get('authorization')?.split(' ').pop();
-    const token = rawToken === 'Bearer' ? '' : rawToken;
+    const token = authService.getTokenByReaquestHeaders(req.headers);
     await authService.getUserIdByRequest(token);
 
     const url = new URL(req.url);

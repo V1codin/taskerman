@@ -3,6 +3,7 @@ import fetcher from './fetcher';
 import {
   API_BOARDS_URL,
   API_BOARD_UPDATE_URL,
+  API_MEMBERS_URL,
   API_SIGNUP_URL,
   API_SINGLE_BOARD_URL,
   API_USER_DELETE_URL,
@@ -227,6 +228,14 @@ const http = new HttpService(
       GET: {
         single: `${BASE_URL}${API_USER_GET_URL}`,
       },
+    },
+    board_members: {
+      GET: {
+        single: `${BASE_URL}${API_MEMBERS_URL}`,
+      },
+      POST: `${BASE_URL}${API_MEMBERS_URL}`,
+      DELETE: `${BASE_URL}${API_MEMBERS_URL}`,
+      PATCH: `${BASE_URL}${API_MEMBERS_URL}`,
     },
   },
   fetcher,

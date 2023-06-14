@@ -5,8 +5,7 @@ import { updateUserSchema } from '@/types/db';
 
 export async function PATCH(req: Request) {
   try {
-    const rawToken = req.headers.get('authorization')?.split(' ').pop();
-    const token = rawToken === 'Bearer' ? '' : rawToken;
+    const token = authService.getTokenByReaquestHeaders(req.headers);
     const issuerId = await authService.getUserIdByRequest(token);
 
     const rawBody = await req.json();

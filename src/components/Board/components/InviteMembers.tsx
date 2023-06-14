@@ -11,6 +11,7 @@ import { useOuterClick } from '@/hooks/useOuterClick';
 import { useCallback, useState } from 'react';
 
 import type { RefObject } from 'react';
+import type { IBoardMember } from '@/models/boards';
 
 const defaultAddMemberClasses = `w-8 h-8 border
 !p-[5px]
@@ -26,9 +27,13 @@ colored designed
 
 type InviteMembersProps = {
   containerRef: RefObject<HTMLElement>;
+  members: IBoardMember[];
 };
 
-const InviteMembers: React.FC<InviteMembersProps> = ({ containerRef }) => {
+const InviteMembers: React.FC<InviteMembersProps> = ({
+  containerRef,
+  members,
+}) => {
   const [dropDown, setDropDown] = useState(false);
 
   const toggleDropDown = useCallback(() => {
@@ -60,7 +65,11 @@ const InviteMembers: React.FC<InviteMembersProps> = ({ containerRef }) => {
           className="w-7 h-7"
         />
       </ButtonWithIcon>
-      <DropDownMenu closeDropDown={closeDropDown} isOpen={dropDown} />
+      <DropDownMenu
+        closeDropDown={closeDropDown}
+        isOpen={dropDown}
+        currentMembers={members}
+      />
     </>
   );
 };

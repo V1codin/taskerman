@@ -3,6 +3,10 @@ import cls from 'classnames';
 import { useBackGround } from '@/hooks/useBackGround';
 import { boardService } from '@/libs/boards.service';
 import { dbConnect } from '@/libs/db/connect';
+import { cookies } from 'next/headers';
+import { authService } from '@/libs/auth.service';
+import { AUTH_TOKEN_COOKIE_NAME } from '@/utils/constants';
+import { redirect } from 'next/navigation';
 
 import type { Metadata } from 'next';
 
@@ -22,7 +26,20 @@ export default async function RootLayout({
   children,
   params: { boardId },
 }: Props) {
+  // ? checking in the layout because
+  // ? of not displaying board background if there is no session
   await dbConnect();
+  const cookieStorage = cookies();
+
+  const sessionToken = cookieStorage.get(AUTH_TOKEN_COOKIE_NAME);
+  const sessionUser = await authService.getSessionUser(
+    sessionToken?.value || '',
+  );
+
+  if (!sessionUser) {
+    redirect('/login');
+  }
+
   const bg = await boardService.getBoardBackgroundById(boardId);
 
   const style = useBackGround(bg || '');

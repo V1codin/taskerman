@@ -1,10 +1,17 @@
 import mongoose, { Model, Types } from 'mongoose';
 
-import { BoardScheme, IBoard } from './boards';
-import { IUser, UserScheme } from './users';
-import { IPassword, PasswordScheme } from './passwords';
-import { ISession, SessionScheme } from './sessions';
-import { TUserNS } from '@/types/db';
+import { BoardScheme } from './boards';
+import { UserScheme } from './users';
+import { PasswordScheme } from './passwords';
+import { SessionScheme } from './sessions';
+import { NotificationScheme } from './notifications';
+
+import type { IBoard } from './boards';
+import type { IUser } from './users';
+import type { IPassword } from './passwords';
+import type { ISession } from './sessions';
+import type { INotification } from './notifications';
+import type { TUserNS } from '@/types/db';
 
 UserScheme.pre('updateOne', async function (next) {
   const update = this.getUpdate() as ReturnType<typeof this.getUpdate> &
@@ -26,6 +33,7 @@ BoardScheme.pre('save', async function (next) {
   this.members.push({
     user: this.owner,
     role: 'owner',
+    isPending: false,
   });
   return next();
 });
@@ -73,3 +81,7 @@ export const PasswordModel =
 export const SessionModel =
   (mongoose.models['Session'] as Model<ISession>) ||
   mongoose.model('Session', SessionScheme);
+
+export const NotificationModel =
+  (mongoose.models['Notification'] as Model<INotification>) ||
+  mongoose.model('Notification', NotificationScheme);

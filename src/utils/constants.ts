@@ -1,3 +1,4 @@
+import { TUserBoardRoles } from '@/models/boards';
 import { ToastProps } from '@/types/helpers';
 import { IModal } from '@/types/state';
 
@@ -69,6 +70,8 @@ export const EMPTY_TOAST: ToastProps = {
   timeout: 0,
 };
 
+export const DEFAULT_INVITED_MEMBER_ROLE: TUserBoardRoles = 'member';
+
 export const API_BOARDS_URL = '/api/boards';
 export const API_SINGLE_BOARD_URL = '/api/single_board';
 
@@ -81,6 +84,8 @@ export const API_BOARD_UPDATE_URL = '/api/update_board';
 export const API_USER_DELETE_URL = '/api/auth/user';
 // ? get user for getting board member's info for example
 export const API_USER_GET_URL = '/api/auth/user';
+
+export const API_MEMBERS_URL = '/api/board_members';
 
 export const DEFAULT_MODAL_STATE: IModal<false> = {
   isOpen: false,
