@@ -68,7 +68,7 @@ export async function POST(req: Request) {
       return acc;
     }, []);
 
-    // await boardService.addBoardMember(boardId, newMembers);
+    await boardService.addBoardMember(boardId, newMembers);
 
     return NextResponse.json(
       {
