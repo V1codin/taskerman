@@ -12,7 +12,7 @@ import {
   BOARD_MEMBERS_DISPLAY_SLICE_INDEX,
   MOBILE_MEDIA_POINT_WIDTH,
 } from '@/utils/constants';
-import { Fragment, useEffect, useRef, useState } from 'react';
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 
 import type { IBoardMember } from '@/models/boards';
 
@@ -52,13 +52,17 @@ overflow-visible
 `;
 
 type MembersProps = {
-  members: IBoardMember[];
+  boardMembers: IBoardMember[];
   ownerId: string;
 };
 
-const Members: React.FC<MembersProps> = ({ members, ownerId }) => {
+const Members: React.FC<MembersProps> = ({ boardMembers, ownerId }) => {
   const [membersIndex, setMembersIndex] = useState(0);
   const containerRef = useRef<HTMLElement>(null);
+
+  const members = useMemo(() => {
+    return boardMembers.filter((item) => item.isPending !== true);
+  }, [boardMembers]);
 
   useEffect(() => {
     const resize = () => {
@@ -138,7 +142,7 @@ const Members: React.FC<MembersProps> = ({ members, ownerId }) => {
           </>
         )}
       </div>
-      <InviteMembers containerRef={containerRef} members={members} />
+      <InviteMembers containerRef={containerRef} members={boardMembers} />
     </section>
   );
 };

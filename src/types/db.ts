@@ -11,7 +11,6 @@ import type { AuthClient } from './state';
 /*
   | 'cards'
   | 'lists'
-  | 'notifications';
   */
 
 export interface IDbCollections {

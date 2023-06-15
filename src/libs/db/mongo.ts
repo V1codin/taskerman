@@ -55,7 +55,12 @@ export class MongoDataBaseProvider implements MongoDbProvider {
         {
           owner: userObj,
         },
-        { 'members.user': { $in: [userObj] } },
+        {
+          $and: [
+            { 'members.user': { $in: [userObj] } },
+            { members: { $in: [{ isPending: false }] } },
+          ],
+        },
       ],
     };
   }

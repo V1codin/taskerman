@@ -37,6 +37,7 @@ const DefaultAccountImage: React.FC<DefaultAccountImageProps> = ({
         w-full h-full text-yellow`,
         classNames,
       )}
+      title={displayName}
     >
       {content}
     </div>

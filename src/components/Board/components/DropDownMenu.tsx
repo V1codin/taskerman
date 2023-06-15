@@ -15,7 +15,7 @@ import Button from '@/modules/button/Button';
 
 import { api } from '@/utils/api/api';
 import { Process } from '@/modules/process/Process';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { debounce } from '@/utils/helpers';
 import { usePathname } from 'next/navigation';
 import { useSetAtom } from 'jotai';
@@ -29,13 +29,11 @@ import type { IBoardMember } from '@/models/boards';
 
 type DropDownMenuProps = {
   closeDropDown: () => void;
-  isOpen: boolean;
   currentMembers: IBoardMember[];
 };
 
 const DropDownMenu: React.FC<DropDownMenuProps> = ({
   closeDropDown,
-  isOpen,
   currentMembers,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -116,14 +114,7 @@ const DropDownMenu: React.FC<DropDownMenuProps> = ({
     }
   };
 
-  useFocus(inputRef, isOpen);
-
-  useEffect(() => {
-    if (!isOpen) {
-      setMembers([]);
-      resetSelectedMembers();
-    }
-  }, [isOpen]);
+  useFocus(inputRef, true);
 
   const searchChange = useRef(
     debounce(async (e: ChangeEvent<HTMLInputElement>) => {
@@ -153,8 +144,6 @@ const DropDownMenu: React.FC<DropDownMenuProps> = ({
       }
     }, 800),
   );
-
-  if (!isOpen) return null;
 
   return (
     <>

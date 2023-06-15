@@ -65,11 +65,9 @@ const InviteMembers: React.FC<InviteMembersProps> = ({
           className="w-7 h-7"
         />
       </ButtonWithIcon>
-      <DropDownMenu
-        closeDropDown={closeDropDown}
-        isOpen={dropDown}
-        currentMembers={members}
-      />
+      {dropDown && (
+        <DropDownMenu closeDropDown={closeDropDown} currentMembers={members} />
+      )}
     </>
   );
 };
