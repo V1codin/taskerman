@@ -33,13 +33,20 @@
   --popup-overlay: #946666de;
 
   --pink: #ff105e;
+  --red: #c50040;
   --pale-green: #67b04b;
   --bright-green: #55d725;
-  --blue: #42c5e4;
+  --bright-blue: #42c5e4;
+
+  --blue: #4343ff;
+  --blue-second: #2727fe;
+  --pale-bright-blue: #98a7f5;
   --pale-blue: #69abad;
   --yellow: #e0fd4d;
 
   --glowing-yellow: #d8ff13;
+
+  --orange: #ff6800;
 
   --hover-blue: #102936;
 
@@ -112,7 +119,7 @@ button {
   transition: 0.3s;
   text-shadow: 2px 2px 10px #000000;
 
-  background: -webkit-linear-gradient(var(--blue), var(--yellow));
+  background: -webkit-linear-gradient(var(--bright-blue), var(--yellow));
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -151,20 +158,23 @@ button {
 }
 
 .badges {
+  border: 1px solid var(--pale-blue);
   position: absolute;
-
   top: -10px;
   right: -10px;
-  width: 17px;
-  height: 17px;
+  width: 22px;
+  height: 22px;
   font-size: 0.9em;
   font-weight: bold;
-  color: var(--pale-green);
-  background-color: var(--pink);
+  color: var(--bright-green);
+  background-color: var(--red);
 
   overflow: hidden;
 
   border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .conflict {
@@ -172,7 +182,7 @@ button {
 }
 
 .warning {
-  color: var(--pale-yellow);
+  color: var(--orange);
 }
 
 .notification {
@@ -362,7 +372,7 @@ button:disabled {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--blue);
+  background: var(--bright-blue);
 }
 
 @keyframes spin {

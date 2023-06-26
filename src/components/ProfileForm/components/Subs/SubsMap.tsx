@@ -138,8 +138,8 @@ const SubsMap: React.FC<SubsMapProps> = () => {
             height={100}
             className="cursor-pointer 
               transition-all duration-200 ease-in-out 
-              z-[3200] hover:scale-125 
-              laptop:sticky laptop:top-4 laptop:z-[3250]"
+              z-[3100] hover:scale-125 
+              laptop:sticky laptop:top-4 laptop:z-[3150]"
           />
           <RightButton
             attrs={{

@@ -55,7 +55,7 @@ const Heading: React.FC<HeadingProps> = ({ boardTitle }) => {
           classNames="bg-transparent 
         font-light 
         text-white p-2 text-xl max-w-full
-        focus:border-b-pale-blue rounded-none"
+        focus:border-b-pale-blue rounded-none rounded-bl-md"
           attrs={{
             type: 'text',
             placeholder: 'Enter board title',

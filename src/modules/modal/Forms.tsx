@@ -1,6 +1,7 @@
 import LoginForm from './modalForms/authForms/LoginForm';
 import DeleteBoardForm from './modalForms/boardForms/DeleteBoardForm';
 import CreateBoardForm from './modalForms/boardForms/CreateBoardForm';
+import DeclineInviteBoardForm from './modalForms/boardForms/DeclineInviteBoardForm';
 
 import type {
   IModalWindow,
@@ -37,6 +38,10 @@ export const ModalForm: React.FC<FormProps> = ({ modalMeta }) => {
   if (type === 'delete') {
     if (view === 'delete_board') {
       return <DeleteBoardForm {...(data as TDeleteModalData)} />;
+    }
+
+    if (view === 'delete_notification') {
+      return <DeclineInviteBoardForm {...(data as TDeleteModalData)} />;
     }
 
     // !

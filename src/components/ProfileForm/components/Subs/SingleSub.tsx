@@ -50,7 +50,7 @@ const SingleSub: React.FC<SingleSubProps> = ({ board, classNames }) => {
           type: 'delete',
           view: 'delete_board',
           data: {
-            id: _id,
+            entitiId: _id,
             children: (
               <h3>
                 {modalMessage} - <p style={{ color: '#55d725' }}>{title}</p>

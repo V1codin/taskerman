@@ -87,6 +87,21 @@ export class BoardsService {
   ) {
     return this.db.addBoardMember(boardId, members);
   }
+
+  declineBoardInvite(userId: string, boardId: string) {
+    return this.db.declineBoardInvite(userId, boardId);
+  }
+
+  confirmBoardInvite(userId: string, boardId: string) {
+    return this.db.confirmBoardInvite(userId, boardId);
+  }
+
+  addBoardInviteToUser(
+    boardId: string,
+    members: Record<keyof Pick<IBoardMember, 'role' | 'user'>, string>[],
+  ) {
+    return this.db.addBoardInviteToUser(boardId, members);
+  }
 }
 
 export type TBoardsService = BoardsService;

@@ -1,5 +1,6 @@
 // @ts-ignore
-import deleteIco from '@/assets/plus.svg?url';
+import confirmIco from '@/assets/check.svg?url';
+
 import ImageModule from '../image/Image';
 import ButtonWithIcon from './ButtonWithIcon';
 import cls from 'classnames';
@@ -12,11 +13,11 @@ import type { CustomButtonAttrs } from './Button';
 
 const defaultButtonClasses = `rounded-xl
 active:border-bright-blue active:border-[1px]
-absolute top-3 right-3 w-8 h-8 !p-0 
+absolute w-8 h-8 !p-0 
 flex items-center justify-center 
 border-0 border-solid border-transparent`;
 
-type CloseProps = {
+type ConfirmProps = {
   click: MouseEventHandler<HTMLButtonElement>;
   attrs?: {} & CustomButtonAttrs;
   classNames?: string;
@@ -24,7 +25,7 @@ type CloseProps = {
   isBackgrounded?: boolean;
 };
 
-const CloseButton = forwardRef<HTMLButtonElement, CloseProps>(
+const ConfirmButton = forwardRef<HTMLButtonElement, ConfirmProps>(
   ({ click, attrs, classNames, iconAttributes, isBackgrounded }, ref) => {
     return (
       <ButtonWithIcon
@@ -34,14 +35,15 @@ const CloseButton = forwardRef<HTMLButtonElement, CloseProps>(
         }}
         ref={ref}
         classNames={cls(defaultButtonClasses, classNames, {
-          'bg-[#ff1060b6] hover:bg-pink active:bg-pale-green': isBackgrounded,
+          'bg-slate-600 hover:bg-slate-400 active:bg-pale-green':
+            isBackgrounded,
         })}
       >
         <ImageModule
-          src={deleteIco}
-          alt="delete"
+          src={confirmIco}
+          alt="confirm"
           draggable={false}
-          className="rotate-45 hover:scale-110"
+          className="hover:scale-110"
           {...iconAttributes}
         />
       </ButtonWithIcon>
@@ -49,6 +51,6 @@ const CloseButton = forwardRef<HTMLButtonElement, CloseProps>(
   },
 );
 
-CloseButton.displayName = 'CloseButton';
+ConfirmButton.displayName = 'ConfirmButton';
 
-export default CloseButton;
+export default ConfirmButton;

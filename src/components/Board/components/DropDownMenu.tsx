@@ -24,40 +24,26 @@ import { ServerResponseError } from '@/libs/error.service';
 import { getSetToastState } from '@/context/stateManager';
 
 import type { ChangeEvent, MouseEvent as ReactMouseEvent } from 'react';
-import type { SessionUser } from '@/types/db';
 import type { IBoardMember } from '@/models/boards';
+import type { IUser } from '@/models/users';
 
 type DropDownMenuProps = {
   closeDropDown: () => void;
   currentMembers: IBoardMember[];
 };
 
-const DropDownMenu: React.FC<DropDownMenuProps> = ({
-  closeDropDown,
-  currentMembers,
-}) => {
+const DropDownMenu: React.FC<DropDownMenuProps> = ({ closeDropDown }) => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [members, setMembers] = useState<SessionUser[]>([]);
+  const [members, setMembers] = useState<IUser[]>([]);
   const [loader, setLoader] = useState(false);
   const [selected, setSelected] = useState<Record<string, boolean>>({});
   const setToast = useSetAtom(getSetToastState);
   const currentBoardId = usePathname().split('/').pop() || '';
+  const [invitedMap, setInvitedMap] = useState<Record<string, boolean>>({});
 
   const isUpToInvite = useMemo(() => {
     return Object.values(selected).some((item) => item === true);
   }, [selected]);
-
-  const [currentMembersMap, setCurrentMembersMap] = useState(() =>
-    currentMembers.reduce<Record<string, { isPending: boolean }>>(
-      (acc, member) => {
-        acc[member.user._id] = {
-          isPending: member.isPending,
-        };
-        return acc;
-      },
-      {},
-    ),
-  );
 
   const selectMember = (e: ReactMouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
@@ -80,22 +66,31 @@ const DropDownMenu: React.FC<DropDownMenuProps> = ({
     try {
       setLoader(true);
 
+      const members = Object.entries(selected).reduce<string[]>(
+        (acc, [key, value]) => {
+          if (value) {
+            acc.push(key);
+          }
+
+          return acc;
+        },
+        [],
+      );
+
       const response = await api.create('board_members', {
-        members: Object.keys(selected),
+        members,
         type: 'invite_members',
         boardId: currentBoardId,
       });
 
-      response.addedMembersIds.forEach((item) => {
-        setCurrentMembersMap({
-          ...currentMembersMap,
-          [item]: {
-            isPending: true,
-          },
-        });
-      });
-
       setSelected({});
+      setInvitedMap((prev) => {
+        members.forEach((prop) => {
+          prev[prop] = true;
+        });
+
+        return prev;
+      });
 
       setToast({
         message: response.message,
@@ -118,9 +113,13 @@ const DropDownMenu: React.FC<DropDownMenuProps> = ({
 
   const searchChange = useRef(
     debounce(async (e: ChangeEvent<HTMLInputElement>) => {
-      resetSelectedMembers();
+      if (isUpToInvite) {
+        resetSelectedMembers();
+      }
+
       if (!e.target.value) {
         setMembers([]);
+        setInvitedMap({});
         return;
       }
       try {
@@ -139,6 +138,14 @@ const DropDownMenu: React.FC<DropDownMenuProps> = ({
 
         setMembers(response.data);
       } catch (e) {
+        setToast({
+          message:
+            e instanceof ServerResponseError
+              ? e.message
+              : 'Something went wrong',
+          typeClass: 'conflict',
+          timeout: 3500,
+        });
       } finally {
         setLoader(false);
       }
@@ -189,10 +196,11 @@ const DropDownMenu: React.FC<DropDownMenuProps> = ({
           listClassNames="!p-[0.4rem]"
         >
           {members.map((item) => {
-            const isAlreadyMember = item._id in currentMembersMap;
+            const subs = item.subs as string[];
+            const isAlreadyMember = subs.includes(currentBoardId);
             const isPending =
-              isAlreadyMember && currentMembersMap[item._id]?.isPending;
-
+              item.pendingInvites.includes(currentBoardId) ||
+              item._id in invitedMap;
             return (
               <li key={item._id} className="text-white">
                 <Button
@@ -216,16 +224,16 @@ const DropDownMenu: React.FC<DropDownMenuProps> = ({
                     'data-id': item._id,
                     onClick: selectMember,
                     title: isAlreadyMember
-                      ? isPending
-                        ? 'Already invited'
-                        : 'Already a member'
+                      ? 'Already a member'
+                      : isPending
+                      ? 'Already invited'
                       : 'Add to board',
-                    disabled: isAlreadyMember,
+                    disabled: isAlreadyMember || isPending,
                   }}
                 >
                   <p
                     className={cls(`dropdown_members_name text-yellow`, {
-                      '!text-disabled-grey': isAlreadyMember,
+                      '!text-disabled-grey': isAlreadyMember || isPending,
                     })}
                   >
                     {item.displayName}
@@ -238,15 +246,15 @@ const DropDownMenu: React.FC<DropDownMenuProps> = ({
                     avatarHeight={38}
                     className="rounded-[50%] col-start-2 dropdown_members_avatar h-full max-w-[38px] bg-monokai"
                   />
-                  {isAlreadyMember && (
+                  {isAlreadyMember || isPending ? (
                     <ImageModule
                       width={isPending ? 25 : 30}
                       height={isPending ? 25 : 30}
                       src={isPending ? pending : blocked}
-                      alt="User is already member"
+                      alt="Invited user"
                       className="absolute right-[5px]"
                     />
-                  )}
+                  ) : null}
                 </Button>
               </li>
             );

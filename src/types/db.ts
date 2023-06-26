@@ -1,10 +1,17 @@
 import { TypeOf, z } from 'zod';
+
+import {
+  noteActionsEnum,
+  notePriorityEnum,
+  noteTypesEnum,
+} from '@/models/notifications';
+
 import type { IUser, TEditableUserProps } from '@/models/users';
 import type {
   BoardServiceCreate,
   BoardServiceGetUserBoards,
 } from '@/libs/boards.service';
-import type { IBoard, TUserBoardRoles } from '@/models/boards';
+import type { IBoard, IBoardMember, TUserBoardRoles } from '@/models/boards';
 import type { RequireAtLeastOne } from './utils';
 import type { AuthClient } from './state';
 
@@ -21,7 +28,6 @@ export const creatingBoardSchema = z.object({
   bg: z.string(),
   members: z.array(z.string()),
   owner: z.string(),
-  pendingMembers: z.array(z.string()),
   title: z.string(),
 });
 export const deletingBoardSchema = z.object({
@@ -46,6 +52,23 @@ export const updatingBoardMembersSchema = z.object({
   members: z.array(z.string().min(24)),
   boardId: z.string().min(24),
   type: z.string(),
+});
+
+const notePriority = z.enum(notePriorityEnum);
+const noteActions = z.enum(noteActionsEnum);
+const noteTypes = z.enum(noteTypesEnum);
+
+export const creatingNotificationSchema = z.object({
+  text: z.string().min(4),
+  recipient: z.string().min(24),
+  type: noteTypes,
+  priority: notePriority,
+  action: noteActions,
+  actionData: z
+    .object({
+      boardId: z.string().min(24).optional(),
+    })
+    .partial(),
 });
 
 export namespace TBoardNS {
@@ -107,6 +130,14 @@ export namespace TUserNS {
   >;
 }
 
+export namespace TNotificationNS {
+  export type TCreating = TypeOf<typeof creatingNotificationSchema>;
+  export type TGetting = null;
+  export type TDeleting = {
+    id: string;
+  };
+}
+
 export type TUser = {
   id: string;
   username: string;
@@ -146,6 +177,13 @@ export interface DataBaseProvider<
   TCreatedBoard extends unknown,
   TDeletedBoard extends unknown,
   TUnsubedUserFromBoard extends unknown,
+  TCreatedNotification extends unknown,
+  TNotificationsByUserId extends unknown,
+  TNotificationById extends unknown,
+  TDeletedNotification extends unknown,
+  TDeclinedInvite extends unknown,
+  TAddBoardMember extends unknown,
+  TAddBoardInvite extends unknown,
 > {
   getAllBoardsByUserQueryUtils(userId: string): TBoardQuery;
   isEqualUtils(
@@ -177,4 +215,18 @@ export interface DataBaseProvider<
   createBoard(board: TBoardNS.TCreating): TCreatedBoard;
   deleteBoard(boardId: string | ParticularDBType): TDeletedBoard;
   unsubscribeFromBoard(userId: string, board: IBoard): TUnsubedUserFromBoard;
+  declineBoardInvite(userId: string, boardId: string): TDeclinedInvite;
+  addBoardMember(
+    boardId: string,
+    members: Record<keyof Pick<IBoardMember, 'role' | 'user'>, string>[],
+  ): TAddBoardMember;
+  addBoardInviteToUser(
+    boardId: string,
+    members: Record<keyof Pick<IBoardMember, 'role' | 'user'>, string>[],
+  ): TAddBoardInvite;
+
+  createNotification(note: TNotificationNS.TCreating): TCreatedNotification;
+  getSafeNotificationsByUserId(userId: string): TNotificationsByUserId;
+  getSafeNotificationById(id: string): TNotificationById;
+  deleteNotification(id: string): TDeletedNotification;
 }

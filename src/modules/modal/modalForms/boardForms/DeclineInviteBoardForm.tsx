@@ -1,8 +1,8 @@
 import Confirm from '@/modules/confirm/Confirm';
 
 import {
-  getSetBoardsState,
   getSetModal,
+  getSetNotificationsState,
   getSetToastState,
 } from '@/context/stateManager';
 import { ServerResponseError } from '@/libs/error.service';
@@ -13,36 +13,29 @@ import { useCallback, useState } from 'react';
 
 import type { SyntheticEvent } from 'react';
 
-type DeleteBoardFormProps = TDeleteModalData;
+type DeclineInviteBoardFormProps = TDeleteModalData;
 
-const DeleteBoardForm: React.FC<DeleteBoardFormProps> = ({
+const DeclineInviteBoardForm: React.FC<DeclineInviteBoardFormProps> = ({
   entitiId,
   children,
 }) => {
   const setModal = useSetAtom(getSetModal);
-  const setBoards = useSetAtom(getSetBoardsState);
   const setToast = useSetAtom(getSetToastState);
+  const setNotes = useSetAtom(getSetNotificationsState);
   const [isLoading, setIsLoading] = useState(false);
-
-  const refreshData = useCallback((boardId: string) => {
-    setBoards((state) => {
-      const result = state.filter((item) => item._id !== boardId);
-
-      return result;
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const accept = useCallback(
     async (e: SyntheticEvent<HTMLElement>) => {
       e.preventDefault();
       try {
         setIsLoading(true);
-        await api.delete('board', {
-          boardId: entitiId,
+        const result = await api.delete('notification_decline', {
+          id: entitiId,
         });
 
-        refreshData(entitiId);
+        setNotes((prev) => {
+          return prev.filter(({ _id }) => _id !== result.removedNoteId);
+        });
 
         setModal({
           isOpen: false,
@@ -67,7 +60,7 @@ const DeleteBoardForm: React.FC<DeleteBoardFormProps> = ({
         setIsLoading(false);
       }
     },
-    [entitiId, refreshData, setModal, setToast],
+    [entitiId, setModal, setNotes, setToast],
   );
 
   const decline = useCallback(() => {
@@ -79,9 +72,9 @@ const DeleteBoardForm: React.FC<DeleteBoardFormProps> = ({
 
   return (
     <Confirm accept={accept} decline={decline} isLoading={isLoading}>
-      {children ? children : <h3>Confirm the board deleting</h3>}
+      {children ? children : <h3>Decline the invite?</h3>}
     </Confirm>
   );
 };
 
-export default DeleteBoardForm;
+export default DeclineInviteBoardForm;

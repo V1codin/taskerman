@@ -1,4 +1,5 @@
 import { Schema, Model } from 'mongoose';
+
 import type { IBoard } from './boards';
 
 export interface IUser {
@@ -6,9 +7,10 @@ export interface IUser {
   username: string;
   displayName?: string;
   email: string;
-  subs: Schema.Types.ObjectId[] | IBoard[];
+  subs: string[] | IBoard[];
   imageURL?: string;
   nameAlias: string;
+  pendingInvites: string[];
 }
 
 export type TEditableUserProps =
@@ -19,6 +21,11 @@ interface IUserMethods {}
 
 export const UserScheme = new Schema<IUser, Model<IUser>, IUserMethods>(
   {
+    pendingInvites: {
+      type: [String],
+      required: true,
+      default: [],
+    },
     username: { type: String, unique: true, require: true },
     displayName: {
       type: String,

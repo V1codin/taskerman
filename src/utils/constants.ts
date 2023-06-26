@@ -44,7 +44,8 @@ export const authFormTypeSignup = 'signup';
 
 export const isDev = () => process.env.NODE_ENV === 'development';
 
-export const PORT = '8080';
+export const PORT = isServer() ? process.env['PORT'] : '3000';
+
 export const BASE_URL = isDev()
   ? `http://localhost:${PORT}`
   : process.env['BASE_URL'];
@@ -87,6 +88,11 @@ export const API_USER_GET_URL = '/api/auth/user';
 
 export const API_MEMBERS_URL = '/api/board_members';
 
+export const API_NOTIFICATIONS_URL = '/api/notifications';
+
+export const API_NOTIFICATION_DECLINE_URL = '/api/notifications/decline';
+export const API_NOTIFICATION_CONFIRM_URL = '/api/notifications/confirm';
+
 export const DEFAULT_MODAL_STATE: IModal<false> = {
   isOpen: false,
   window: null,
@@ -115,3 +121,5 @@ export const BOARD_MEMBERS_DISPLAY_SLICE_INDEX = 2;
 
 export const SKELETON_CLASS_NAMES =
   'skeleton_block skeleton_bg_l skeleton_bg_d';
+
+export const NOTIFICATION_TEXT_FORMAT_REGEX = /<important>(.*?)<\/important>/g;

@@ -10,8 +10,10 @@ import {
   API_USER_GET_URL,
   API_USER_UPDATE_URL,
   AUTH_TOKEN_COOKIE_NAME,
-  BASE_URL,
+  API_NOTIFICATIONS_URL,
   isServer,
+  API_NOTIFICATION_DECLINE_URL,
+  API_NOTIFICATION_CONFIRM_URL,
 } from '../constants';
 
 import type {
@@ -35,6 +37,10 @@ class HttpService<TFetcher extends TFetch> implements HttpProtocol {
   constructor(urls: HttpNS.IUrls, fetcher: TFetcher) {
     this.urls = urls;
     this.fetch = fetcher;
+  }
+
+  revalidateData<TResult extends unknown>(path: string) {
+    return this.fetch<TResult>(`/api/revalidate?path=${path}`);
   }
 
   private getJsonTypeHeaders() {
@@ -80,9 +86,9 @@ class HttpService<TFetcher extends TFetch> implements HttpProtocol {
       return '';
     }
 
-    return Object.entries(data).reduce((acc, [key, prop]) => {
-      return (acc += `?${key}=${prop}`);
-    }, '');
+    return Object.entries(data).reduce((acc, [key, prop], index, arr) => {
+      return (acc += `${key}=${prop}${index === arr.length - 1 ? '' : '&'}`);
+    }, '?');
   }
 
   private getReadUrl(
@@ -177,6 +183,10 @@ class Api {
     this.protocol = dataTransfer;
   }
 
+  revalidateData(path: string) {
+    return this.protocol.revalidateData<{ revalidated: true; now: Date }>(path);
+  }
+
   read<
     TRequestEntity extends TEntities,
     TResult extends ApiNS.IReturnType[TRequestEntity]['read'],
@@ -213,29 +223,53 @@ class Api {
 const http = new HttpService(
   {
     board: {
-      DELETE: `${BASE_URL}${API_BOARDS_URL}`,
-      POST: `${BASE_URL}${API_BOARDS_URL}`,
-      PATCH: `${BASE_URL}${API_BOARD_UPDATE_URL}`,
+      DELETE: API_BOARDS_URL,
+      POST: API_BOARDS_URL,
+      PATCH: API_BOARD_UPDATE_URL,
       GET: {
-        single: `${BASE_URL}${API_SINGLE_BOARD_URL}`,
-        paginated: `${BASE_URL}${API_BOARDS_URL}`,
+        single: API_SINGLE_BOARD_URL,
+        paginated: API_BOARDS_URL,
       },
     },
     user: {
-      POST: `${BASE_URL}${API_SIGNUP_URL}`,
-      DELETE: `${BASE_URL}${API_USER_DELETE_URL}`,
-      PATCH: `${BASE_URL}${API_USER_UPDATE_URL}`,
+      POST: API_SIGNUP_URL,
+      DELETE: API_USER_DELETE_URL,
+      PATCH: API_USER_UPDATE_URL,
       GET: {
-        single: `${BASE_URL}${API_USER_GET_URL}`,
+        single: API_USER_GET_URL,
       },
     },
     board_members: {
       GET: {
-        single: `${BASE_URL}${API_MEMBERS_URL}`,
+        single: API_MEMBERS_URL,
       },
-      POST: `${BASE_URL}${API_MEMBERS_URL}`,
-      DELETE: `${BASE_URL}${API_MEMBERS_URL}`,
-      PATCH: `${BASE_URL}${API_MEMBERS_URL}`,
+      POST: API_MEMBERS_URL,
+      DELETE: API_MEMBERS_URL,
+      PATCH: API_MEMBERS_URL,
+    },
+    notification: {
+      GET: {
+        single: API_NOTIFICATIONS_URL,
+      },
+      POST: API_NOTIFICATIONS_URL,
+      DELETE: API_NOTIFICATIONS_URL,
+      PATCH: API_NOTIFICATIONS_URL,
+    },
+    notification_decline: {
+      GET: {
+        single: API_NOTIFICATION_DECLINE_URL,
+      },
+      POST: API_NOTIFICATION_DECLINE_URL,
+      PATCH: API_NOTIFICATION_DECLINE_URL,
+      DELETE: API_NOTIFICATION_DECLINE_URL,
+    },
+    notification_confirm: {
+      GET: {
+        single: API_NOTIFICATION_CONFIRM_URL,
+      },
+      POST: API_NOTIFICATION_CONFIRM_URL,
+      PATCH: API_NOTIFICATION_CONFIRM_URL,
+      DELETE: API_NOTIFICATION_CONFIRM_URL,
     },
   },
   fetcher,

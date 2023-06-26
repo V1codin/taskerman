@@ -9,7 +9,13 @@ type TAuthUnion = RedirectableProviderType & OAuthProviderType;
 declare global {
   var _mongoClientPromise: Promise<any> | undefined;
 
-  type TEntities = 'board' | 'user' | 'board_members';
+  type TEntities =
+    | 'board'
+    | 'user'
+    | 'board_members'
+    | 'notification'
+    | 'notification_decline'
+    | 'notification_confirm';
 
   interface IMongoose {
     conn: null | Awaited<Promise<typeof mongoose>>;

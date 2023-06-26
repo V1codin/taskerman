@@ -19,12 +19,15 @@ const Toast: React.FC<ToastProps> = ({}) => {
 
     if (timeout.current) {
       clearTimeout(timeout.current);
+      timeout.current = null;
     }
 
     const resetToast = () => {
       setToast({
         message: '',
       });
+
+      timeout.current = null;
     };
 
     const time = toast.timeout || 2000;

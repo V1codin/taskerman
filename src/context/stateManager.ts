@@ -6,6 +6,7 @@ import { EMPTY_TOAST, DEFAULT_MODAL_STATE } from '@/utils/constants';
 import { IModal, TProfileActiveSub } from '@/types/state';
 import { IBoard } from '@/models/boards';
 import { SessionUser, TBoardNS } from '@/types/db';
+import { INotification } from '@/models/notifications';
 
 export const userStateAtom = atom<SessionUser | null>(null);
 export const getSetUserStateAtom: WritableAtom<
@@ -157,5 +158,40 @@ export const getSetConfirm: WritableAtom<
   (get) => get(confirmAtom),
   (_, set, update) => {
     set(confirmAtom, update);
+  },
+);
+
+export const notificationAtom = atom<INotification[]>([]);
+export const getSetNotificationsState: WritableAtom<
+  INotification[],
+  [
+    update:
+      | INotification
+      | INotification[]
+      | ((prevValue: INotification[]) => INotification[]),
+  ],
+  void
+> = atom(
+  (get) => get(notificationAtom),
+  (get, set, update) => {
+    const prev = get(notificationAtom);
+
+    if (Array.isArray(update)) {
+      if (!update.length) return;
+
+      set(notificationAtom, update);
+    } else if (typeof update === 'function') {
+      set(notificationAtom, () => {
+        const result = update(prev);
+
+        return result;
+      });
+    } else {
+      set(notificationAtom, () => {
+        const result = [...prev, update];
+
+        return result;
+      });
+    }
   },
 );

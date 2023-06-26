@@ -13,8 +13,9 @@ type Props = {
 export default async function SingleBoard({ params: { boardId } }: Props) {
   await dbConnect();
 
-  const board = await boardService.getSafeBoardById(boardId);
+  // TODO check if the user have access rights for getting this board
 
+  const board = await boardService.getSafeBoardById(boardId);
   if (!board) {
     return notFound();
   }

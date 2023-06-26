@@ -4,8 +4,10 @@ import type {
   TBoardPermissions,
   TUserBoardRoles,
 } from '@/models/boards';
-import type { SessionUser, TBoardNS, TUserNS } from './db';
+import type { SessionUser, TBoardNS, TNotificationNS, TUserNS } from './db';
 import type { NextApiRequest } from 'next';
+import type { INotification } from '@/models/notifications';
+import { IUser } from '@/models/users';
 
 export type TMethods = 'POST' | 'PUT' | 'DELETE' | 'GET' | 'PATCH';
 
@@ -58,6 +60,12 @@ export namespace ApiNS {
 
   export type TDeleteData<T extends TEntities> = T extends 'board'
     ? TBoardNS.TDeleting
+    : T extends 'notification'
+    ? TNotificationNS.TDeleting
+    : T extends 'notification_decline'
+    ? TNotificationNS.TDeleting
+    : T extends 'notification_confirm'
+    ? TNotificationNS.TDeleting
     : null;
 
   export type TUpdateData<T extends TEntities> = T extends 'board'
@@ -84,7 +92,7 @@ export namespace ApiNS {
 
   interface IUserReturn extends Record<keyof TActions, unknown> {
     read: {
-      data: SessionUser[];
+      data: IUser[];
     };
     create: {
       message: string;
@@ -108,11 +116,37 @@ export namespace ApiNS {
       data: null;
     };
   }
+  interface INotificationReturn extends Record<keyof TActions, unknown> {
+    read: {
+      data: INotification[];
+    };
+    create: INotification;
+    update: INotification;
+
+    delete: {
+      removedNoteId: string;
+    };
+  }
+
+  interface INotificationOptionReturn extends Record<keyof TActions, unknown> {
+    read: {
+      data: null;
+    };
+    create: null;
+    update: null;
+
+    delete: {
+      removedNoteId: string;
+    };
+  }
 
   export interface IReturnType extends Record<TEntities, unknown> {
     board: IBoardReturn;
     user: IUserReturn;
     board_members: IBoardMembersReturn;
+    notification: INotificationReturn;
+    notification_decline: INotificationOptionReturn;
+    notification_confirm: INotificationOptionReturn;
   }
 }
 
@@ -122,6 +156,7 @@ export namespace TBoardMembersNS {
     type: keyof TBoardPermissions;
     members: string[];
     role?: TUserBoardRoles;
+    invitationText?: string;
   };
 }
 
@@ -147,6 +182,9 @@ export namespace HttpNS {
     board: TUrl;
     user: TUrl;
     board_members: TUrl;
+    notification: TUrl;
+    notification_decline: TUrl;
+    notification_confirm: TUrl;
   }
 }
 
@@ -162,6 +200,7 @@ export type HttpProtocol = Protocol;
 export type CurrentProtocol = HttpProtocol;
 
 export interface Protocol {
+  revalidateData<TResult extends unknown>(path: string): Promise<TResult>;
   read<TResult extends unknown, TEntity extends TEntities>(
     type: TEntity,
     data: ApiNS.TGetData<TEntity>,

@@ -15,9 +15,14 @@ import cls from 'classnames';
 
 import { useRouter } from 'next/navigation';
 import { useState, useCallback } from 'react';
-import { getSetModal, getSetUserStateAtom } from '@/context/stateManager';
-import { useAtom, useAtomValue } from 'jotai';
+import {
+  getSetModal,
+  getSetNotificationsState,
+  getSetUserStateAtom,
+} from '@/context/stateManager';
+import { useAtomValue, useSetAtom } from 'jotai';
 import { signOut } from 'next-auth/react';
+import { NotificationDropDown } from './dropdownBodies/NotificationDropDown';
 
 import type {
   SyntheticEvent,
@@ -62,9 +67,10 @@ const defaultDropState: DropState = {
 
 const Menu: React.FC<MenuProps> = ({ containerRef }) => {
   const [dropState, setDropState] = useState<DropState>(defaultDropState);
-  const [, setModalState] = useAtom(getSetModal);
+  const setModalState = useSetAtom(getSetModal);
   const user = useAtomValue(getSetUserStateAtom);
   const { push } = useRouter();
+  const notifications = useAtomValue(getSetNotificationsState);
 
   const logout = useCallback(() => {
     signOut({ redirect: true, callbackUrl: '/' });
@@ -73,8 +79,6 @@ const Menu: React.FC<MenuProps> = ({ containerRef }) => {
   const closeAllDropDowns = useCallback(() => {
     setDropState(defaultDropState);
   }, []);
-
-  const notifications = [];
 
   const toggleDropDown = useCallback(
     (e: KeyboardEvent | IMouseEvent | SyntheticEvent<HTMLButtonElement>) => {
@@ -141,6 +145,10 @@ const Menu: React.FC<MenuProps> = ({ containerRef }) => {
 
   const closeAccountDropDown = useCallback(() => {
     closeDropDown('account');
+  }, []);
+
+  const closeNoteDropDown = useCallback(() => {
+    closeDropDown('note');
   }, []);
 
   const openModal = useCallback(
@@ -223,30 +231,12 @@ const Menu: React.FC<MenuProps> = ({ containerRef }) => {
         )}
         <ImageModule src={note} alt="note" height={20} width={20} />
       </ButtonWithIcon>
-      {/*
-      .note {
-        width: 450px;
-        height: 300px;
-
-        overflow: auto;
-      }
-      .note > header {
-        position: sticky;
-        top: 0;
-        background-color: ${({ theme }) => theme.colors.gentleBlack};
-        z-index: 500;
-      }
-
-       */}
-      {/* 
       {dropState.note && (
-        <NoteBoardDrop
-          toggle={() => setState({ ...defState, note: !state.note })}
-          notes={notifications}
-          userId={userId}
+        <NotificationDropDown
+          closeDropDown={closeNoteDropDown}
+          containerRef={containerRef}
         />
       )}
-      */}
       {user && (
         <>
           <Account

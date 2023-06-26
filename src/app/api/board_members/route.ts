@@ -4,9 +4,10 @@ import { BadRequestError, ServerResponseError } from '@/libs/error.service';
 import { updatingBoardMembersSchema } from '@/types/db';
 import { BOARD_MEMBER_ROLES_PERMISSIONS, IBoardMember } from '@/models/boards';
 import { boardService } from '@/libs/boards.service';
+import { notificationService } from '@/libs/notifications.service';
+import { DEFAULT_INVITED_MEMBER_ROLE } from '@/utils/constants';
 
 import type { TBoardMembersNS } from '@/types/api';
-import { DEFAULT_INVITED_MEMBER_ROLE } from '@/utils/constants';
 
 export async function POST(req: Request) {
   try {
@@ -20,7 +21,7 @@ export async function POST(req: Request) {
       throw new BadRequestError();
     }
 
-    const { boardId, members, type, role } =
+    const { boardId, members, type, role, invitationText } =
       rawBody as TBoardMembersNS.TCreating;
     const userRole = await boardService.getUserRole(boardId, issuerId);
 
@@ -40,15 +41,25 @@ export async function POST(req: Request) {
       });
     }
 
-    const currentMembers = (await boardService.getBoardMembers(boardId)).reduce<
-      Record<string, boolean>
-    >((acc, item) => {
-      acc[item.user._id] = true;
+    const board = await boardService.getSafeBoardById(boardId);
 
-      return acc;
-    }, {});
+    if (!board) {
+      throw new ServerResponseError({
+        code: 404,
+        message: 'Error: The requested board was not found',
+      });
+    }
 
-    const addedMembers: string[] = [];
+    const currentMembers = board.members.reduce<Record<string, boolean>>(
+      (acc, item) => {
+        acc[item.user._id] = true;
+
+        return acc;
+      },
+      {},
+    );
+
+    const addedMembersIds: string[] = [];
     const newMembers = members.reduce<
       Record<keyof Pick<IBoardMember, 'role' | 'user'>, string>[]
     >((acc, item) => {
@@ -61,7 +72,7 @@ export async function POST(req: Request) {
         user: item,
       };
 
-      addedMembers.push(item);
+      addedMembersIds.push(item);
 
       acc.push(newMember);
 
@@ -69,18 +80,34 @@ export async function POST(req: Request) {
     }, []);
 
     await boardService.addBoardMember(boardId, newMembers);
+    await boardService.addBoardInviteToUser(boardId, newMembers);
+
+    // ? newMembers is already uniq so there is no doubled notification
+    newMembers.forEach((member) => {
+      notificationService.create({
+        type: 'option',
+        action: 'board_invite',
+        actionData: {
+          boardId,
+        },
+        priority: 'notification',
+        recipient: member.user,
+        text:
+          invitationText ||
+          `You've been invited to board.<br> Name: <important>${board.title}</important><br> Owner: <important>${board.owner.displayName}</important>`,
+      });
+    });
 
     return NextResponse.json(
       {
         message: 'Invites were sent to users',
-        addedMembersIds: addedMembers,
+        addedMembersIds,
       },
       {
         status: 200,
       },
     );
   } catch (e) {
-    console.log('e: ', e);
     if (e instanceof ServerResponseError) {
       return NextResponse.json(
         {
