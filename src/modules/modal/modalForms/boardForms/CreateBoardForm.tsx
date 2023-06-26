@@ -130,7 +130,6 @@ const CreateBoardForm: React.FC<CreateBoardModalProps> = () => {
         const result = await api.create('board', {
           bg: form.bg,
           members: [],
-          pendingMembers: [],
           title: form.title,
           owner: user?.id!,
         });

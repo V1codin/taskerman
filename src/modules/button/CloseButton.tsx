@@ -12,7 +12,7 @@ import type { CustomButtonAttrs } from './Button';
 
 const defaultButtonClasses = `rounded-xl
 active:border-bright-blue active:border-[1px]
-absolute top-3 right-3 w-8 h-8 p-0 
+absolute top-3 right-3 w-8 h-8 !p-0 
 flex items-center justify-center 
 border-0 border-solid border-transparent`;
 

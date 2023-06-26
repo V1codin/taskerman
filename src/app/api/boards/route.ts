@@ -10,9 +10,8 @@ import type { TBoardNS } from '@/types/db';
 
 export async function GET(req: Request) {
   try {
-    const rawToken = req.headers.get('authorization')?.split(' ').pop();
-    const token = rawToken === 'Bearer' ? '' : rawToken;
-    await authService.getUserByRequest(token);
+    const token = authService.getTokenByReaquestHeaders(req.headers);
+    await authService.getUserIdByRequest(token);
 
     const url = new URL(req.url);
     const queryParams = new URLSearchParams(url.search);
@@ -67,9 +66,8 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
-    const rawToken = req.headers.get('authorization')?.split(' ').pop();
-    const token = rawToken === 'Bearer' ? '' : rawToken;
-    await authService.getUserByRequest(token);
+    const token = authService.getTokenByReaquestHeaders(req.headers);
+    await authService.getUserIdByRequest(token);
 
     const rawBody = await req.json();
 
@@ -114,9 +112,8 @@ export async function POST(req: Request) {
 
 export async function DELETE(req: Request) {
   try {
-    const rawToken = req.headers.get('authorization')?.split(' ').pop();
-    const token = rawToken === 'Bearer' ? '' : rawToken;
-    const issuerId = await authService.getUserByRequest(token);
+    const token = authService.getTokenByReaquestHeaders(req.headers);
+    const issuerId = await authService.getUserIdByRequest(token);
 
     const { searchParams } = new URL(req.url);
     const boardId = searchParams.get('boardId') || '';
@@ -158,6 +155,13 @@ export async function DELETE(req: Request) {
 
     if (!deleted.acknowledged) {
       throw new BadRequestError();
+    }
+
+    if (deleted.deletedCount === 0) {
+      throw new ServerResponseError({
+        code: 500,
+        message: 'Error: Server does not response',
+      });
     }
 
     return NextResponse.json(

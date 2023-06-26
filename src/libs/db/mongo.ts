@@ -1,11 +1,18 @@
-import { BoardModel, UserModel, PasswordModel } from '@/models/middlewares';
+import {
+  BoardModel,
+  UserModel,
+  PasswordModel,
+  NotificationModel,
+} from '@/models/middlewares';
+import { ServerResponseError } from '../error.service';
 import { Types } from 'mongoose';
 
 import type { IUser } from '@/models/users';
-import type { IBoard } from '@/models/boards';
+import type { IBoard, IBoardMember } from '@/models/boards';
 import type { FilterQuery } from 'mongoose';
-import type { DataBaseProvider, TBoardNS } from '@/types/db';
+import type { DataBaseProvider, TBoardNS, TNotificationNS } from '@/types/db';
 import type { TEditableUserProps } from '@/models/users';
+import type { INotification } from '@/models/notifications';
 
 interface MongoDbProvider
   extends DataBaseProvider<
@@ -15,19 +22,34 @@ interface MongoDbProvider
     ReturnType<typeof UserModel.findOne>,
     ReturnType<typeof UserModel.findOne>,
     Awaited<ReturnType<typeof UserModel.findOne>>,
+    Promise<IUser[] | null>,
     Promise<string | null>,
     Promise<string | null>,
     Promise<IBoard | null>,
+    Promise<IBoardMember[]>,
     IBoard[],
     // ? unknown because Boards.create is overloading function
     // ? and ReturnType is not compatible
     unknown,
     ReturnType<typeof BoardModel.deleteOne>,
-    Promise<true | null>
+    Promise<boolean>,
+    Promise<boolean>,
+    Promise<INotification[]>,
+    Promise<INotification | null>,
+    Promise<boolean>,
+    Promise<boolean>,
+    ReturnType<typeof BoardModel.updateOne>,
+    Promise<boolean>
   > {}
 
 export class MongoDataBaseProvider implements MongoDbProvider {
   constructor() {}
+
+  getUserAliasRegexQueryUtils(alias: string): FilterQuery<IUser> {
+    return {
+      nameAlias: { $regex: alias, $options: 'i' },
+    };
+  }
 
   /*
   ? Util methods for changing DataProvider but save request data API
@@ -46,7 +68,9 @@ export class MongoDataBaseProvider implements MongoDbProvider {
         {
           owner: userObj,
         },
-        { 'members.user': { $in: [userObj] } },
+        {
+          members: { $elemMatch: { user: userObj, isPending: false } },
+        },
       ],
     };
   }
@@ -92,7 +116,7 @@ export class MongoDataBaseProvider implements MongoDbProvider {
         {
           $pull: {
             members: {
-              $in: [userId],
+              user: this.getObjectIdFromStringUtils(userId),
             },
           },
         },
@@ -113,20 +137,21 @@ export class MongoDataBaseProvider implements MongoDbProvider {
 
       return true;
     } catch (e) {
-      return null;
+      console.log('e: ', e);
+      return false;
     }
   }
 
   async patchUser(userId: string, data: TEditableUserProps) {
     try {
-      const { acknowledged } = await UserModel.updateOne(
+      const { modifiedCount } = await UserModel.updateOne(
         {
           _id: userId,
         },
         data,
       );
 
-      if (acknowledged) {
+      if (modifiedCount > 0) {
         return this.getUserByIdWithPopulatedSubs(userId);
       }
 
@@ -193,6 +218,18 @@ export class MongoDataBaseProvider implements MongoDbProvider {
     }
   }
 
+  async getUsersByAlias(alias: string) {
+    try {
+      const query = this.getUserAliasRegexQueryUtils(alias);
+
+      const result = await UserModel.find(query);
+
+      return result;
+    } catch (e) {
+      return [];
+    }
+  }
+
   async getBoardTitleById(boardId: string | ParticularDBType) {
     const board = await BoardModel.findOne({
       _id: this.getObjectIdFromStringUtils(boardId),
@@ -231,6 +268,31 @@ export class MongoDataBaseProvider implements MongoDbProvider {
       return result;
     } catch (e) {
       return null;
+    }
+  }
+
+  async getBoardMembers(boardId: string | ParticularDBType) {
+    try {
+      const board = await BoardModel.findOne({
+        _id: this.getObjectIdFromStringUtils(boardId),
+      }).populate('members');
+
+      if (!board) {
+        throw new ServerResponseError({
+          code: 404,
+          message: 'Error: Document was not found',
+        });
+      }
+
+      return board.members;
+    } catch (e) {
+      if (e instanceof ServerResponseError) {
+        throw e;
+      }
+      throw new ServerResponseError({
+        code: 500,
+        message: 'Error: Server does not response',
+      });
     }
   }
 
@@ -281,12 +343,255 @@ export class MongoDataBaseProvider implements MongoDbProvider {
     return createdBoard.populate('owner');
   }
 
+  async getUserRole(boardId: string, userId: string) {
+    try {
+      const result = await BoardModel.findOne({
+        _id: boardId,
+      });
+
+      if (!result) {
+        return '';
+      }
+
+      const member = result.members.find(
+        (member) => String(member.user._id) === userId,
+      );
+
+      const role = member?.role || '';
+
+      return role;
+    } catch (e) {
+      return '';
+    }
+  }
+
+  addBoardMember(
+    boardId: string,
+    members: Record<keyof Pick<IBoardMember, 'role' | 'user'>, string>[],
+  ) {
+    const mappedMembers = members.map((member) => {
+      const user = this.getObjectIdFromStringUtils(member.user);
+      return {
+        ...member,
+        user,
+      };
+    });
+
+    return BoardModel.updateOne(
+      {
+        _id: boardId,
+      },
+      {
+        $push: {
+          members: {
+            $each: mappedMembers,
+          },
+        },
+      },
+    );
+  }
+
+  async addBoardInviteToUser(
+    boardId: string,
+    members: Record<keyof Pick<IBoardMember, 'role' | 'user'>, string>[],
+  ) {
+    try {
+      await Promise.all(
+        members.map((member) => {
+          return UserModel.updateOne(
+            {
+              _id: member.user,
+            },
+            {
+              $push: {
+                pendingInvites: boardId,
+              },
+            },
+          );
+        }),
+      );
+
+      return true;
+    } catch (e) {
+      throw new ServerResponseError({
+        code: 500,
+        message: 'Error: Server does not response',
+      });
+    }
+  }
+
+  async createNotification(note: TNotificationNS.TCreating) {
+    try {
+      // ? upsert: true (if there is the note it's gonna only update it)
+      // ? if there is no such a note it's gonna create one
+      const result = await NotificationModel.updateOne(
+        {
+          recipient: note.recipient,
+          action: note.action,
+          'actionData.boardId': note.actionData.boardId,
+        },
+        note,
+        {
+          upsert: true,
+        },
+      );
+
+      if (result.modifiedCount > 0 || result.upsertedCount > 0) {
+        return true;
+      }
+
+      throw new Error('Something went wrong');
+    } catch (e) {
+      return false;
+    }
+  }
+
   deleteBoard(
     boardId: string | ParticularDBType,
   ): ReturnType<typeof BoardModel.deleteOne> {
     return BoardModel.deleteOne({
       _id: boardId,
     });
+  }
+
+  async getSafeNotificationsByUserId(userId: string) {
+    try {
+      const notes = await NotificationModel.find({
+        recipient: this.getObjectIdFromStringUtils(userId),
+      }).populate('recipient');
+
+      if (!notes || !notes.length) {
+        throw new Error('Document was not found');
+      }
+
+      const result = JSON.parse(JSON.stringify(notes)) as INotification[];
+
+      return result;
+    } catch (e) {
+      return [];
+    }
+  }
+
+  async getSafeNotificationById(noteId: string) {
+    try {
+      const note = await NotificationModel.findById(noteId).populate(
+        'recipient',
+      );
+
+      if (!note) {
+        throw new Error('Document was not found');
+      }
+
+      const result = JSON.parse(
+        JSON.stringify(note.toObject()),
+      ) as INotification;
+
+      return result;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  async deleteNotification(noteId: string) {
+    try {
+      const result = await NotificationModel.deleteOne({
+        _id: noteId,
+      });
+
+      if (result.deletedCount > 0) {
+        return true;
+      }
+
+      throw new Error('Something went wrong');
+    } catch (e) {
+      return false;
+    }
+  }
+
+  async declineBoardInvite(userId: string, boardId: string) {
+    try {
+      const result = await Promise.all([
+        BoardModel.updateOne(
+          {
+            _id: boardId,
+          },
+          {
+            $pull: {
+              members: { user: this.getObjectIdFromStringUtils(userId) },
+            },
+          },
+        ),
+        UserModel.updateOne(
+          {
+            _id: userId,
+          },
+          {
+            $pull: {
+              pendingInvites: boardId,
+            },
+          },
+        ),
+      ]);
+
+      const modified = result.reduce((acc, item) => {
+        return (acc += item.modifiedCount);
+      }, 0);
+
+      if (modified > 0) {
+        return true;
+      }
+
+      return false;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  async confirmBoardInvite(userId: string, boardId: string) {
+    try {
+      const result = await Promise.all([
+        BoardModel.updateOne(
+          {
+            $and: [
+              { _id: boardId },
+              {
+                'members.user': this.getObjectIdFromStringUtils(userId),
+              },
+            ],
+          },
+          {
+            $set: {
+              'members.$.isPending': false,
+            },
+          },
+        ),
+        UserModel.updateOne(
+          {
+            _id: userId,
+          },
+          {
+            $push: {
+              subs: new Types.ObjectId(boardId),
+            },
+            $pull: {
+              pendingInvites: boardId,
+            },
+          },
+        ),
+      ]);
+
+      const modified = result.reduce((acc, item) => {
+        return (acc += item.modifiedCount);
+      }, 0);
+
+      if (modified > 0) {
+        return true;
+      }
+
+      return false;
+    } catch (e) {
+      return false;
+    }
   }
 }
 

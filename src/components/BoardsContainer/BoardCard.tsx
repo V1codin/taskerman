@@ -4,6 +4,8 @@ import cls from 'classnames';
 import CloseButton from '@/modules/button/CloseButton';
 import Link from 'next/link';
 
+import { BOARD_TITLE_SLICE_INDEX } from '@/utils/constants';
+
 import type { IBoard } from '@/models/boards';
 import type { MouseEvent } from 'react';
 
@@ -49,9 +51,12 @@ const BoardCard: React.FC<BoardCardProps> = ({
       <Link
         href={`/board/${_id}`}
         className="card__btn"
-        title="Go to the board"
+        title={`Go to the board ${title}`}
+        prefetch={false}
       >
-        {title}
+        {title.length >= BOARD_TITLE_SLICE_INDEX
+          ? title.slice(0, BOARD_TITLE_SLICE_INDEX) + '...'
+          : title}
       </Link>
     </div>
   );

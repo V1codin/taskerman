@@ -20,29 +20,6 @@ const warns = {
   email: 'Invalid email',
 };
 
-/*
-const Note = z.object({
-  _id: z.string(),
-  type: NoteType,
-  text: string,
-  recipient: string,
-  inviteToBoardId: string,
-  createdAt: string,
-  updatedAt: string,
-});
-
-export type NoteType = 'info' | 'invite';
-export interface Note {
-  _id: string;
-  type: NoteType;
-  text: string;
-  recipient: string;
-  inviteToBoardId: string;
-  createdAt: string;
-  updatedAt: string;
-}
-*/
-
 export const userLoginSchema = z.object({
   username: z.string().regex(masks.username, {
     message: warns.username,
@@ -101,7 +78,7 @@ export type TModalForms =
 type TAuthModalData = {};
 type TCreateModalData = {};
 export type TDeleteModalData = {
-  id: string;
+  entitiId: string;
   children?: React.ReactNode;
   entity: TEntities;
 };

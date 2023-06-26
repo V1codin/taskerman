@@ -3,7 +3,7 @@
 import Members from './components/Members';
 import Heading from './components/Heading';
 
-import { IBoard } from '@/models/boards';
+import type { IBoard } from '@/models/boards';
 
 type BoardProps = {
   board: IBoard;
@@ -15,8 +15,14 @@ const Board: React.FC<BoardProps> = ({ board }) => {
   return (
     <>
       <Heading boardTitle={board.title} />
+      <Members boardMembers={members} ownerId={owner._id} />
 
-      <Members members={members} ownerId={owner._id} />
+      <div className="mt-4 flex items-center justify-between flex-wrap">
+        <div className="w-1/3 h-48 border border-blue"></div>
+        <div className="w-1/3 h-48 border border-blue"></div>
+        <div className="w-1/3 h-48 border border-blue"></div>
+        <div className="w-1/3 h-48 border border-blue"></div>
+      </div>
     </>
   );
 };

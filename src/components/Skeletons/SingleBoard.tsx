@@ -1,15 +1,25 @@
+import cls from 'classnames';
+
+import { SKELETON_CLASS_NAMES } from '@/utils/constants';
+
 type SingleBoardProps = {};
 
 const SingleBoard: React.FC<SingleBoardProps> = () => {
   return (
     <>
       <header className="flex">
-        <h2 className="w-[376px] laptop:w-[50vw] rounded-md skeleton_block skeleton_bg_l skeleton_bg_d h-11"></h2>
+        <h2
+          className={cls(
+            'w-[376px] laptop:w-[40vw] rounded-md h-11 mobile:h-[38px]',
+            SKELETON_CLASS_NAMES,
+          )}
+        ></h2>
       </header>
 
       <section
         className="flex items-center
-      fixed right-14
+      fixed right-10 
+      p-2 mx-1 
       top-[var(--header-height)] 
       z-[2900] 
       after:absolute
@@ -24,18 +34,33 @@ const SingleBoard: React.FC<SingleBoardProps> = () => {
       after:border-l
       after:border-r
       after:border-pale-blue
-      mobile:right-4 
-      laptop:right-4 
       "
       >
-        <div className="relative p-2 flex items-center w-[204px] mx-2 overflow-hidden mobile:w-12">
-          <div className="skeleton_block skeleton_bg_l skeleton_bg_d rounded-[50%] w-8 h-8"></div>
-          <span className="px-0 py-3 ml-1 border-l-2 border-solid !m-2 mobile:hidden"></span>
-          <div className="skeleton_block skeleton_bg_l skeleton_bg_d rounded-[50%] w-8 h-8 mobile:hidden"></div>
-          <span className="px-0 py-3 ml-1 border-l-2 border-solid !m-2 mobile:hidden"></span>
-          <div className="skeleton_block skeleton_bg_l skeleton_bg_d rounded-[50%] w-8 h-8 mobile:hidden"></div>
-          <span className="px-0 py-3 ml-1 border-l-2 border-solid !m-2 mobile:hidden"></span>
-          <div className="skeleton_block skeleton_bg_l skeleton_bg_d rounded-[50%] w-8 h-8 mobile:hidden"></div>
+        <div className="relative flex items-center max-w-[240px] overflow-hidden">
+          <div
+            className={cls(
+              'rounded-[50%] w-[34px] h-[34px]',
+              SKELETON_CLASS_NAMES,
+            )}
+          ></div>
+          <span className="px-0 py-3 ml-1 border-l-[1px] border-solid !m-2 mobile:hidden"></span>
+          <div
+            className={cls(
+              'rounded-[50%] w-[34px] h-[34px] mobile:hidden',
+              SKELETON_CLASS_NAMES,
+            )}
+          ></div>
+          <span className="px-0 py-3 ml-1 border-l-[1px] border-solid !m-2 mobile:hidden"></span>
+          <div
+            className={cls(
+              'rounded-[50%] w-[34px] h-[34px] mobile:hidden',
+              SKELETON_CLASS_NAMES,
+            )}
+          ></div>
+          <span className="px-0 py-3 ml-1 border-l-[1px] border-solid !m-2"></span>
+          <div
+            className={cls('rounded-[7px] w-8 h-8', SKELETON_CLASS_NAMES)}
+          ></div>
         </div>
       </section>
     </>

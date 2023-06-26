@@ -9,7 +9,7 @@ import {
 } from '@/context/stateManager';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  FIRST_MEDIA_POINT_WIDTH,
+  LAPTOP_MEDIA_POINT_WIDTH,
   PROFILE_SUBS_SLIDE_WIDTH,
 } from '@/utils/constants';
 import { clearCanvas, degreesToRadians } from '@/utils/helpers';
@@ -31,7 +31,7 @@ const SubsMap: React.FC<SubsMapProps> = () => {
 
   useEffect(() => {
     const resize = () => {
-      if (window.innerWidth < FIRST_MEDIA_POINT_WIDTH) {
+      if (window.innerWidth < LAPTOP_MEDIA_POINT_WIDTH) {
         setIsSubsMapDisplayed(false);
       } else {
         setIsSubsMapDisplayed(true);
@@ -138,8 +138,8 @@ const SubsMap: React.FC<SubsMapProps> = () => {
             height={100}
             className="cursor-pointer 
               transition-all duration-200 ease-in-out 
-              z-[3200] hover:scale-125 
-              laptop:sticky laptop:top-4 laptop:z-[3250]"
+              z-[3100] hover:scale-125 
+              laptop:sticky laptop:top-4 laptop:z-[3150]"
           />
           <RightButton
             attrs={{

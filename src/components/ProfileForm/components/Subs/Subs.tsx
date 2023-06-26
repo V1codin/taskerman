@@ -12,7 +12,7 @@ import {
 } from '@/context/stateManager';
 import { useEffect, useRef, useState } from 'react';
 import {
-  FIRST_MEDIA_POINT_WIDTH,
+  LAPTOP_MEDIA_POINT_WIDTH,
   PROFILE_SUBS_SLIDE_WIDTH,
 } from '@/utils/constants';
 
@@ -30,12 +30,22 @@ const SubsIterator: React.FC<SubsIteratorProps> = () => {
   const [mouseSlideCoords, setMouseSlideCoords] = useState(0);
 
   const mouseDown = (e: ReactMouseEvent<HTMLDivElement, MouseEvent>) => {
+    const target = e.target as HTMLElement;
+    if (target.tagName !== 'DIV') {
+      return;
+    }
+
     setIsMouseSlideStart(true);
     setMouseSlideCoords(e.pageX);
   };
 
   const mouseUp = (e: ReactMouseEvent<HTMLDivElement, MouseEvent>) => {
     setIsMouseSlideStart(false);
+
+    const target = e.target as HTMLElement;
+    if (target.tagName !== 'DIV') {
+      return;
+    }
 
     const direction = Math.sign(e.pageX - mouseSlideCoords);
 
@@ -63,7 +73,7 @@ const SubsIterator: React.FC<SubsIteratorProps> = () => {
 
   useEffect(() => {
     const resize = () => {
-      if (window.innerWidth < FIRST_MEDIA_POINT_WIDTH) {
+      if (window.innerWidth < LAPTOP_MEDIA_POINT_WIDTH) {
         setIsSubsMapDisplayed(false);
       } else {
         setIsSubsMapDisplayed(true);
@@ -103,7 +113,7 @@ const SubsIterator: React.FC<SubsIteratorProps> = () => {
 
   useEffect(() => {
     const resize = () => {
-      if (window.innerWidth < FIRST_MEDIA_POINT_WIDTH) {
+      if (window.innerWidth < LAPTOP_MEDIA_POINT_WIDTH) {
         if (activeSlide.coords) {
           setActive(initialProfileSub);
         }

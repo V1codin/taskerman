@@ -126,3 +126,40 @@ export const clearCanvas = (
 ) => {
   context.clearRect(0, 0, width, height);
 };
+
+export const debounce = (
+  callback: (...args: any[]) => Promise<any>,
+  timeOut: number = 600,
+) => {
+  let timer: NodeJS.Timeout;
+
+  return (...args: any[]) => {
+    if (timer) {
+      clearTimeout(timer);
+    }
+
+    timer = setTimeout(async () => {
+      await callback(...args);
+    }, timeOut);
+  };
+};
+
+export function throttle<T extends (...args: any[]) => ReturnType<T>>(
+  callback: T,
+  timeOut: number = 300,
+): (...args: Parameters<T>) => ReturnType<T> {
+  let isThrottle: boolean;
+  let lastResult: ReturnType<T>;
+
+  return (...args) => {
+    if (!isThrottle) {
+      isThrottle = true;
+
+      setTimeout(() => (isThrottle = false), timeOut);
+
+      lastResult = callback(...args);
+    }
+
+    return lastResult;
+  };
+}

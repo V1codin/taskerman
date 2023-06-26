@@ -37,7 +37,7 @@ const BoardsContainer: React.FC<BoardContainerProps> = () => {
           type: 'delete',
           view: 'delete_board',
           data: {
-            id: _id,
+            entitiId: _id,
             children: (
               <h3>
                 {modalMessage} - <p style={{ color: '#55d725' }}>{title}</p>

@@ -1,5 +1,6 @@
 'use client';
 import ButtonWithLoader from '@/modules/button/ButtonWithLoader';
+import Input from '@/modules/input/Input';
 
 import { useAtomValue, useSetAtom } from 'jotai';
 import { useState } from 'react';
@@ -24,8 +25,9 @@ const NameForm: React.FC<NameFormProps> = () => {
 
   const click = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+    if (localDisplayName === displayName) return;
 
-    if (!displayName || !displayName.trim()) {
+    if (!localDisplayName || !localDisplayName.trim()) {
       setToast({
         message: 'Name input should not be empty',
         typeClass: 'warning',
@@ -38,10 +40,13 @@ const NameForm: React.FC<NameFormProps> = () => {
       setLoader(true);
 
       const response = await api.update('user', {
-        displayName,
+        displayName: localDisplayName,
       });
       setUser(response.updatedUser);
-
+      setToast({
+        typeClass: 'notification',
+        message: 'Name was successfully updated',
+      });
       setLoader(false);
     } catch (e) {
       setLoader(false);
@@ -84,29 +89,19 @@ const NameForm: React.FC<NameFormProps> = () => {
       >
         Name
       </h3>
-      <input
-        className="mt-4 rounded-md 
-        bg-alpha-black w-full
-        font-light 
-        text-white p-2 text-base 
-        border-b 
-        border-b-yellow 
-        outline-none
-        focus:border-b-pale-blue
-        placeholder:text-[#757575]
-        hover:border-b-pale-green
-        hover:placeholder:text-yellow
-        "
-        type="text"
-        placeholder="Enter your full name"
-        value={localDisplayName}
-        name="displayName"
-        onChange={changeHandler}
+      <Input
+        classNames="mt-4"
+        attrs={{
+          placeholder: 'Enter your full name',
+          value: localDisplayName,
+          name: 'displayName',
+          onChange: changeHandler,
+        }}
       />
       <ButtonWithLoader
         isLoading={loader}
         spinnerSize="w-[45px] h-auto"
-        classNames="min-w-[79px] min-h-[33px] font-medium
+        classNames="min-w-[79px] min-h-[34px] font-medium
         designed
         rounded-md
         py-1 px-3

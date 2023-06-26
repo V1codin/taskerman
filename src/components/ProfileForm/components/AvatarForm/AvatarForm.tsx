@@ -2,9 +2,10 @@
 
 import ButtonWithLoader from '@/modules/button/ButtonWithLoader';
 import ClipBoardButton from '@/modules/button/ClipBoardButton';
+import Input from '@/modules/input/Input';
 
 import { getDataFromClipBoard } from '@/utils/helpers';
-import { ChangeEvent, useLayoutEffect, useState } from 'react';
+import { ChangeEvent, useLayoutEffect, useRef, useState } from 'react';
 import { useAtomValue, useSetAtom } from 'jotai';
 import {
   getSetToastState,
@@ -19,6 +20,7 @@ type AvatarFormProps = {};
 
 const AvatarForm: React.FC<AvatarFormProps> = () => {
   const image = useAtomValue(userImageAtom);
+  const imagePrevRef = useRef(image);
   const setUser = useSetAtom(getSetUserStateAtom);
   const [state, setState] = useState(image || '');
   const setToast = useSetAtom(getSetToastState);
@@ -36,6 +38,7 @@ const AvatarForm: React.FC<AvatarFormProps> = () => {
 
   const click = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+    if (state === imagePrevRef.current) return;
 
     if (!state || !state.trim()) {
       setToast({
@@ -53,6 +56,11 @@ const AvatarForm: React.FC<AvatarFormProps> = () => {
         imageURL: state,
       });
       setUser(response.updatedUser);
+      imagePrevRef.current = response.updatedUser.imageURL;
+      setToast({
+        typeClass: 'notification',
+        message: 'Avatar was successfully updated',
+      });
 
       setLoader(false);
     } catch (e) {
@@ -112,24 +120,14 @@ const AvatarForm: React.FC<AvatarFormProps> = () => {
       >
         Avatar
       </h3>
-      <input
-        className="mt-4 rounded-md 
-        bg-alpha-black w-full
-        font-light 
-        text-white p-2 text-base 
-        border-b 
-        border-b-yellow 
-        outline-none
-        focus:border-b-pale-blue
-        placeholder:text-[#757575]
-        hover:border-b-pale-green
-        hover:placeholder:text-yellow
-        laptop:pr-12
-        "
-        type="text"
-        value={state}
-        name="imageURL"
-        onChange={changeHandler}
+      <Input
+        classNames="mt-4 laptop:pr-12"
+        attrs={{
+          placeholder: 'Enter your full name',
+          value: state,
+          name: 'imageURL',
+          onChange: changeHandler,
+        }}
       />
       <div className="flex items-end relative mt-2 mr-0 mb-0 ml-auto laptop:w-full">
         <ClipBoardButton
@@ -143,7 +141,7 @@ const AvatarForm: React.FC<AvatarFormProps> = () => {
         <ButtonWithLoader
           isLoading={loader}
           spinnerSize="w-[45px] h-auto"
-          classNames="min-w-[79px] min-h-[33px] font-medium
+          classNames="min-w-[79px] min-h-[34px] font-medium
           designed
           rounded-md
           py-1 px-3

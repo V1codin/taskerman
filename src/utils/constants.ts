@@ -1,3 +1,4 @@
+import { TUserBoardRoles } from '@/models/boards';
 import { ToastProps } from '@/types/helpers';
 import { IModal } from '@/types/state';
 
@@ -43,7 +44,8 @@ export const authFormTypeSignup = 'signup';
 
 export const isDev = () => process.env.NODE_ENV === 'development';
 
-export const PORT = '8080';
+export const PORT = isServer() ? process.env['PORT'] : '3000';
+
 export const BASE_URL = isDev()
   ? `http://localhost:${PORT}`
   : process.env['BASE_URL'];
@@ -69,20 +71,27 @@ export const EMPTY_TOAST: ToastProps = {
   timeout: 0,
 };
 
+export const DEFAULT_INVITED_MEMBER_ROLE: TUserBoardRoles = 'member';
+
 export const API_BOARDS_URL = '/api/boards';
 export const API_SINGLE_BOARD_URL = '/api/single_board';
 
-export const API_LISTS_URL = '/api/lists';
-
 export const API_REQUEST_SESSION_URL = '/api/auth/session';
-export const API_SIGNUP_URL = '/api/auth/sign_up';
-export const API_USER_UPDATE_URL = '/api/auth/update_user';
+export const API_SIGNUP_URL = '/api/auth/user';
+export const API_USER_UPDATE_URL = '/api/auth/user';
 
 // TODO server handle the routes
-export const API_LIST_UPDATE_URL = '/api/update_list';
 export const API_BOARD_UPDATE_URL = '/api/update_board';
-export const API_USER_DELETE_URL = '/api/auth/delete_user';
+export const API_USER_DELETE_URL = '/api/auth/user';
+// ? get user for getting board member's info for example
 export const API_USER_GET_URL = '/api/auth/user';
+
+export const API_MEMBERS_URL = '/api/board_members';
+
+export const API_NOTIFICATIONS_URL = '/api/notifications';
+
+export const API_NOTIFICATION_DECLINE_URL = '/api/notifications/decline';
+export const API_NOTIFICATION_CONFIRM_URL = '/api/notifications/confirm';
 
 export const DEFAULT_MODAL_STATE: IModal<false> = {
   isOpen: false,
@@ -103,7 +112,14 @@ export const PROFILE_SUBS_SLIDE_WIDTH = 465;
 export const SUBS_SLIDE_HALF = PROFILE_SUBS_SLIDE_WIDTH / 2;
 export const SUBS_MAP_LINE_WIDTH = 10;
 
-export const FIRST_MEDIA_POINT_WIDTH = 975;
+export const LAPTOP_MEDIA_POINT_WIDTH = 975;
+export const MOBILE_MEDIA_POINT_WIDTH = 575;
 
 export const BOARD_TITLE_SLICE_INDEX = 15;
-export const BOARD_MEMBERS_DISPLAY_SLICE_INDEX = 3;
+export const BOARD_SUBS_TITLE_SLICE_INDEX = 40;
+export const BOARD_MEMBERS_DISPLAY_SLICE_INDEX = 2;
+
+export const SKELETON_CLASS_NAMES =
+  'skeleton_block skeleton_bg_l skeleton_bg_d';
+
+export const NOTIFICATION_TEXT_FORMAT_REGEX = /<important>(.*?)<\/important>/g;

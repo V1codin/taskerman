@@ -1,7 +1,7 @@
 import dbProvider from '@/db/mongo';
 
 import type { TDb } from '@/db/mongo';
-import type { IBoard } from '@/models/boards';
+import type { IBoard, IBoardMember } from '@/models/boards';
 import type { TBoardNS } from '@/types/db';
 import type { ParticularDBType } from '@/db/mongo';
 
@@ -40,12 +40,20 @@ export class BoardsService {
     );
   }
 
+  getUserRole(boardId: string, userId: string) {
+    return this.db.getUserRole(boardId, userId);
+  }
+
   getSafeBoardById(boardId: string | ParticularDBType) {
     return this.db.getBoardById(boardId);
   }
 
   getBoardTitleById(boardId: string | ParticularDBType) {
     return this.db.getBoardTitleById(boardId);
+  }
+
+  getBoardMembers(boardId: string | ParticularDBType) {
+    return this.db.getBoardMembers(boardId);
   }
 
   getBoardBackgroundById(boardId: string | ParticularDBType) {
@@ -71,6 +79,28 @@ export class BoardsService {
     const result = this.db.deleteBoard(boardId);
 
     return result;
+  }
+
+  addBoardMember(
+    boardId: string,
+    members: Record<keyof Pick<IBoardMember, 'role' | 'user'>, string>[],
+  ) {
+    return this.db.addBoardMember(boardId, members);
+  }
+
+  declineBoardInvite(userId: string, boardId: string) {
+    return this.db.declineBoardInvite(userId, boardId);
+  }
+
+  confirmBoardInvite(userId: string, boardId: string) {
+    return this.db.confirmBoardInvite(userId, boardId);
+  }
+
+  addBoardInviteToUser(
+    boardId: string,
+    members: Record<keyof Pick<IBoardMember, 'role' | 'user'>, string>[],
+  ) {
+    return this.db.addBoardInviteToUser(boardId, members);
   }
 }
 

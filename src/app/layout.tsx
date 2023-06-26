@@ -9,6 +9,7 @@ import { Inter } from 'next/font/google';
 import { cookies } from 'next/headers';
 import { authService } from '@/libs/auth.service';
 import { boardService } from '@/libs/boards.service';
+import { notificationService } from '@/libs/notifications.service';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -30,11 +31,18 @@ export default async function RootLayout({ children }: Props) {
   );
 
   const boards = await boardService.getSafeUserBoards(sessionUser?._id || '');
+  const notifications = await notificationService.getNotificationsByUserId(
+    sessionUser?._id || '',
+  );
 
   return (
     <html lang="en">
       <body className={inter.className}>
-        <StateProvider user={sessionUser} boards={boards}>
+        <StateProvider
+          user={sessionUser}
+          boards={boards}
+          notifications={notifications}
+        >
           <Header />
           <Modal />
           <Toast />

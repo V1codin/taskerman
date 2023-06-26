@@ -6,7 +6,9 @@ import { useAtom } from 'jotai';
 import { getSetToastState } from '@/context/stateManager';
 import { useEffect, useRef } from 'react';
 
-const Toast: React.FC<{}> = ({}) => {
+type ToastProps = {};
+
+const Toast: React.FC<ToastProps> = ({}) => {
   const [toast, setToast] = useAtom(getSetToastState);
   const timeout = useRef<NodeJS.Timeout | null>(null);
 
@@ -17,12 +19,15 @@ const Toast: React.FC<{}> = ({}) => {
 
     if (timeout.current) {
       clearTimeout(timeout.current);
+      timeout.current = null;
     }
 
     const resetToast = () => {
       setToast({
         message: '',
       });
+
+      timeout.current = null;
     };
 
     const time = toast.timeout || 2000;

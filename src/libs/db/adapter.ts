@@ -64,7 +64,9 @@ const mongoAdapter: MyAdapter = {
       const result = await SessionModel.findOne({ sessionToken }).populate({
         path: 'userId',
       });
-      if (!result) return null;
+      if (!result) {
+        return null;
+      }
 
       const objectedResult = result.toObject();
 

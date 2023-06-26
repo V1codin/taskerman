@@ -1,6 +1,13 @@
-import type { IBoard } from '@/models/boards';
-import type { SessionUser, TBoardNS, TUserNS } from './db';
+import type {
+  IBoard,
+  IBoardMember,
+  TBoardPermissions,
+  TUserBoardRoles,
+} from '@/models/boards';
+import type { SessionUser, TBoardNS, TNotificationNS, TUserNS } from './db';
 import type { NextApiRequest } from 'next';
+import type { INotification } from '@/models/notifications';
+import { IUser } from '@/models/users';
 
 export type TMethods = 'POST' | 'PUT' | 'DELETE' | 'GET' | 'PATCH';
 
@@ -34,7 +41,7 @@ export namespace TBoardsApiNS {
 }
 
 export namespace ApiNS {
-  export type TPagination = [number, number] | null;
+  export type TPagination = [number, number?] | null;
   export type TActions = 'create' | 'delete' | 'update' | 'read';
 
   export type TGetData<T extends TEntities> = T extends 'board'
@@ -47,10 +54,18 @@ export namespace ApiNS {
     ? TBoardNS.TCreating
     : T extends 'user'
     ? TUserNS.TCreating
+    : T extends 'board_members'
+    ? TBoardMembersNS.TCreating
     : null;
 
   export type TDeleteData<T extends TEntities> = T extends 'board'
     ? TBoardNS.TDeleting
+    : T extends 'notification'
+    ? TNotificationNS.TDeleting
+    : T extends 'notification_decline'
+    ? TNotificationNS.TDeleting
+    : T extends 'notification_confirm'
+    ? TNotificationNS.TDeleting
     : null;
 
   export type TUpdateData<T extends TEntities> = T extends 'board'
@@ -77,7 +92,7 @@ export namespace ApiNS {
 
   interface IUserReturn extends Record<keyof TActions, unknown> {
     read: {
-      data: SessionUser;
+      data: IUser[];
     };
     create: {
       message: string;
@@ -89,35 +104,60 @@ export namespace ApiNS {
       data: null;
     };
   }
+  interface IBoardMembersReturn extends Record<keyof TActions, unknown> {
+    read: {
+      data: IBoardMember[];
+    };
+    create: { message: string; addedMembersIds: string[] };
+    update: IBoardMember;
+
+    // TODO set type
+    delete: {
+      data: null;
+    };
+  }
+  interface INotificationReturn extends Record<keyof TActions, unknown> {
+    read: {
+      data: INotification[];
+    };
+    create: INotification;
+    update: INotification;
+
+    delete: {
+      removedNoteId: string;
+    };
+  }
+
+  interface INotificationOptionReturn extends Record<keyof TActions, unknown> {
+    read: {
+      data: null;
+    };
+    create: null;
+    update: null;
+
+    delete: {
+      removedNoteId: string;
+    };
+  }
 
   export interface IReturnType extends Record<TEntities, unknown> {
     board: IBoardReturn;
     user: IUserReturn;
+    board_members: IBoardMembersReturn;
+    notification: INotificationReturn;
+    notification_decline: INotificationOptionReturn;
+    notification_confirm: INotificationOptionReturn;
   }
 }
 
-export interface Protocol<TAuthProps extends unknown> {
-  read<TResult extends unknown, TEntity extends TEntities>(
-    type: TEntity,
-    data: ApiNS.TGetData<TEntity>,
-    pagination: ApiNS.TPagination,
-    authProps: TAuthProps,
-  ): Promise<TResult>;
-
-  create<TResult extends unknown>(
-    type: TEntities,
-    data: ApiNS.TCreateData<TEntities>,
-  ): Promise<TResult>;
-
-  delete<TResult extends unknown>(
-    type: TEntities,
-    data: ApiNS.TDeleteData<TEntities>,
-  ): Promise<TResult>;
-
-  update<TResult extends unknown>(
-    type: TEntities,
-    data: ApiNS.TUpdateData<TEntities>,
-  ): Promise<TResult>;
+export namespace TBoardMembersNS {
+  export type TCreating = {
+    boardId: string;
+    type: keyof TBoardPermissions;
+    members: string[];
+    role?: TUserBoardRoles;
+    invitationText?: string;
+  };
 }
 
 export namespace HttpNS {
@@ -140,7 +180,45 @@ export namespace HttpNS {
 
   export interface IUrls {
     board: TUrl;
-    list: TUrl;
     user: TUrl;
+    board_members: TUrl;
+    notification: TUrl;
+    notification_decline: TUrl;
+    notification_confirm: TUrl;
   }
+}
+
+// * CurrentAuthProps could be null if it is not needed in another protocol impl
+export type CurrentAuthProps = HttpNS.TAuthProps;
+export interface RequestConfig {
+  authProps?: CurrentAuthProps;
+  pagination?: ApiNS.TPagination;
+  additionalPath?: string;
+}
+
+export type HttpProtocol = Protocol;
+export type CurrentProtocol = HttpProtocol;
+
+export interface Protocol {
+  revalidateData<TResult extends unknown>(path: string): Promise<TResult>;
+  read<TResult extends unknown, TEntity extends TEntities>(
+    type: TEntity,
+    data: ApiNS.TGetData<TEntity>,
+    getConfig: RequestConfig,
+  ): Promise<TResult>;
+
+  create<TResult extends unknown>(
+    type: TEntities,
+    data: ApiNS.TCreateData<TEntities>,
+  ): Promise<TResult>;
+
+  delete<TResult extends unknown>(
+    type: TEntities,
+    data: ApiNS.TDeleteData<TEntities>,
+  ): Promise<TResult>;
+
+  update<TResult extends unknown>(
+    type: TEntities,
+    data: ApiNS.TUpdateData<TEntities>,
+  ): Promise<TResult>;
 }
