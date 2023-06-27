@@ -242,10 +242,15 @@ export const getAuthOptions = (method?: TMethods | string): NextAuthOptions => {
               const cookieStore = cookies();
 
               // ? https://github.com/vercel/next.js/issues/49259
-              // ? NextJS doc says that cookies() has set method
+              // ? NEXTJS Doc: .set() is only available in a Server Action or Route Handler.
+              // ? This is gonna be executed in Route Handler
               // @ts-ignore
               cookieStore.set(AUTH_TOKEN_COOKIE_NAME, sessionToken, {
                 expires: sessionExpiry,
+                httpOnly: !isDev(),
+                sameSite: 'lax',
+                path: '/',
+                secure: !isDev(),
               });
             } catch (e) {
               console.error('creating session error', e);
