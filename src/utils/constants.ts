@@ -46,11 +46,6 @@ export const isDev = () => process.env.NODE_ENV === 'development';
 
 export const PORT = isServer() ? process.env['PORT'] : '3000';
 
-export const BASE_URL = isDev()
-  ? `http://localhost:${PORT}`
-  : process.env['BASE_URL'];
-export const DOMAIN = isDev() ? '.localhost' : process.env['DOMAIN'];
-
 export const MONGO_DB_NAME = isDev() ? 'Local_Trello' : process.env['DB_NAME'];
 
 export const AUTH_TOKEN_COOKIE_NAME = isDev()

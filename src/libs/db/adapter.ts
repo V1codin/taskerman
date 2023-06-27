@@ -211,6 +211,17 @@ export const getAuthOptions = (method?: TMethods | string): NextAuthOptions => {
       error: '/error',
       newUser: '/profile',
     },
+    cookies: {
+      sessionToken: {
+        name: AUTH_TOKEN_COOKIE_NAME,
+        options: {
+          httpOnly: !isDev(),
+          sameSite: 'lax',
+          path: '/',
+          secure: !isDev(),
+        },
+      },
+    },
     callbacks: {
       async signIn({ user }) {
         // Check if this sign in callback is being called in the credentials authentication flow. If so, use the next-auth adapter to create a session entry in the database (SignIn is called after authorize so we can safely assume the user is valid and already authenticated).
@@ -257,7 +268,6 @@ export const getAuthOptions = (method?: TMethods | string): NextAuthOptions => {
 
         return token;
       },
-
       async session({ session, token }) {
         if (token) {
           session.user = token.user;
