@@ -67,9 +67,13 @@ const Members: React.FC<MembersProps> = ({ boardMembers, ownerId }) => {
   useEffect(() => {
     const resize = () => {
       if (window.innerWidth < MOBILE_MEDIA_POINT_WIDTH) {
-        setMembersIndex(1);
+        if (membersIndex !== 1 && members.length > 2) {
+          setMembersIndex(1);
+        }
       } else {
-        setMembersIndex(BOARD_MEMBERS_DISPLAY_SLICE_INDEX);
+        if (membersIndex !== BOARD_MEMBERS_DISPLAY_SLICE_INDEX) {
+          setMembersIndex(BOARD_MEMBERS_DISPLAY_SLICE_INDEX);
+        }
       }
     };
 
@@ -78,6 +82,7 @@ const Members: React.FC<MembersProps> = ({ boardMembers, ownerId }) => {
     return () => {
       window.removeEventListener('resize', resize);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -118,7 +123,7 @@ const Members: React.FC<MembersProps> = ({ boardMembers, ownerId }) => {
             </Fragment>
           );
         })}
-        {members.length > BOARD_MEMBERS_DISPLAY_SLICE_INDEX && (
+        {membersIndex === 1 || members.length > 2 ? (
           <>
             <Divider classNames="!m-2 !border-l-[1px]" />
             <Button
@@ -140,7 +145,7 @@ const Members: React.FC<MembersProps> = ({ boardMembers, ownerId }) => {
               />
             </Button>
           </>
-        )}
+        ) : null}
       </div>
       <InviteMembers containerRef={containerRef} members={boardMembers} />
     </section>

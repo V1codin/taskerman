@@ -16,30 +16,30 @@ import type { INotification } from '@/models/notifications';
 
 interface MongoDbProvider
   extends DataBaseProvider<
-    Types.ObjectId,
-    FilterQuery<IBoard>,
-    Promise<IUser | null>,
-    ReturnType<typeof UserModel.findOne>,
-    ReturnType<typeof UserModel.findOne>,
-    Awaited<ReturnType<typeof UserModel.findOne>>,
-    Promise<IUser[] | null>,
-    Promise<string | null>,
-    Promise<string | null>,
-    Promise<IBoard | null>,
-    Promise<IBoardMember[]>,
-    IBoard[],
+    Types.ObjectId, //  ParticularDBType
+    FilterQuery<IBoard>, //   TBoardQuery
+    Promise<IUser | null>, //   TUserByName
+    ReturnType<typeof UserModel.findOne>, //   TUserById
+    ReturnType<typeof UserModel.findOne>, //   TUserIdByUserName
+    Awaited<ReturnType<typeof UserModel.findOne>>, //   TPatchedUser
+    Promise<IUser[] | null>, //   TUsersByAlias
+    Promise<string | null>, //   TBoardBackgroundById
+    Promise<string | null>, //   TBoardTitleById
+    Promise<IBoard | null>, //   TBoardDById
+    Promise<IBoardMember[]>, //   TBoardMembers
+    IBoard[], //   TUserBoards
     // ? unknown because Boards.create is overloading function
     // ? and ReturnType is not compatible
-    unknown,
-    ReturnType<typeof BoardModel.deleteOne>,
-    Promise<boolean>,
-    Promise<boolean>,
-    Promise<INotification[]>,
-    Promise<INotification | null>,
-    Promise<boolean>,
-    Promise<boolean>,
-    ReturnType<typeof BoardModel.updateOne>,
-    Promise<boolean>
+    unknown, //   TCreatedBoard
+    ReturnType<typeof BoardModel.deleteOne>, //   TDeletedBoard
+    Promise<boolean>, //   TUnsubedUserFromBoard
+    Promise<boolean>, //   TCreatedNotification
+    Promise<INotification[]>, //   TNotificationsByUserId
+    Promise<INotification | null>, //   TNotificationById
+    Promise<boolean>, //   TDeletedNotification
+    Promise<boolean>, //   TDeclinedInvite
+    ReturnType<typeof BoardModel.updateOne>, //   TAddBoardMember
+    Promise<boolean> //   TAddBoardInvite
   > {}
 
 export class MongoDataBaseProvider implements MongoDbProvider {
@@ -592,6 +592,10 @@ export class MongoDataBaseProvider implements MongoDbProvider {
     } catch (e) {
       return false;
     }
+  }
+
+  __TEST() {
+    return BoardModel.find({}).populate('owner').populate('members.user');
   }
 }
 
