@@ -1,3 +1,5 @@
+import { Schema } from 'mongoose';
+
 export type TUserBoardRoles = 'guest' | 'owner' | 'admin' | 'member';
 
 export interface TUser {
@@ -11,12 +13,6 @@ export interface TUser {
   nameAlias: string;
   pendingInvites: string[];
 }
-
-export type TBoardMember = {
-  role: TUserBoardRoles;
-  user: TUser;
-  isPending: boolean;
-};
 
 export type TBoardPermissions = {
   invite_members: boolean;
@@ -44,14 +40,6 @@ export type TNotePriority = 'conflict' | 'warning' | 'notification';
 export type TActions = 'board_invite';
 export type TNoteTypes = 'option' | 'info';
 
-export const notePriorityEnum = [
-  'conflict',
-  'warning',
-  'notification',
-] as const;
-export const noteActionsEnum = ['board_invite'] as const;
-export const noteTypesEnum = ['option', 'info'] as const;
-
 export interface INotification {
   id: string;
   type: TNoteTypes;
@@ -74,12 +62,6 @@ export interface ISession {
   userId: Schema.Types.ObjectId | TUser;
   expires: Date;
 }
-
-export type TBoardMember = {
-  role: TUserBoardRoles;
-  user: TUser;
-  isPending: boolean;
-};
 
 export type TEditableUserProps =
   | Required<Pick<TUser, 'displayName'>>

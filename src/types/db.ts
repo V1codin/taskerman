@@ -1,11 +1,5 @@
 import { TypeOf, z } from 'zod';
 
-import {
-  notePriorityEnum,
-  noteActionsEnum,
-  noteTypesEnum,
-} from '@/libs/db/postgres/schemas/types';
-
 import type {
   TUser,
   TEditableUserProps,
@@ -26,6 +20,10 @@ import type { AuthClient } from './state';
   | 'cards'
   | 'lists'
   */
+
+const notePriorityEnum = ['conflict', 'warning', 'notification'] as const;
+const noteActionsEnum = ['board_invite'] as const;
+const noteTypesEnum = ['option', 'info'] as const;
 
 export interface IDbCollections {
   users: TUser;

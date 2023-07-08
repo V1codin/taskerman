@@ -53,16 +53,8 @@ export type TNotificationActionData = {
 };
 export type TNotePriority = 'conflict' | 'warning' | 'notification';
 
-export const notePriorityEnum = [
-  'conflict',
-  'warning',
-  'notification',
-] as const;
-export const noteActionsEnum = ['board_invite'] as const;
-export const noteTypesEnum = ['option', 'info'] as const;
-
-export type TNoteTypes = (typeof noteTypesEnum)[number];
-export type TActions = (typeof noteActionsEnum)[number];
+export type TNoteTypes = 'option' | 'info';
+export type TActions = 'board_invite';
 
 export interface INotification {
   id: string;
