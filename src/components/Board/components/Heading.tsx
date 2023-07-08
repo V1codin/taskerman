@@ -54,6 +54,7 @@ const Heading: React.FC<HeadingProps> = ({ boardTitle }) => {
           ref={inputRef}
           classNames="bg-transparent 
         font-light 
+        max-h-11
         text-white p-2 text-xl max-w-full
         focus:border-b-pale-blue rounded-none rounded-bl-md"
           attrs={{
@@ -66,7 +67,7 @@ const Heading: React.FC<HeadingProps> = ({ boardTitle }) => {
         />
       ) : (
         <h2
-          className="text-3xl px-3 py-1 max-w-[40vw] overflow-hidden mobile:text-lg"
+          className="max-h-11 text-3xl px-3 py-1 max-w-[40vw] overflow-hidden mobile:text-lg"
           title={title}
         >
           {slicedTitle}

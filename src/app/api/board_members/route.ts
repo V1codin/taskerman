@@ -2,12 +2,15 @@ import { NextResponse } from 'next/server';
 import { authService } from '@/libs/auth.service';
 import { BadRequestError, ServerResponseError } from '@/libs/error.service';
 import { updatingBoardMembersSchema } from '@/types/db';
-import { BOARD_MEMBER_ROLES_PERMISSIONS, IBoardMember } from '@/models/boards';
 import { boardService } from '@/libs/boards.service';
 import { notificationService } from '@/libs/notifications.service';
-import { DEFAULT_INVITED_MEMBER_ROLE } from '@/utils/constants';
+import {
+  BOARD_MEMBER_ROLES_PERMISSIONS,
+  DEFAULT_INVITED_MEMBER_ROLE,
+} from '@/utils/constants';
 
 import type { TBoardMembersNS } from '@/types/api';
+import type { TBoardMember } from '@/libs/db/postgres/schemas/types';
 
 export async function POST(req: Request) {
   try {
@@ -52,7 +55,9 @@ export async function POST(req: Request) {
 
     const currentMembers = board.members.reduce<Record<string, boolean>>(
       (acc, item) => {
-        acc[item.user._id] = true;
+        if (item && item.user) {
+          acc[item.user.id!] = true;
+        }
 
         return acc;
       },
@@ -61,7 +66,7 @@ export async function POST(req: Request) {
 
     const addedMembersIds: string[] = [];
     const newMembers = members.reduce<
-      Record<keyof Pick<IBoardMember, 'role' | 'user'>, string>[]
+      Record<keyof Pick<TBoardMember, 'role' | 'user'>, string>[]
     >((acc, item) => {
       if (currentMembers[item]) {
         return acc;
@@ -80,6 +85,7 @@ export async function POST(req: Request) {
     }, []);
 
     await boardService.addBoardMember(boardId, newMembers);
+
     await boardService.addBoardInviteToUser(boardId, newMembers);
 
     // ? newMembers is already uniq so there is no doubled notification

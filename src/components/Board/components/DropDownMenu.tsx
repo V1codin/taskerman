@@ -24,17 +24,16 @@ import { ServerResponseError } from '@/libs/error.service';
 import { getSetToastState } from '@/context/stateManager';
 
 import type { ChangeEvent, MouseEvent as ReactMouseEvent } from 'react';
-import type { IBoardMember } from '@/models/boards';
-import type { IUser } from '@/models/users';
+import type { TUser, TBoardMember } from '@/libs/db/postgres/schemas/types';
 
 type DropDownMenuProps = {
   closeDropDown: () => void;
-  currentMembers: IBoardMember[];
+  currentMembers: TBoardMember[];
 };
 
 const DropDownMenu: React.FC<DropDownMenuProps> = ({ closeDropDown }) => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [members, setMembers] = useState<IUser[]>([]);
+  const [members, setMembers] = useState<TUser[]>([]);
   const [loader, setLoader] = useState(false);
   const [selected, setSelected] = useState<Record<string, boolean>>({});
   const setToast = useSetAtom(getSetToastState);
@@ -196,13 +195,13 @@ const DropDownMenu: React.FC<DropDownMenuProps> = ({ closeDropDown }) => {
           listClassNames="!p-[0.4rem]"
         >
           {members.map((item) => {
-            const subs = item.subs as string[];
+            const subs = item.subs.map((item) => item.boardId);
             const isAlreadyMember = subs.includes(currentBoardId);
             const isPending =
               item.pendingInvites.includes(currentBoardId) ||
-              item._id in invitedMap;
+              item.id in invitedMap;
             return (
-              <li key={item._id} className="text-white">
+              <li key={item.id} className="text-white">
                 <Button
                   containerClassNames={cls(
                     `
@@ -215,13 +214,13 @@ const DropDownMenu: React.FC<DropDownMenuProps> = ({ closeDropDown }) => {
                     active:bg-aqua-active
                     `,
                     {
-                      'bg-blue-second': selected[item._id],
-                      'border-b-yellow': selected[item._id],
-                      'hover:!bg-blue': selected[item._id],
+                      'bg-blue-second': selected[item.id],
+                      'border-b-yellow': selected[item.id],
+                      'hover:!bg-blue': selected[item.id],
                     },
                   )}
                   attrs={{
-                    'data-id': item._id,
+                    'data-id': item.id,
                     onClick: selectMember,
                     title: isAlreadyMember
                       ? 'Already a member'
@@ -240,8 +239,8 @@ const DropDownMenu: React.FC<DropDownMenuProps> = ({ closeDropDown }) => {
                   </p>
                   <p className="dropdown_members_email">{item.email}</p>
                   <Avatar
-                    imageURL={item.imageURL}
-                    displayName={item.displayName}
+                    imageURL={item.imageURL || ''}
+                    displayName={item.displayName || ''}
                     avatarWidth={38}
                     avatarHeight={38}
                     className="rounded-[50%] col-start-2 dropdown_members_avatar h-full max-w-[38px] bg-monokai"

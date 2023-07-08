@@ -1,25 +1,10 @@
 import { Schema, Model } from 'mongoose';
 
-import type { IBoard } from './boards';
+import type { TUser } from './types';
 
-export interface IUser {
-  _id: string;
-  username: string;
-  displayName?: string;
-  email: string;
-  subs: string[] | IBoard[];
-  imageURL?: string;
-  nameAlias: string;
-  pendingInvites: string[];
-}
+interface TUserMethods {}
 
-export type TEditableUserProps =
-  | Required<Pick<IUser, 'displayName'>>
-  | Required<Pick<IUser, 'imageURL'>>;
-
-interface IUserMethods {}
-
-export const UserScheme = new Schema<IUser, Model<IUser>, IUserMethods>(
+export const UserScheme = new Schema<TUser, Model<TUser>, TUserMethods>(
   {
     pendingInvites: {
       type: [String],
@@ -47,3 +32,7 @@ export const UserScheme = new Schema<IUser, Model<IUser>, IUserMethods>(
     collection: 'users',
   },
 );
+
+UserScheme.set('toJSON', {
+  virtuals: true,
+});

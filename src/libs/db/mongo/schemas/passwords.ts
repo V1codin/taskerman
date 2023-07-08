@@ -1,10 +1,6 @@
 import { Schema, Model } from 'mongoose';
 
-export interface IPassword {
-  _id: string;
-  user: Schema.Types.ObjectId;
-  pw: string;
-}
+import type { IPassword } from './types';
 
 export const PasswordScheme = new Schema<IPassword, Model<IPassword>>(
   {
@@ -19,3 +15,7 @@ export const PasswordScheme = new Schema<IPassword, Model<IPassword>>(
     collection: 'passwords',
   },
 );
+
+PasswordScheme.set('toJSON', {
+  virtuals: true,
+});

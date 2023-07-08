@@ -1,5 +1,4 @@
-import mongoProvider from '@/libs/db/mongo';
-
+import { dbProvider } from '@/libs/db/provider';
 import { authService } from '@/libs/auth.service';
 import { NextResponse } from 'next/server';
 import { boardService } from '@/libs/boards.service';
@@ -137,7 +136,7 @@ export async function DELETE(req: Request) {
 
     // TODO check issiuer's role -> if 'owner' -> boardService.delete
     // TODO if guest,admin etc -> boardService.unsubscribe
-    if (!mongoProvider.isEqualUtils(issuerId, boardToDelete.owner._id)) {
+    if (!dbProvider.isEqualUtils(issuerId, boardToDelete.owner.id)) {
       const deleted = await boardService.unsubscribe(issuerId, boardToDelete);
 
       if (!deleted.acknowledged) {
@@ -151,6 +150,7 @@ export async function DELETE(req: Request) {
         },
       );
     }
+
     const deleted = await boardService.delete(boardId);
 
     if (!deleted.acknowledged) {

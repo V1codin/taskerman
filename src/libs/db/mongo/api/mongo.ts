@@ -3,31 +3,34 @@ import {
   UserModel,
   PasswordModel,
   NotificationModel,
-} from '@/models/middlewares';
-import { ServerResponseError } from '../error.service';
+} from '../schemas/middlewares';
+import { ServerResponseError } from '@/libs/error.service';
 import { Types } from 'mongoose';
 
-import type { IUser } from '@/models/users';
-import type { IBoard, IBoardMember } from '@/models/boards';
 import type { FilterQuery } from 'mongoose';
 import type { DataBaseProvider, TBoardNS, TNotificationNS } from '@/types/db';
-import type { TEditableUserProps } from '@/models/users';
-import type { INotification } from '@/models/notifications';
+import type { INotification } from '../schemas/types';
+import type {
+  TUser,
+  TBoard,
+  TBoardMember,
+  TEditableUserProps,
+} from '../schemas/types';
 
 interface MongoDbProvider
   extends DataBaseProvider<
     Types.ObjectId, //  ParticularDBType
-    FilterQuery<IBoard>, //   TBoardQuery
-    Promise<IUser | null>, //   TUserByName
+    FilterQuery<TBoard>, //   TBoardQuery
+    Promise<TUser | null>, //   TUserByName
     ReturnType<typeof UserModel.findOne>, //   TUserById
     ReturnType<typeof UserModel.findOne>, //   TUserIdByUserName
     Awaited<ReturnType<typeof UserModel.findOne>>, //   TPatchedUser
-    Promise<IUser[] | null>, //   TUsersByAlias
+    Promise<TUser[] | null>, //   TUsersByAlias
     Promise<string | null>, //   TBoardBackgroundById
     Promise<string | null>, //   TBoardTitleById
-    Promise<IBoard | null>, //   TBoardDById
-    Promise<IBoardMember[]>, //   TBoardMembers
-    IBoard[], //   TUserBoards
+    Promise<TBoard | null>, //   TBoardDById
+    Promise<TBoardMember[]>, //   TBoardMembers
+    TBoard[], //   TUserBoards
     // ? unknown because Boards.create is overloading function
     // ? and ReturnType is not compatible
     unknown, //   TCreatedBoard
@@ -45,7 +48,7 @@ interface MongoDbProvider
 export class MongoDataBaseProvider implements MongoDbProvider {
   constructor() {}
 
-  getUserAliasRegexQueryUtils(alias: string): FilterQuery<IUser> {
+  getUserAliasRegexQueryUtils(alias: string): FilterQuery<TUser> {
     return {
       nameAlias: { $regex: alias, $options: 'i' },
     };
@@ -61,8 +64,10 @@ export class MongoDataBaseProvider implements MongoDbProvider {
   */
   getAllBoardsByUserQueryUtils(
     userId: string | ParticularDBType,
-  ): FilterQuery<IBoard> {
+  ): FilterQuery<TBoard> {
     const userObj = this.getObjectIdFromStringUtils(userId);
+    if (!userObj) return {};
+
     return {
       $or: [
         {
@@ -82,10 +87,10 @@ export class MongoDataBaseProvider implements MongoDbProvider {
     return new Types.ObjectId(str1).equals(str2);
   }
 
-  isUserBoardSubscriberUtils(userId: string, board: IBoard) {
+  isUserBoardSubscriberUtils(userId: string, board: TBoard) {
     return (
-      board.members.findIndex(({ user: { _id } }) =>
-        this.isEqualUtils(userId, _id),
+      board.members.findIndex(({ user: { id } }) =>
+        this.isEqualUtils(userId, id),
       ) > -1
     );
   }
@@ -107,11 +112,11 @@ export class MongoDataBaseProvider implements MongoDbProvider {
     return this.getUserById(userId).populate('subs');
   }
 
-  async unsubscribeFromBoard(userId: string, board: IBoard) {
+  async unsubscribeFromBoard(userId: string, board: TBoard) {
     try {
       await BoardModel.updateOne(
         {
-          _id: board._id,
+          _id: board.id,
         },
         {
           $pull: {
@@ -129,7 +134,7 @@ export class MongoDataBaseProvider implements MongoDbProvider {
         {
           $pull: {
             subs: {
-              $in: [board._id],
+              $in: [board.id],
             },
           },
         },
@@ -189,8 +194,9 @@ export class MongoDataBaseProvider implements MongoDbProvider {
       if (!user) {
         return '';
       }
+
       const result = await PasswordModel.findOne({
-        user: new Types.ObjectId(user._id),
+        user: new Types.ObjectId(user.id),
       });
 
       return result?.pw || '';
@@ -208,9 +214,9 @@ export class MongoDataBaseProvider implements MongoDbProvider {
       return null;
     }
 
-    const obj = user.toObject();
+    const obj = user.toJSON();
     try {
-      const result = JSON.parse(JSON.stringify(obj)) as IUser;
+      const result = JSON.parse(JSON.stringify(obj)) as TUser;
 
       return result;
     } catch (e) {
@@ -262,8 +268,8 @@ export class MongoDataBaseProvider implements MongoDbProvider {
         return null;
       }
 
-      const obj = board.toObject();
-      const result = JSON.parse(JSON.stringify(obj)) as IBoard;
+      const obj = board.toJSON();
+      const result = JSON.parse(JSON.stringify(obj)) as TBoard;
 
       return result;
     } catch (e) {
@@ -313,9 +319,13 @@ export class MongoDataBaseProvider implements MongoDbProvider {
    * Uses JSON.parse
    * So wrap the function call into try/catch
    */
-  async getUserBoards(query: FilterQuery<IBoard>) {
+  async getUserBoards(userId: string | ParticularDBType) {
+    if (!userId) return [];
+
+    const query = this.getAllBoardsByUserQueryUtils(userId);
+
     const found = await BoardModel.find(query).populate('owner');
-    const result = JSON.parse(JSON.stringify(found)) as IBoard[];
+    const result = JSON.parse(JSON.stringify(found)) as TBoard[];
 
     return result;
   }
@@ -325,6 +335,7 @@ export class MongoDataBaseProvider implements MongoDbProvider {
 
     const boardToCreate = {
       ...board,
+      members: [],
       owner: ownerObj,
     };
 
@@ -340,7 +351,7 @@ export class MongoDataBaseProvider implements MongoDbProvider {
       },
     );
 
-    return createdBoard.populate('owner');
+    return createdBoard.populate('owner') as Promise<TBoard>;
   }
 
   async getUserRole(boardId: string, userId: string) {
@@ -367,7 +378,7 @@ export class MongoDataBaseProvider implements MongoDbProvider {
 
   addBoardMember(
     boardId: string,
-    members: Record<keyof Pick<IBoardMember, 'role' | 'user'>, string>[],
+    members: Record<keyof Pick<TBoardMember, 'role' | 'user'>, string>[],
   ) {
     const mappedMembers = members.map((member) => {
       const user = this.getObjectIdFromStringUtils(member.user);
@@ -393,7 +404,7 @@ export class MongoDataBaseProvider implements MongoDbProvider {
 
   async addBoardInviteToUser(
     boardId: string,
-    members: Record<keyof Pick<IBoardMember, 'role' | 'user'>, string>[],
+    members: Record<keyof Pick<TBoardMember, 'role' | 'user'>, string>[],
   ) {
     try {
       await Promise.all(
@@ -482,9 +493,7 @@ export class MongoDataBaseProvider implements MongoDbProvider {
         throw new Error('Document was not found');
       }
 
-      const result = JSON.parse(
-        JSON.stringify(note.toObject()),
-      ) as INotification;
+      const result = JSON.parse(JSON.stringify(note.toJSON())) as INotification;
 
       return result;
     } catch (e) {
@@ -593,15 +602,8 @@ export class MongoDataBaseProvider implements MongoDbProvider {
       return false;
     }
   }
-
-  __TEST() {
-    return BoardModel.find({}).populate('owner').populate('members.user');
-  }
 }
 
 const mongoProvider = new MongoDataBaseProvider();
-// TODO TDb type as global type and assign to it current DB provider
-export type TDb = MongoDataBaseProvider;
-export type ParticularDBType = Types.ObjectId;
 
 export default mongoProvider;

@@ -1,18 +1,17 @@
 import CredentialsProvider from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
-import encrypt from '@/libs/encrypt.service';
 
 import { cookies } from 'next/headers';
 import { GoogleProfile } from 'next-auth/providers/google';
-import { clientPromise, dbConnect } from '@/libs/db/connect';
+import { dbConnect } from '@/libs/db/connect';
 import { NextAuthOptions } from 'next-auth';
-import { MongoDBAdapter } from '@next-auth/mongodb-adapter';
 import {
   AUTH_TOKEN_COOKIE_NAME,
+  CURRENT_DB,
   isDev,
-  MONGO_DB_NAME,
   SESSION_MAX_AGE_DAYS,
 } from '@/utils/constants';
+import { mongoAdapter } from './mongo/api/adapter';
 import {
   fromDate,
   generateSessionToken,
@@ -21,19 +20,17 @@ import {
 } from '../server.helpers';
 import { authService } from '@/libs/auth.service';
 import { decode, encode } from 'next-auth/jwt';
-import { PasswordModel, SessionModel, UserModel } from '@/models/middlewares';
-import { Adapter, AdapterSession } from 'next-auth/adapters';
-import { IUser } from '@/models/users';
-import { SessionUser } from '@/types/db';
 import { ServerResponseError } from '@/libs/error.service';
-import { WithOptional } from '@/types/utils';
+import { postgresAdapter } from './postgres/api/adapter';
 
+import type { SessionUser } from '@/types/db';
+import type { Adapter, AdapterSession } from 'next-auth/adapters';
 import type { TMethods } from '@/types/api';
 import type { AuthClient } from '@/types/state';
 
 type Session = { user: SessionUser; session: AdapterSession };
 
-type MyAdapter = Adapter & {
+export type MyAdapter = Adapter & {
   _getSessionAndUser(sessionToken: string): Promise<Session | null>;
   _createSession(session: {
     sessionToken: string;
@@ -45,137 +42,12 @@ type MyAdapter = Adapter & {
     error?: ServerResponseError<400 | 403>;
     data: string | null;
   }>;
+
+  _removeExpiredSessionToken(token: string): Promise<boolean>;
 };
 
-const mongoAdapter: MyAdapter = {
-  ...MongoDBAdapter(clientPromise, {
-    databaseName: MONGO_DB_NAME,
-    collections: {
-      Users: 'users',
-      VerificationTokens: 'verification_tokens',
-      Sessions: 'sessions',
-      Accounts: 'accounts',
-    },
-  }),
-  async _getSessionAndUser(sessionToken: string) {
-    await dbConnect();
-
-    try {
-      const result = await SessionModel.findOne({ sessionToken }).populate({
-        path: 'userId',
-      });
-      if (!result) {
-        return null;
-      }
-
-      const objectedResult = result.toObject();
-
-      const session: AdapterSession = {
-        expires: objectedResult.expires,
-        sessionToken: objectedResult.sessionToken,
-        userId: String(objectedResult._id),
-      };
-
-      const populatedUser = objectedResult.userId as WithOptional<
-        IUser,
-        'subs'
-      >;
-
-      //? for converting data for passing from server component to client component
-      populatedUser._id = String(populatedUser._id);
-
-      delete populatedUser.subs;
-
-      const user: SessionUser = {
-        ...populatedUser,
-        id: populatedUser._id,
-      };
-
-      return {
-        user,
-        session,
-      };
-    } catch (e) {
-      return null;
-    }
-  },
-
-  async _createSession(session: {
-    sessionToken: string;
-    userId: string;
-    expires: Date;
-  }): Promise<AdapterSession> {
-    await dbConnect();
-    await SessionModel.create(session);
-
-    return session;
-  },
-
-  async _createUser(user: AuthClient.TSignUpBodyReducer<TSignUp>) {
-    try {
-      await dbConnect();
-
-      const { password, username, displayName, email } = user;
-
-      const isUserExist = await UserModel.findOne({
-        username,
-      });
-
-      if (isUserExist) {
-        throw new ServerResponseError({
-          code: 403,
-          message: 'Error: User with the username already exists',
-        });
-      }
-
-      const isEmailExist = await UserModel.findOne({
-        email,
-      });
-
-      if (isEmailExist) {
-        throw new ServerResponseError({
-          code: 403,
-          message: 'Error: User with the email already exists',
-        });
-      }
-
-      const createdUser = await UserModel.create({
-        username,
-        displayName,
-        email,
-        nameAlias: `${displayName} ${email}`,
-      });
-
-      const safePW = await encrypt.hash(password);
-
-      await PasswordModel.create({
-        user: createdUser._id,
-        pw: safePW,
-      });
-
-      return {
-        data: 'User was successfully created',
-      };
-    } catch (e) {
-      if (e instanceof ServerResponseError) {
-        return {
-          data: null,
-          error: e,
-        };
-      }
-
-      return {
-        data: null,
-        error: new ServerResponseError({
-          code: 400,
-          message: 'Error: Bad request',
-        }),
-      };
-    }
-  },
-};
-
-export const dbAdapter: MyAdapter = mongoAdapter;
+export const dbAdapter =
+  CURRENT_DB !== 'mongo' ? postgresAdapter : mongoAdapter;
 
 export const getAuthOptions = (method?: TMethods | string): NextAuthOptions => {
   return {
@@ -233,7 +105,7 @@ export const getAuthOptions = (method?: TMethods | string): NextAuthOptions => {
             const sessionExpiry = fromDate(sessionMaxAge); // Implement a function to calculate the session cookie expiry date
 
             try {
-              await mongoAdapter._createSession({
+              await dbAdapter._createSession({
                 sessionToken: sessionToken,
                 userId: user.id,
                 expires: sessionExpiry,
@@ -283,7 +155,7 @@ export const getAuthOptions = (method?: TMethods | string): NextAuthOptions => {
       },
     },
     useSecureCookies: !isDev(),
-    adapter: mongoAdapter,
+    adapter: dbAdapter,
     providers: [
       GoogleProvider<GoogleProfile>({
         checks: 'pkce',

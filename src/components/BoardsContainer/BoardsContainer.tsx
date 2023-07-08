@@ -15,7 +15,7 @@ import {
 import { isLink } from '@/utils/helpers';
 import { useCallback } from 'react';
 
-import type { IBoard } from '@/models/boards';
+import type { TBoard } from '@/libs/db/postgres/schemas/types';
 
 type BoardContainerProps = {};
 
@@ -25,9 +25,9 @@ const BoardsContainer: React.FC<BoardContainerProps> = () => {
   const setModal = useSetAtom(getSetModal);
 
   const deleteBoard = useCallback(
-    ({ owner, _id, title }: IBoard) => {
+    ({ owner, id, title }: TBoard) => {
       const modalMessage =
-        user?._id === owner._id
+        user?.id === owner.id
           ? DeleteBoardMessage()
           : UnsubscribeBoardMessage();
 
@@ -37,7 +37,7 @@ const BoardsContainer: React.FC<BoardContainerProps> = () => {
           type: 'delete',
           view: 'delete_board',
           data: {
-            entitiId: _id,
+            entitiId: id,
             children: (
               <h3>
                 {modalMessage} - <p style={{ color: '#55d725' }}>{title}</p>
@@ -48,7 +48,7 @@ const BoardsContainer: React.FC<BoardContainerProps> = () => {
         },
       });
     },
-    [setModal, user?._id],
+    [setModal, user?.id],
   );
 
   if (!boards.length) return null;
@@ -66,7 +66,7 @@ const BoardsContainer: React.FC<BoardContainerProps> = () => {
           <BoardCard
             {...boardProps}
             deleteBoard={() => deleteBoard(board)}
-            key={Math.random() * 100 + index + board._id}
+            key={Math.random() * 100 + index + board.id}
           />
         );
       })}
