@@ -1,5 +1,11 @@
 import { TypeOf, z } from 'zod';
 
+import {
+  notePriorityEnum,
+  noteActionsEnum,
+  noteTypesEnum,
+} from '../libs/db/postgres/schemas/types';
+
 import type {
   TUser,
   TEditableUserProps,
@@ -15,11 +21,6 @@ import type {
 } from '../libs/db/postgres/schemas/types';
 import type { RequireAtLeastOne } from './utils';
 import type { AuthClient } from './state';
-import type {
-  notePriorityEnum,
-  noteActionsEnum,
-  noteTypesEnum,
-} from '../libs/db/postgres/schemas/types';
 
 /*
   | 'cards'
