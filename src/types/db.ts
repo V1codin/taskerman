@@ -4,12 +4,12 @@ import {
   notePriorityEnum,
   noteActionsEnum,
   noteTypesEnum,
-} from '../libs/db/postgres/schemas/types';
+} from '@/libs/db/postgres/schemas/types';
 
 import type {
   TUser,
   TEditableUserProps,
-} from '../libs/db/postgres/schemas/types';
+} from '@/libs/db/postgres/schemas/types';
 import type {
   BoardServiceCreate,
   BoardServiceGetUserBoards,
@@ -18,7 +18,7 @@ import type {
   TBoard,
   TBoardMember,
   TUserBoardRoles,
-} from '../libs/db/postgres/schemas/types';
+} from '@/libs/db/postgres/schemas/types';
 import type { RequireAtLeastOne } from './utils';
 import type { AuthClient } from './state';
 
