@@ -8,6 +8,7 @@ import type {
   TBoardMember,
   TEditableUserProps,
 } from '../schemas/types';
+import { noop } from '@/utils/helpers';
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
@@ -93,6 +94,7 @@ export class PostgresSqlDataBaseProvider implements PrismaDbProvider {
   }
   // TODO add to DataBaseProvider
   confirmBoardInvite(userId: string, boardId: string): unknown {
+    noop(userId), boardId;
     throw new Error('Method not implemented.');
   }
   // TODO add to DataBaseProvider
@@ -421,6 +423,7 @@ export class PostgresSqlDataBaseProvider implements PrismaDbProvider {
   }
 
   async getSafeNotificationsByUserId(userId: string): Promise<INotification[]> {
+    noop(userId);
     try {
       return [];
     } catch (e) {
@@ -429,37 +432,47 @@ export class PostgresSqlDataBaseProvider implements PrismaDbProvider {
   }
 
   getAllBoardsByUserQueryUtils(userId: string): unknown {
+    noop(userId);
     throw new Error('Method not implemented.');
   }
   getBoardMembers(boardId: string): Promise<TBoardMember[]> {
+    noop(boardId);
     throw new Error('Method not implemented.');
   }
   isValidUserForGettingBoardUtils(
     userId: string,
     boardId: string,
   ): Promise<boolean> {
+    noop(userId, boardId);
     throw new Error('Method not implemented.');
   }
   getUserById(userId: string): unknown {
+    noop(userId);
     throw new Error('Method not implemented.');
   }
   getUserIdByUserName(username: string): unknown {
+    noop(username);
     throw new Error('Method not implemented.');
   }
   patchUser(userId: string, patch: TEditableUserProps): unknown {
+    noop(userId, patch);
     throw new Error('Method not implemented.');
   }
 
   unsubscribeFromBoard(userId: string, board: TBoard): Promise<boolean> {
+    noop(userId, board);
     throw new Error('Method not implemented.');
   }
   declineBoardInvite(userId: string, boardId: string): Promise<boolean> {
+    noop(userId, boardId);
     throw new Error('Method not implemented.');
   }
   getSafeNotificationById(id: string): Promise<INotification | null> {
+    noop(id);
     throw new Error('Method not implemented.');
   }
   deleteNotification(id: string): Promise<boolean> {
+    noop(id);
     throw new Error('Method not implemented.');
   }
 }

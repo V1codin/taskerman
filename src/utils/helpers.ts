@@ -163,3 +163,5 @@ export function throttle<T extends (...args: any[]) => ReturnType<T>>(
     return lastResult;
   };
 }
+// @ts-ignore
+export const noop = (...args: any[]) => {};
