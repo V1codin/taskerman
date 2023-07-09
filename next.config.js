@@ -29,7 +29,6 @@ const nextConfig = {
     return config;
   },
   experimental: {
-    serverComponentsExternalPackages: ['mongoose'],
     serverActions: true,
   },
   reactStrictMode: process.env.NODE_ENV === 'development',

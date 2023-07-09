@@ -217,4 +217,4 @@ export interface DataBaseProvider<
   deleteNotification(id: string): TDeletedNotification;
 }
 
-export type DB_TYPES = 'mongo' | 'postgressql';
+export type DB_TYPES = 'postgressql';

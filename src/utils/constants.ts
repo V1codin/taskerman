@@ -123,9 +123,7 @@ export const SKELETON_CLASS_NAMES =
 
 export const NOTIFICATION_TEXT_FORMAT_REGEX = /<important>(.*?)<\/important>/g;
 
-export const CURRENT_DB: DB_TYPES = process.env['DB_TYPE']
-  ? (process.env['DB_TYPE'] as DB_TYPES)
-  : 'mongo';
+export const CURRENT_DB: DB_TYPES = process.env['DB_TYPE'] as DB_TYPES;
 
 export const BOARD_MEMBER_ROLES_PERMISSIONS: Record<
   TUserBoardRoles,
