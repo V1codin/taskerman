@@ -1,0 +1,142 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  guest
+  owner
+  admin
+  member
+}
+
+enum NotePriority {
+  conflict
+  warning
+  notification
+}
+
+enum NotificationType {
+  option
+  info
+}
+
+enum NotificationAction {
+  board_invite
+}
+
+model User {
+  id        String   @id @default(cuid()) @map("_id")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  displayName String? @map("display_name") @db.VarChar(36)
+  imageURL    String? @map("image_url") @db.VarChar(200)
+  username    String  @unique @db.VarChar(16)
+  email       String  @unique @db.VarChar(64)
+  nameAlias   String? @map("name_alias") @db.VarChar(200)
+
+  boards Board[]
+  subs   BoardMember[]
+
+  password Password?
+  session  Session?
+
+  pendingInvites String[]
+
+  notifications Notification[]
+
+  @@unique([username, email])
+  @@map("users")
+}
+
+model Board {
+  id        String   @id @default(cuid()) @map("_id")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  title String @db.VarChar(74)
+  bg    String @db.VarChar(200)
+
+  ownerId String
+  owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  members BoardMember[] @relation("members")
+
+  @@map("boards")
+}
+
+model BoardMember {
+  id String @id @default(cuid()) @map("_id")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  role      Role    @default(guest)
+  isPending Boolean @default(false)
+
+  board   Board?  @relation("members", fields: [boardId], references: [id], onDelete: Cascade)
+  boardId String?
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id])
+}
+
+model Password {
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  id String @id @default(cuid()) @map("_id")
+
+  pw String @db.VarChar(150)
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @unique
+
+  @@map("passwords")
+}
+
+model Session {
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  id String @id @default(cuid()) @map("_id")
+
+  userId  User   @relation(fields: [user_Id], references: [id], onDelete: Cascade)
+  user_Id String @unique
+
+  expires DateTime @db.Date
+
+  @@map("sessions")
+}
+
+model NotificationActionData {
+  id String @id @default(cuid()) @map("_id")
+
+  boardId      String?
+  Notification Notification[] @relation("notes")
+}
+
+model Notification {
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  id String @id @default(cuid()) @map("_id")
+
+  text     String             @db.VarChar(300)
+  priority NotePriority       @default(notification)
+  action   NotificationAction
+  type     NotificationType   @default(info)
+
+  recipient User?   @relation(fields: [userId], references: [id])
+  userId    String?
+
+  actionData               NotificationActionData @relation(name: "notes", fields: [notificationActionDataId], references: [id], onDelete: Cascade)
+  notificationActionDataId String
+
+  @@map("notifications")
+}

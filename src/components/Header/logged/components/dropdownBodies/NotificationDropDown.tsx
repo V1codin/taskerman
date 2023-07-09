@@ -15,7 +15,7 @@ import { useCallback } from 'react';
 import { api } from '@/utils/api/api';
 
 import type { MutableRefObject } from 'react';
-import type { INotification } from '@/models/notifications';
+import type { INotification } from '@/libs/db/postgres/schemas/types';
 
 type NotificationDropDownProps = {
   closeDropDown: () => void;
@@ -37,11 +37,11 @@ const NotificationDropDown: React.FC<NotificationDropDownProps> = ({
         if (noteType === 'info') {
           try {
             const result = await api.delete('notification', {
-              id: note._id,
+              id: note.id,
             });
 
             setNotes((prev) =>
-              prev.filter(({ _id }) => _id !== result.removedNoteId),
+              prev.filter(({ id }) => id !== result.removedNoteId),
             );
           } catch (e) {
             setToast({
@@ -58,7 +58,7 @@ const NotificationDropDown: React.FC<NotificationDropDownProps> = ({
               isOpen: true,
               window: {
                 data: {
-                  entitiId: note._id,
+                  entitiId: note.id,
                   entity: 'notification_decline',
                 },
                 type: 'delete',
@@ -83,11 +83,11 @@ const NotificationDropDown: React.FC<NotificationDropDownProps> = ({
     return async () => {
       try {
         const result = await api.delete('notification_confirm', {
-          id: note._id,
+          id: note.id,
         });
 
         setNotes((prev) =>
-          prev.filter(({ _id }) => _id !== result.removedNoteId),
+          prev.filter(({ id }) => id !== result.removedNoteId),
         );
       } catch (e) {
         setToast({
@@ -116,7 +116,7 @@ const NotificationDropDown: React.FC<NotificationDropDownProps> = ({
 
         return (
           <DropDownElement
-            key={item._id}
+            key={item.id}
             classNames={cls('p-1 text-base relative', {
               'border-b border-pink': item.priority === 'conflict',
               'border-b border-orange': item.priority === 'warning',

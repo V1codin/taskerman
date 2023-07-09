@@ -3,10 +3,10 @@
 import Members from './components/Members';
 import Heading from './components/Heading';
 
-import type { IBoard } from '@/models/boards';
+import type { TBoard } from '@/libs/db/postgres/schemas/types';
 
 type BoardProps = {
-  board: IBoard;
+  board: TBoard;
 };
 
 const Board: React.FC<BoardProps> = ({ board }) => {
@@ -15,7 +15,7 @@ const Board: React.FC<BoardProps> = ({ board }) => {
   return (
     <>
       <Heading boardTitle={board.title} />
-      <Members boardMembers={members} ownerId={owner._id} />
+      <Members boardMembers={members} ownerId={owner.id} />
 
       <div className="mt-4 flex items-center justify-between flex-wrap">
         <div className="w-1/3 h-48 border border-blue"></div>

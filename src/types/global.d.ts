@@ -4,10 +4,20 @@ import {
   OAuthProviderType,
 } from 'next-auth/providers/index';
 
+import { CURRENT_DB } from '../utils/constants';
+
+import type { MongoDataBaseProvider } from '../libs/db/mongo/api/mongo';
+import type { PostgresSqlDataBaseProvider } from '../libs/db/postgres/api/prisma';
+import type { DB_TYPES } from './db';
+
 type TAuthUnion = RedirectableProviderType & OAuthProviderType;
 
 declare global {
   var _mongoClientPromise: Promise<any> | undefined;
+
+  type ParticularDBType = typeof CURRENT_DB extends 'mongo'
+    ? Types.ObjectId
+    : string;
 
   type TEntities =
     | 'board'
@@ -53,4 +63,12 @@ declare global {
   };
 
   type TAuthTypes = OAuthProviderType;
+
+  type TGetDbProvider<T extends DB_TYPES> = T extends 'mongo'
+    ? MongoDataBaseProvider
+    : T extends 'postgressql'
+    ? PostgresSqlDataBaseProvider
+    : never;
+
+  type TDb = PostgresSqlDataBaseProvider;
 }

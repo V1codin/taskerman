@@ -6,12 +6,10 @@ import { PasswordScheme } from './passwords';
 import { SessionScheme } from './sessions';
 import { NotificationScheme } from './notifications';
 
-import type { IBoard } from './boards';
-import type { IUser } from './users';
-import type { IPassword } from './passwords';
-import type { ISession } from './sessions';
-import type { INotification } from './notifications';
+import type { IPassword } from './types';
+import type { ISession } from './types';
 import type { TUserNS } from '@/types/db';
+import type { INotification, TUser, TBoard } from './types';
 
 UserScheme.pre('updateOne', async function (next) {
   const update = this.getUpdate() as ReturnType<typeof this.getUpdate> &
@@ -67,11 +65,11 @@ BoardScheme.pre('deleteOne', {}, async function (next) {
 });
 
 export const BoardModel =
-  (mongoose.models['Board'] as Model<IBoard>) ||
+  (mongoose.models['Board'] as Model<TBoard>) ||
   mongoose.model('Board', BoardScheme);
 
 export const UserModel =
-  (mongoose.models['User'] as Model<IUser>) ||
+  (mongoose.models['User'] as Model<TUser>) ||
   mongoose.model('User', UserScheme);
 
 export const PasswordModel =

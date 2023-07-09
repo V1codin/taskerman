@@ -26,7 +26,7 @@ const DeleteBoardForm: React.FC<DeleteBoardFormProps> = ({
 
   const refreshData = useCallback((boardId: string) => {
     setBoards((state) => {
-      const result = state.filter((item) => item._id !== boardId);
+      const result = state.filter((item) => item.id !== boardId);
 
       return result;
     });

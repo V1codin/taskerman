@@ -1,17 +1,18 @@
 import { TypeOf, z } from 'zod';
 
-import {
-  noteActionsEnum,
-  notePriorityEnum,
-  noteTypesEnum,
-} from '@/models/notifications';
-
-import type { IUser, TEditableUserProps } from '@/models/users';
+import type {
+  TUser,
+  TEditableUserProps,
+} from '@/libs/db/postgres/schemas/types';
 import type {
   BoardServiceCreate,
   BoardServiceGetUserBoards,
 } from '@/libs/boards.service';
-import type { IBoard, IBoardMember, TUserBoardRoles } from '@/models/boards';
+import type {
+  TBoard,
+  TBoardMember,
+  TUserBoardRoles,
+} from '@/libs/db/postgres/schemas/types';
 import type { RequireAtLeastOne } from './utils';
 import type { AuthClient } from './state';
 
@@ -20,13 +21,16 @@ import type { AuthClient } from './state';
   | 'lists'
   */
 
+const notePriorityEnum = ['conflict', 'warning', 'notification'] as const;
+const noteActionsEnum = ['board_invite'] as const;
+const noteTypesEnum = ['option', 'info'] as const;
+
 export interface IDbCollections {
-  users: IUser;
+  users: TUser;
 }
 
 export const creatingBoardSchema = z.object({
   bg: z.string(),
-  members: z.array(z.string()),
   owner: z.string(),
   title: z.string(),
 });
@@ -72,7 +76,7 @@ export const creatingNotificationSchema = z.object({
 });
 
 export namespace TBoardNS {
-  type UpdateAvailableProps = Pick<IBoard, 'bg' | 'title'>;
+  type UpdateAvailableProps = Pick<TBoard, 'bg' | 'title'>;
   export type TUpdating = RequireAtLeastOne<
     UpdateAvailableProps,
     'bg' | 'title'
@@ -88,7 +92,7 @@ export namespace TBoardNS {
         userId: string;
       };
 
-  export interface IBoardMember {
+  export interface TBoardMember {
     role: TUserBoardRoles;
     member: Pick<
       SessionUser,
@@ -97,7 +101,7 @@ export namespace TBoardNS {
   }
 
   export interface ISingleBoard {
-    board: IBoard | null;
+    board: TBoard | null;
   }
 
   export type TCreatedBoard = Awaited<ReturnType<BoardServiceCreate>>;
@@ -138,28 +142,13 @@ export namespace TNotificationNS {
   };
 }
 
-export type TUser = {
-  id: string;
-  username: string;
-  displayName?: string;
-  email: string;
-  subs: IBoard[];
-  imageURL?: string;
-  nameAlias: string;
-};
-
-export type TUnsafeBoardProps = '_id';
-
 export type SessionUser = {
-  _id: string;
   id: string;
   displayName?: string;
   imageURL?: string;
   email: string;
   username: string;
 };
-
-export type TUserDataClient = TUser;
 
 export interface DataBaseProvider<
   ParticularDBType extends unknown,
@@ -208,21 +197,18 @@ export interface DataBaseProvider<
   getBoardTitleById(boardId: string | ParticularDBType): TBoardTitleById;
   getBoardById(boardId: string | ParticularDBType): TBoardDById;
   getBoardMembers(boardId: string | ParticularDBType): TBoardMembers;
-  getUserBoards(
-    query: TBoardQuery | null,
-    userId?: string | ParticularDBType,
-  ): Promise<TUserBoards>;
+  getUserBoards(userId: string | ParticularDBType): Promise<TUserBoards>;
   createBoard(board: TBoardNS.TCreating): TCreatedBoard;
   deleteBoard(boardId: string | ParticularDBType): TDeletedBoard;
-  unsubscribeFromBoard(userId: string, board: IBoard): TUnsubedUserFromBoard;
+  unsubscribeFromBoard(userId: string, board: unknown): TUnsubedUserFromBoard;
   declineBoardInvite(userId: string, boardId: string): TDeclinedInvite;
   addBoardMember(
     boardId: string,
-    members: Record<keyof Pick<IBoardMember, 'role' | 'user'>, string>[],
+    members: Record<keyof Pick<TBoardMember, 'role' | 'user'>, string>[],
   ): TAddBoardMember;
   addBoardInviteToUser(
     boardId: string,
-    members: Record<keyof Pick<IBoardMember, 'role' | 'user'>, string>[],
+    members: Record<keyof Pick<TBoardMember, 'role' | 'user'>, string>[],
   ): TAddBoardInvite;
 
   createNotification(note: TNotificationNS.TCreating): TCreatedNotification;
@@ -230,3 +216,5 @@ export interface DataBaseProvider<
   getSafeNotificationById(id: string): TNotificationById;
   deleteNotification(id: string): TDeletedNotification;
 }
+
+export type DB_TYPES = 'mongo' | 'postgressql';

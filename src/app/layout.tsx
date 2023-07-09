@@ -25,14 +25,13 @@ type Props = {
 export default async function RootLayout({ children }: Props) {
   const cookieStorage = cookies();
 
-  const sessionToken = cookieStorage.get(AUTH_TOKEN_COOKIE_NAME);
-  const sessionUser = await authService.getSessionUser(
-    sessionToken?.value || '',
-  );
+  const sessionToken = cookieStorage.get(AUTH_TOKEN_COOKIE_NAME)?.value || '';
+  const sessionUser = await authService.getSessionUser(sessionToken);
 
-  const boards = await boardService.getSafeUserBoards(sessionUser?._id || '');
+  const boards = await boardService.getSafeUserBoards(sessionUser?.id || '');
+
   const notifications = await notificationService.getNotificationsByUserId(
-    sessionUser?._id || '',
+    sessionUser?.id || '',
   );
 
   return (

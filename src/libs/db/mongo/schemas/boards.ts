@@ -1,26 +1,6 @@
 import { Schema, Model } from 'mongoose';
 
-import { IUser } from './users';
-
-export type TUserBoardRoles = 'guest' | 'owner' | 'admin' | 'member';
-
-export type TBoardPermissions = {
-  invite_members: boolean;
-};
-
-export interface IBoardMember {
-  role: TUserBoardRoles;
-  user: IUser;
-  isPending: boolean;
-}
-
-export interface IBoard {
-  _id: string;
-  title: string;
-  bg: string;
-  owner: IUser;
-  members: IBoardMember[];
-}
+import type { TBoard, TBoardPermissions, TUserBoardRoles } from './types';
 
 export const BOARD_MEMBER_ROLES_PERMISSIONS: Record<
   TUserBoardRoles,
@@ -40,9 +20,9 @@ export const BOARD_MEMBER_ROLES_PERMISSIONS: Record<
   },
 };
 
-interface IBoardMethods {}
+interface TBoardMethods {}
 
-export const BoardScheme = new Schema<IBoard, Model<IBoard>, IBoardMethods>(
+export const BoardScheme = new Schema<TBoard, Model<TBoard>, TBoardMethods>(
   {
     members: [
       {
@@ -74,3 +54,7 @@ export const BoardScheme = new Schema<IBoard, Model<IBoard>, IBoardMethods>(
     collection: 'boards',
   },
 );
+
+BoardScheme.set('toJSON', {
+  virtuals: true,
+});

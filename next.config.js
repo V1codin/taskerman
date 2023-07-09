@@ -32,7 +32,7 @@ const nextConfig = {
     serverComponentsExternalPackages: ['mongoose'],
     serverActions: true,
   },
-  reactStrictMode: true,
+  reactStrictMode: process.env.NODE_ENV === 'development',
   images: {
     remotePatterns: [
       {
@@ -49,6 +49,7 @@ const nextConfig = {
       },
     ],
   },
+  distDir: 'build',
 };
 
 module.exports = nextConfig;

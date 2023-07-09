@@ -1,6 +1,10 @@
-import { TUserBoardRoles } from '@/models/boards';
-import { ToastProps } from '@/types/helpers';
-import { IModal } from '@/types/state';
+import type { ToastProps } from '@/types/helpers';
+import type { IModal } from '@/types/state';
+import type { DB_TYPES } from '@/types/db';
+import type {
+  TUserBoardRoles,
+  TBoardPermissions,
+} from '@/libs/db/postgres/schemas/types';
 
 export const STANDARD_BG = '#091921';
 export const BG_IMAGE = '';
@@ -45,11 +49,6 @@ export const authFormTypeSignup = 'signup';
 export const isDev = () => process.env.NODE_ENV === 'development';
 
 export const PORT = isServer() ? process.env['PORT'] : '3000';
-
-export const BASE_URL = isDev()
-  ? `http://localhost:${PORT}`
-  : process.env['BASE_URL'];
-export const DOMAIN = isDev() ? '.localhost' : process.env['DOMAIN'];
 
 export const MONGO_DB_NAME = isDev() ? 'Local_Trello' : process.env['DB_NAME'];
 
@@ -123,3 +122,25 @@ export const SKELETON_CLASS_NAMES =
   'skeleton_block skeleton_bg_l skeleton_bg_d';
 
 export const NOTIFICATION_TEXT_FORMAT_REGEX = /<important>(.*?)<\/important>/g;
+
+export const CURRENT_DB: DB_TYPES = process.env['DB_TYPE']
+  ? (process.env['DB_TYPE'] as DB_TYPES)
+  : 'mongo';
+
+export const BOARD_MEMBER_ROLES_PERMISSIONS: Record<
+  TUserBoardRoles,
+  TBoardPermissions
+> = {
+  guest: {
+    invite_members: false,
+  },
+  owner: {
+    invite_members: true,
+  },
+  admin: {
+    invite_members: true,
+  },
+  member: {
+    invite_members: true,
+  },
+};

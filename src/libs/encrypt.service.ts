@@ -32,7 +32,7 @@ export class EncryptService {
     this.setSalt = bcrypt.genSaltSync(this.getConfig.saltRounds);
   }
 
-  hash(str: string) {
+  hash(str: string): Promise<string> {
     return new Promise((resolve, reject) => {
       bcrypt.hash(str, this.getSalt, function (err, hash) {
         if (err) {

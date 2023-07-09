@@ -21,7 +21,7 @@ export async function DELETE(req: Request) {
       });
     }
 
-    if (note.recipient._id !== issuerId) {
+    if (note.recipient.id !== issuerId) {
       throw new ServerResponseError({
         code: 403,
         message: 'Error: Unauthorized',
@@ -36,7 +36,7 @@ export async function DELETE(req: Request) {
 
     if (note.action === 'board_invite') {
       await boardService.confirmBoardInvite(
-        note.recipient._id,
+        note.recipient.id,
         note.actionData.boardId,
       );
     }
