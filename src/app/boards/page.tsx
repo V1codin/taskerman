@@ -15,7 +15,7 @@ export default async function Boards() {
     sessionToken?.value || '',
   );
 
-  if (sessionUser) {
+  if (!sessionUser) {
     return redirect('/login');
   }
 
