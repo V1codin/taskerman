@@ -2,7 +2,7 @@ import LoginForm from '@/modules/modal/modalForms/authForms/LoginForm';
 
 import { authService } from '@/libs/auth.service';
 import { dbConnect } from '@/libs/db/connect';
-import { AUTH_TOKEN_COOKIE_NAME } from '@/utils/constants';
+import { AUTH_TOKEN_COOKIE_NAME, CURRENT_DB } from '@/utils/constants';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
@@ -16,7 +16,7 @@ export default async function Login() {
   );
 
   if (sessionUser) {
-    redirect('/boards');
+    return redirect('/boards');
   }
 
   return <LoginForm />;
