@@ -11,7 +11,7 @@ import { useOuterClick } from '@/hooks/useOuterClick';
 import { useCallback, useState } from 'react';
 
 import type { RefObject } from 'react';
-import type { IBoardMember } from '@/models/boards';
+import type { TBoardMember } from '@/libs/db/postgres/schemas/types';
 
 const defaultAddMemberClasses = `w-8 h-8 border
 !p-[5px]
@@ -27,7 +27,7 @@ colored designed
 
 type InviteMembersProps = {
   containerRef: RefObject<HTMLElement>;
-  members: IBoardMember[];
+  members: TBoardMember[];
 };
 
 const InviteMembers: React.FC<InviteMembersProps> = ({

@@ -6,18 +6,18 @@ import Link from 'next/link';
 
 import { BOARD_TITLE_SLICE_INDEX } from '@/utils/constants';
 
-import type { IBoard } from '@/models/boards';
 import type { MouseEvent } from 'react';
+import type { TBoard } from '@/libs/db/postgres/schemas/types';
 
 const defaultContainerClasses = `relative mt-2 mr-0 mb-0 ml-4 overflow-auto cursor-pointer w-56 h-[150px] mobile:mx-[auto] mobile:w-3/4`;
 
-type BoardCardProps = IBoard & {
+type BoardCardProps = TBoard & {
   bgChecker: boolean;
   deleteBoard: (e: MouseEvent<HTMLButtonElement>) => void;
 };
 
 const BoardCard: React.FC<BoardCardProps> = ({
-  _id,
+  id,
   bgChecker,
   bg,
   title,
@@ -42,14 +42,14 @@ const BoardCard: React.FC<BoardCardProps> = ({
         classNames="!top-1 !right-1 !w-5 !h-5 !p-1"
         click={deleteBoard}
         attrs={{
-          name: _id,
+          name: id,
         }}
         iconAttributes={{
           title: 'Delete the board',
         }}
       />
       <Link
-        href={`/board/${_id}`}
+        href={`/board/${id}`}
         className="card__btn"
         title={`Go to the board ${title}`}
         prefetch={false}

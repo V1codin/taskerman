@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 import { MongoClient, MongoClientOptions } from 'mongodb';
 import { ConnectOptions } from 'mongoose';
-import { MONGO_DB_NAME } from '@/utils/constants';
+import { CURRENT_DB, MONGO_DB_NAME } from '@/utils/constants';
 
 const mongo_uri = process.env['MONGO_DB_URI'];
 
@@ -18,7 +18,7 @@ if (!cached) {
   cached = global._mongoose = { conn: null, promise: null };
 }
 
-export async function dbConnect() {
+async function mongoConnect() {
   if (cached.conn) {
     return cached.conn;
   }
@@ -39,8 +39,19 @@ export async function dbConnect() {
     cached.promise = null;
     throw e;
   }
-
   return cached.conn;
+}
+
+export async function dbConnect() {
+  if (CURRENT_DB === 'mongo') {
+    return mongoConnect();
+  }
+  if (CURRENT_DB === 'postgressql') {
+    // return prisma.$connect();
+    return null;
+  }
+
+  return null;
 }
 
 const options: MongoClientOptions = {};

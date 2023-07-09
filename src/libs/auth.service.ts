@@ -1,15 +1,13 @@
-import dbProvider from '@/db/mongo';
 import encrypt from '@/libs/encrypt.service';
 
+import { dbProvider } from './db/provider';
 import { ServerResponseError } from './error.service';
 import { cookies } from 'next/headers';
 import { AUTH_TOKEN_COOKIE_NAME } from '@/utils/constants';
-import { SessionModel } from '@/models/middlewares';
 import { TEncryptService } from './encrypt.service';
 import { dbAdapter } from './db/adapter';
 
-import type { TDb } from '@/db/mongo';
-import type { TEditableUserProps } from '@/models/users';
+import type { TEditableUserProps } from '@/libs/db/postgres/schemas/types';
 
 interface IAuth {
   db: TDb;
@@ -60,10 +58,11 @@ export class AuthService {
     const isExpired = this.isExpired(sessionAndUser?.session.expires);
 
     if (isExpired) {
-      await SessionModel.deleteOne({
-        sessionToken: token,
-      });
-      return null;
+      const isRemoved = await dbAdapter._removeExpiredSessionToken(token);
+
+      if (isRemoved) {
+        return null;
+      }
     }
 
     return sessionAndUser?.user;
@@ -125,10 +124,8 @@ export class AuthService {
     if (!userFromBD) {
       throw new Error('Wrong username or password');
     }
-    return {
-      id: userFromBD._id,
-      ...userFromBD,
-    };
+
+    return Object.assign(Object.create(null), userFromBD);
   }
 
   getUsersByAlias(alias: string) {

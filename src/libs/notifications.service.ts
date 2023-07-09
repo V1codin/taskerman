@@ -1,6 +1,5 @@
-import dbProvider from '@/db/mongo';
+import { dbProvider } from './db/provider';
 
-import type { TDb } from '@/db/mongo';
 import type { TNotificationNS } from '@/types/db';
 
 class NotificationService {

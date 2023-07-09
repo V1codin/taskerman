@@ -1,13 +1,13 @@
 import type {
-  IBoard,
-  IBoardMember,
-  TBoardPermissions,
   TUserBoardRoles,
-} from '@/models/boards';
+  INotification,
+  TUser,
+  TBoard,
+  TBoardMember,
+  TBoardPermissions,
+} from '@/libs/db/postgres/schemas/types';
 import type { SessionUser, TBoardNS, TNotificationNS, TUserNS } from './db';
 import type { NextApiRequest } from 'next';
-import type { INotification } from '@/models/notifications';
-import { IUser } from '@/models/users';
 
 export type TMethods = 'POST' | 'PUT' | 'DELETE' | 'GET' | 'PATCH';
 
@@ -23,7 +23,7 @@ export namespace TBoardsApiNS {
 
   type TBoardReturnType = {
     GET: TBoardNS.TRawUserBoards;
-    POST: IBoard;
+    POST: TBoard;
     DELETE: TBoardNS.TDeleting;
 
     PUT: null;
@@ -74,12 +74,12 @@ export namespace ApiNS {
     ? TUserNS.TUpdating
     : null;
 
-  interface IBoardReturn extends Record<keyof TActions, unknown> {
+  interface TBoardReturn extends Record<keyof TActions, unknown> {
     read: {
-      data: IBoard[];
+      data: TBoard[];
     };
     create: {
-      data: IBoard;
+      data: TBoard;
     };
     delete: {
       data: string;
@@ -90,9 +90,9 @@ export namespace ApiNS {
     };
   }
 
-  interface IUserReturn extends Record<keyof TActions, unknown> {
+  interface TUserReturn extends Record<keyof TActions, unknown> {
     read: {
-      data: IUser[];
+      data: TUser[];
     };
     create: {
       message: string;
@@ -104,12 +104,12 @@ export namespace ApiNS {
       data: null;
     };
   }
-  interface IBoardMembersReturn extends Record<keyof TActions, unknown> {
+  interface TBoardMembersReturn extends Record<keyof TActions, unknown> {
     read: {
-      data: IBoardMember[];
+      data: TBoardMember[];
     };
     create: { message: string; addedMembersIds: string[] };
-    update: IBoardMember;
+    update: TBoardMember;
 
     // TODO set type
     delete: {
@@ -141,9 +141,9 @@ export namespace ApiNS {
   }
 
   export interface IReturnType extends Record<TEntities, unknown> {
-    board: IBoardReturn;
-    user: IUserReturn;
-    board_members: IBoardMembersReturn;
+    board: TBoardReturn;
+    user: TUserReturn;
+    board_members: TBoardMembersReturn;
     notification: INotificationReturn;
     notification_decline: INotificationOptionReturn;
     notification_confirm: INotificationOptionReturn;

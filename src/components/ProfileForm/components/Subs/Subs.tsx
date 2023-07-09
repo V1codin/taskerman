@@ -151,7 +151,7 @@ const SubsIterator: React.FC<SubsIteratorProps> = () => {
       }}
     >
       {subs.map((board) => {
-        return <SingleSub board={board} key={board._id} />;
+        return <SingleSub board={board} key={board.id} />;
       })}
     </div>
   );

@@ -16,7 +16,7 @@ export default async function Login() {
   );
 
   if (sessionUser) {
-    redirect('/boards');
+    return redirect('/boards');
   }
 
   return <LoginForm />;

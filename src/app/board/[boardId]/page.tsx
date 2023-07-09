@@ -16,6 +16,7 @@ export default async function SingleBoard({ params: { boardId } }: Props) {
   // TODO check if the user have access rights for getting this board
 
   const board = await boardService.getSafeBoardById(boardId);
+
   if (!board) {
     return notFound();
   }

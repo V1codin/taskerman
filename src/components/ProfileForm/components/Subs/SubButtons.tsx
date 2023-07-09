@@ -17,16 +17,16 @@ import { MutableRefObject, useCallback, useEffect, useState } from 'react';
 import { LAPTOP_MEDIA_POINT_WIDTH } from '@/utils/constants';
 import { listInnerActiveElementDefaultClass } from '@/components/Header/logged/components/dropdownBodies/DropDownElement';
 
-import type { IBoard } from '@/models/boards';
+import type { TBoard } from '@/libs/db/postgres/schemas/types';
 
 const ellipsisDefaultClasses = cls(
   `colored designed absolute top-2 right-3 !p-0`,
 );
 
 type SubButtonsProps = {
-  board: IBoard;
+  board: TBoard;
   containerRef: MutableRefObject<HTMLElement | null>;
-  openDeleteBoardModal: (board: IBoard) => void;
+  openDeleteBoardModal: (board: TBoard) => void;
 };
 
 const SubButtons: React.FC<SubButtonsProps> = ({
@@ -38,7 +38,7 @@ const SubButtons: React.FC<SubButtonsProps> = ({
 
   const [dropDown, setDropDown] = useState('');
   const [ellipsClass, setEllipsClass] = useState(ellipsisDefaultClasses);
-  const href = `/board/${board._id}`;
+  const href = `/board/${board.id}`;
 
   useEffect(() => {
     const resize = () => {
@@ -65,8 +65,8 @@ const SubButtons: React.FC<SubButtonsProps> = ({
   }, []);
 
   const toggleDropDownHandler = useCallback(() => {
-    toggleDropDown(board._id);
-  }, [board._id, toggleDropDown]);
+    toggleDropDown(board.id);
+  }, [board.id, toggleDropDown]);
 
   return typeof window === 'undefined' || isDesktop ? (
     <>
@@ -75,13 +75,13 @@ const SubButtons: React.FC<SubButtonsProps> = ({
         attrs={{
           type: 'button',
           onClick: toggleDropDownHandler,
-          'data-drop-type': board._id,
+          'data-drop-type': board.id,
         }}
         iconProps={{
           title: 'more options',
         }}
       />
-      {dropDown === board._id ? (
+      {dropDown === board.id ? (
         <CardDropDown
           closeDropDown={toggleDropDownHandler}
           containerRef={containerRef}

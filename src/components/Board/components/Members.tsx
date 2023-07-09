@@ -14,7 +14,7 @@ import {
 } from '@/utils/constants';
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 
-import type { IBoardMember } from '@/models/boards';
+import type { TBoardMember } from '@/libs/db/postgres/schemas/types';
 
 const defaultSectionClasses = `flex items-center
 fixed right-10 
@@ -52,7 +52,7 @@ overflow-visible
 `;
 
 type MembersProps = {
-  boardMembers: IBoardMember[];
+  boardMembers: TBoardMember[];
   ownerId: string;
 };
 
@@ -67,9 +67,13 @@ const Members: React.FC<MembersProps> = ({ boardMembers, ownerId }) => {
   useEffect(() => {
     const resize = () => {
       if (window.innerWidth < MOBILE_MEDIA_POINT_WIDTH) {
-        setMembersIndex(1);
+        if (membersIndex !== 1 && members.length > 2) {
+          setMembersIndex(1);
+        }
       } else {
-        setMembersIndex(BOARD_MEMBERS_DISPLAY_SLICE_INDEX);
+        if (membersIndex !== BOARD_MEMBERS_DISPLAY_SLICE_INDEX) {
+          setMembersIndex(BOARD_MEMBERS_DISPLAY_SLICE_INDEX);
+        }
       }
     };
 
@@ -78,14 +82,17 @@ const Members: React.FC<MembersProps> = ({ boardMembers, ownerId }) => {
     return () => {
       window.removeEventListener('resize', resize);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <section className={cls(defaultSectionClasses)} ref={containerRef}>
       <div className="relative flex items-center max-w-[240px]">
         {members.slice(0, membersIndex).map(({ user }, index) => {
+          if (!user) return null;
+
           return (
-            <Fragment key={user._id}>
+            <Fragment key={user.id}>
               {index !== 0 && <Divider classNames="!m-2 !border-l-[1px]" />}
               <Button
                 attrs={{
@@ -100,12 +107,12 @@ const Members: React.FC<MembersProps> = ({ boardMembers, ownerId }) => {
                 <Avatar
                   avatarHeight={36}
                   avatarWidth={36}
-                  imageURL={user.imageURL}
-                  displayName={user.displayName}
+                  imageURL={user.imageURL || ''}
+                  displayName={user.displayName || ''}
                   username={user.username}
                   className={cls('w-[inherit] h-[inherit] max-w-[unset]')}
                 />
-                {user._id === ownerId && (
+                {user.id === ownerId && (
                   <ImageModule
                     height={64}
                     width={20}
@@ -118,7 +125,7 @@ const Members: React.FC<MembersProps> = ({ boardMembers, ownerId }) => {
             </Fragment>
           );
         })}
-        {members.length > BOARD_MEMBERS_DISPLAY_SLICE_INDEX && (
+        {membersIndex === 1 || members.length > 2 ? (
           <>
             <Divider classNames="!m-2 !border-l-[1px]" />
             <Button
@@ -140,7 +147,7 @@ const Members: React.FC<MembersProps> = ({ boardMembers, ownerId }) => {
               />
             </Button>
           </>
-        )}
+        ) : null}
       </div>
       <InviteMembers containerRef={containerRef} members={boardMembers} />
     </section>

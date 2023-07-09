@@ -1,12 +1,13 @@
 'use client';
 
 import { atom, WritableAtom } from 'jotai';
-import { ToastProps } from '@/types/helpers';
 import { EMPTY_TOAST, DEFAULT_MODAL_STATE } from '@/utils/constants';
-import { IModal, TProfileActiveSub } from '@/types/state';
-import { IBoard } from '@/models/boards';
-import { SessionUser, TBoardNS } from '@/types/db';
-import { INotification } from '@/models/notifications';
+
+import type { ToastProps } from '@/types/helpers';
+import type { IModal, TProfileActiveSub } from '@/types/state';
+import type { SessionUser, TBoardNS } from '@/types/db';
+import type { INotification } from '@/libs/db/postgres/schemas/types';
+import type { TBoard } from '@/libs/db/postgres/schemas/types';
 
 export const userStateAtom = atom<SessionUser | null>(null);
 export const getSetUserStateAtom: WritableAtom<
@@ -81,10 +82,10 @@ export const getSetProfileSubsActiveAtom: WritableAtom<
   set(getSetProfileSubsActiveAtom, newValue);
 });
 
-export const boardsStateAtom = atom<IBoard[]>([]);
+export const boardsStateAtom = atom<TBoard[]>([]);
 export const getSetBoardsState = atom<
-  IBoard[],
-  [update: IBoard | IBoard[] | ((prevValue: IBoard[]) => IBoard[])],
+  TBoard[],
+  [update: TBoard | TBoard[] | ((prevValue: TBoard[]) => TBoard[])],
   void
 >(
   (get) => get(boardsStateAtom),

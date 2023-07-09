@@ -1,14 +1,8 @@
 import { Schema, Model } from 'mongoose';
-import { IUser } from './users';
 import { SESSION_MAX_AGE_DAYS } from '@/utils/constants';
 import { getAgeInSec } from '@/libs/server.helpers';
 
-export interface ISession {
-  _id: string;
-  sessionToken: string;
-  userId: Schema.Types.ObjectId | IUser;
-  expires: Date;
-}
+import type { ISession } from './types';
 
 export const SessionScheme = new Schema<ISession, Model<ISession>>(
   {
@@ -31,3 +25,7 @@ export const SessionScheme = new Schema<ISession, Model<ISession>>(
     collection: 'sessions',
   },
 );
+
+SessionScheme.set('toJSON', {
+  virtuals: true,
+});

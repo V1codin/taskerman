@@ -6,6 +6,7 @@ import boardIcon from '@/assets/board_colored.svg?url';
 import binIcon from '@/assets/bin.svg?url';
 import SubButtons from './SubButtons';
 import cls from 'classnames';
+import Link from 'next/link';
 
 import {
   DeleteBoardMessage,
@@ -16,13 +17,12 @@ import { isLink } from '@/utils/helpers';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { useCallback, useRef } from 'react';
 
-import type { IBoard } from '@/models/boards';
-import Link from 'next/link';
-
 import { BOARD_SUBS_TITLE_SLICE_INDEX } from '@/utils/constants';
 
+import type { TBoard } from '@/libs/db/postgres/schemas/types';
+
 type SingleSubProps = {
-  board: IBoard;
+  board: TBoard;
   classNames?: string;
 };
 
@@ -38,9 +38,9 @@ const SingleSub: React.FC<SingleSubProps> = ({ board, classNames }) => {
   const bgChecker = isLink(board.bg);
 
   const openDeleteBoardModal = useCallback(
-    ({ owner, _id, title }: IBoard) => {
+    ({ owner, id, title }: TBoard) => {
       const modalMessage =
-        user?._id === owner._id
+        user?.id === owner.id
           ? DeleteBoardMessage()
           : UnsubscribeBoardMessage();
 
@@ -50,7 +50,7 @@ const SingleSub: React.FC<SingleSubProps> = ({ board, classNames }) => {
           type: 'delete',
           view: 'delete_board',
           data: {
-            entitiId: _id,
+            entitiId: id,
             children: (
               <h3>
                 {modalMessage} - <p style={{ color: '#55d725' }}>{title}</p>
@@ -61,7 +61,7 @@ const SingleSub: React.FC<SingleSubProps> = ({ board, classNames }) => {
         },
       });
     },
-    [setModal, user?._id],
+    [setModal, user?.id],
   );
 
   const style = bgChecker
@@ -74,7 +74,7 @@ const SingleSub: React.FC<SingleSubProps> = ({ board, classNames }) => {
 
   return (
     <div
-      key={board._id}
+      key={board.id}
       className={cls(
         `w-[465px] laptop:mt-2 laptop:w-full 
       laptop:flex
@@ -92,7 +92,7 @@ const SingleSub: React.FC<SingleSubProps> = ({ board, classNames }) => {
         classNames,
       )}
     >
-      <Link href={`/board/${board._id}`} className="flex self-start">
+      <Link href={`/board/${board.id}`} className="flex self-start">
         <h4
           className="rounded-md bg-[#333] 
         text-white font-bold px-3 py-1 w-full
@@ -102,7 +102,7 @@ const SingleSub: React.FC<SingleSubProps> = ({ board, classNames }) => {
         laptop:w-fit
         laptop:self-start
         "
-          id={board._id}
+          id={board.id}
           title={`Go to the board (${board.title})`}
         >
           {title}

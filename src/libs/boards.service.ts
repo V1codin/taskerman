@@ -1,9 +1,7 @@
-import dbProvider from '@/db/mongo';
+import { dbProvider } from './db/provider';
 
-import type { TDb } from '@/db/mongo';
-import type { IBoard, IBoardMember } from '@/models/boards';
 import type { TBoardNS } from '@/types/db';
-import type { ParticularDBType } from '@/db/mongo';
+import type { TBoard, TBoardMember } from './db/postgres/schemas/types';
 
 export class BoardsService {
   private readonly db: TDb;
@@ -12,12 +10,9 @@ export class BoardsService {
     this.db = dbProvider;
   }
 
-  async getSafeUserBoards(
-    userId: string | ParticularDBType,
-  ): Promise<IBoard[]> {
+  async getSafeUserBoards(userId: string | ParticularDBType) {
     try {
-      const boardsQuery = this.db.getAllBoardsByUserQueryUtils(userId);
-      const boards = await this.db.getUserBoards(boardsQuery);
+      const boards = await this.db.getUserBoards(userId);
 
       return boards;
     } catch (e) {
@@ -29,13 +24,13 @@ export class BoardsService {
     return this.db.isValidUserForGettingBoardUtils(userId, boardId);
   }
 
-  isUserBoardSubscriber(userId: string, board: IBoard) {
+  isUserBoardSubscriber(userId: string, board: TBoard) {
     return this.db.isUserBoardSubscriberUtils(userId, board);
   }
 
-  isValidIssuer(issuerId: string, board: IBoard) {
+  isValidIssuer(issuerId: string, board: TBoard) {
     return (
-      this.db.isEqualUtils(issuerId, board.owner._id) ||
+      this.db.isEqualUtils(issuerId, board.owner.id) ||
       this.isUserBoardSubscriber(issuerId, board)
     );
   }
@@ -60,13 +55,13 @@ export class BoardsService {
     return this.db.getBoardBackgroundById(boardId);
   }
 
-  async create(board: TBoardNS.TCreating): Promise<IBoard> {
+  async create(board: TBoardNS.TCreating) {
     const createdBoard = await this.db.createBoard(board);
 
     return createdBoard;
   }
 
-  async unsubscribe(userId: string, board: IBoard) {
+  async unsubscribe(userId: string, board: TBoard) {
     const result = await this.db.unsubscribeFromBoard(userId, board);
     return {
       acknowledged: result,
@@ -83,7 +78,7 @@ export class BoardsService {
 
   addBoardMember(
     boardId: string,
-    members: Record<keyof Pick<IBoardMember, 'role' | 'user'>, string>[],
+    members: Record<keyof Pick<TBoardMember, 'role' | 'user'>, string>[],
   ) {
     return this.db.addBoardMember(boardId, members);
   }
@@ -98,7 +93,7 @@ export class BoardsService {
 
   addBoardInviteToUser(
     boardId: string,
-    members: Record<keyof Pick<IBoardMember, 'role' | 'user'>, string>[],
+    members: Record<keyof Pick<TBoardMember, 'role' | 'user'>, string>[],
   ) {
     return this.db.addBoardInviteToUser(boardId, members);
   }

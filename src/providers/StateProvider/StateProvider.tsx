@@ -8,13 +8,12 @@ import {
 } from '@/context/stateManager';
 
 import type { PropsWithChildren } from 'react';
-import type { IBoard } from '@/models/boards';
 import type { SessionUser } from '@/types/db';
-import type { INotification } from '@/models/notifications';
+import type { INotification, TBoard } from '@/libs/db/postgres/schemas/types';
 
 type StateProviderProps = {
   user: SessionUser | null;
-  boards: IBoard[];
+  boards: TBoard[];
   notifications: INotification[];
 };
 
