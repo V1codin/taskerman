@@ -7,11 +7,9 @@ import { dbConnect } from '@/libs/db/connect';
 import { NextAuthOptions } from 'next-auth';
 import {
   AUTH_TOKEN_COOKIE_NAME,
-  CURRENT_DB,
   isDev,
   SESSION_MAX_AGE_DAYS,
 } from '@/utils/constants';
-import { mongoAdapter } from './mongo/api/adapter';
 import {
   fromDate,
   generateSessionToken,
@@ -46,8 +44,7 @@ export type MyAdapter = Adapter & {
   _removeExpiredSessionToken(token: string): Promise<boolean>;
 };
 
-export const dbAdapter =
-  CURRENT_DB !== 'mongo' ? postgresAdapter : mongoAdapter;
+export const dbAdapter = postgresAdapter;
 
 export const getAuthOptions = (method?: TMethods | string): NextAuthOptions => {
   return {
