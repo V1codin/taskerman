@@ -34,7 +34,7 @@ const DeclineInviteBoardForm: React.FC<DeclineInviteBoardFormProps> = ({
         });
 
         setNotes((prev) => {
-          return prev.filter(({ id }) => id !== result.removedNoteId);
+          return prev.filter((note) => note.id !== result.removedNoteId);
         });
 
         setModal({

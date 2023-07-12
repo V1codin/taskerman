@@ -20,7 +20,7 @@ export async function DELETE(req: Request) {
       });
     }
 
-    if (note.recipient.id !== issuerId) {
+    if (!note.recipient?.id || note.recipient.id !== issuerId) {
       throw new ServerResponseError({
         code: 403,
         message: 'Error: Unauthorized',

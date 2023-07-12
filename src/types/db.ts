@@ -15,15 +15,20 @@ import type {
 } from '@/libs/db/postgres/schemas/types';
 import type { RequireAtLeastOne } from './utils';
 import type { AuthClient } from './state';
+import { TNotification } from '@/libs/db/postgres/api/prisma';
 
 /*
   | 'cards'
   | 'lists'
   */
 
-const notePriorityEnum = ['conflict', 'warning', 'notification'] as const;
-const noteActionsEnum = ['board_invite'] as const;
-const noteTypesEnum = ['option', 'info'] as const;
+export const notePriorityEnum = [
+  'conflict',
+  'warning',
+  'notification',
+] as const;
+export const noteActionsEnum = ['board_invite'] as const;
+export const noteTypesEnum = ['option', 'info'] as const;
 
 export interface IDbCollections {
   users: TUser;
@@ -70,9 +75,9 @@ export const creatingNotificationSchema = z.object({
   action: noteActions,
   actionData: z
     .object({
-      boardId: z.string().min(24).optional(),
+      boardId: z.string().min(24),
     })
-    .partial(),
+    .or(z.null()),
 });
 
 export namespace TBoardNS {
@@ -135,7 +140,16 @@ export namespace TUserNS {
 }
 
 export namespace TNotificationNS {
-  export type TCreating = TypeOf<typeof creatingNotificationSchema>;
+  export type TCreating<
+    TAction extends TNotification['action'] = 'board_invite',
+  > = {
+    type: 'info' | 'option';
+    text: string;
+    recipient: string;
+    priority: 'conflict' | 'warning' | 'notification';
+    action: TAction;
+    actionData: TAction extends 'board_invite' ? { boardId: string } : null;
+  };
   export type TGetting = null;
   export type TDeleting = {
     id: string;
@@ -171,6 +185,7 @@ export interface DataBaseProvider<
   TNotificationById extends unknown,
   TDeletedNotification extends unknown,
   TDeclinedInvite extends unknown,
+  TConfirmedInvite extends unknown,
   TAddBoardMember extends unknown,
   TAddBoardInvite extends unknown,
 > {
@@ -202,6 +217,7 @@ export interface DataBaseProvider<
   deleteBoard(boardId: string | ParticularDBType): TDeletedBoard;
   unsubscribeFromBoard(userId: string, board: unknown): TUnsubedUserFromBoard;
   declineBoardInvite(userId: string, boardId: string): TDeclinedInvite;
+  confirmBoardInvite(userId: string, boardId: string | null): TConfirmedInvite;
   addBoardMember(
     boardId: string,
     members: Record<keyof Pick<TBoardMember, 'role' | 'user'>, string>[],

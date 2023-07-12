@@ -1,13 +1,14 @@
 import { PrismaClient } from '@prisma/client';
 import { ServerResponseError } from '@/libs/error.service';
 
-import type { DataBaseProvider } from '@/types/db';
+import type { Notification } from 'prisma/prisma-client';
+import type { DataBaseProvider, TNotificationNS } from '@/types/db';
 import type {
-  INotification,
   TBoard,
   TBoardMember,
   TEditableUserProps,
 } from '../schemas/types';
+
 import { noop } from '@/utils/helpers';
 
 const globalForPrisma = globalThis as unknown as {
@@ -42,10 +43,11 @@ interface PrismaDbProvider
     unknown, //   TDeletedBoard
     Promise<boolean>, //   TUnsubedUserFromBoard
     Promise<boolean>, //   TCreatedNotification
-    Promise<INotification[]>, //   TNotificationsByUserId
-    Promise<INotification | null>, //   TNotificationById
+    unknown, //   TNotificationsByUserId
+    unknown, //   TNotificationById
     Promise<boolean>, //   TDeletedNotification
     Promise<boolean>, //   TDeclinedInvite
+    Promise<boolean>, //   TConfirmedInvite
     unknown, //   TAddBoardMember
     Promise<boolean> //   TAddBoardInvite
   > {}
@@ -93,11 +95,6 @@ export class PostgresSqlDataBaseProvider implements PrismaDbProvider {
     }
   }
   // TODO add to DataBaseProvider
-  confirmBoardInvite(userId: string, boardId: string): unknown {
-    noop(userId), boardId;
-    throw new Error('Method not implemented.');
-  }
-  // TODO add to DataBaseProvider
   isEqualUtils(str1: string, str2: string): boolean {
     return str1 === str2;
   }
@@ -107,7 +104,6 @@ export class PostgresSqlDataBaseProvider implements PrismaDbProvider {
       nameAlias: { contains: alias },
     };
   }
-
   async addBoardMember(
     boardId: string,
     members: Record<'user' | 'role', string>[],
@@ -388,17 +384,13 @@ export class PostgresSqlDataBaseProvider implements PrismaDbProvider {
     }
   }
 
-  async createNotification(note: {
-    type: 'info' | 'option';
-    text: string;
-    recipient: string;
-    priority: 'conflict' | 'warning' | 'notification';
-    action: 'board_invite';
-    actionData: { boardId?: string | undefined };
-  }) {
+  async createNotification<
+    TAction extends Notification['action'] = 'board_invite',
+  >(note: TNotificationNS.TCreating<TAction>) {
     try {
       await prisma.notification.create({
         data: {
+          type: note.type,
           text: note.text,
           priority: note.priority,
           action: note.action,
@@ -417,22 +409,181 @@ export class PostgresSqlDataBaseProvider implements PrismaDbProvider {
 
       return true;
     } catch (e) {
-      console.error('', e);
       return false;
     }
   }
 
-  async getSafeNotificationsByUserId(userId: string): Promise<INotification[]> {
-    noop(userId);
+  async getSafeNotificationsByUserId(userId: string) {
     try {
-      return [];
+      const notes = await prisma.notification.findMany({
+        where: {
+          recipient: {
+            id: userId,
+          },
+        },
+        include: {
+          recipient: true,
+          actionData: true,
+        },
+      });
+
+      if (!notes || !notes.length) {
+        throw new Error('Document was not found');
+      }
+
+      return notes;
     } catch (e) {
       return [];
     }
   }
 
+  async getSafeNotificationById(id: string) {
+    try {
+      const note = await prisma.notification.findUnique({
+        where: {
+          id,
+        },
+        include: {
+          recipient: true,
+          actionData: true,
+        },
+      });
+
+      return note;
+    } catch (e) {
+      return null;
+    }
+  }
+  async deleteNotification(id: string) {
+    try {
+      await prisma.$transaction(async (tx) => {
+        const deletedNote = await tx.notification.delete({
+          where: {
+            id,
+          },
+        });
+
+        await tx.notificationActionData.delete({
+          where: {
+            id: deletedNote.notificationActionDataId || '',
+          },
+        });
+      });
+
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  async declineBoardInvite(userId: string, boardId: string) {
+    if (!boardId) {
+      return false;
+    }
+    try {
+      await prisma.$transaction(async (tx) => {
+        const boardMember = await tx.boardMember.findFirst({
+          where: {
+            AND: [
+              {
+                boardId,
+              },
+              {
+                user: {
+                  id: userId,
+                },
+              },
+            ],
+          },
+        });
+
+        await tx.boardMember.delete({
+          where: {
+            id: boardMember?.id,
+          },
+        });
+
+        const pendingInvitesResult = await tx.user.findUnique({
+          where: {
+            id: userId,
+          },
+          select: {
+            pendingInvites: true,
+          },
+        });
+
+        await tx.user.update({
+          where: {
+            id: userId,
+          },
+          data: {
+            pendingInvites: pendingInvitesResult?.pendingInvites.filter(
+              (item) => item !== boardId,
+            ),
+          },
+        });
+      });
+
+      return true;
+    } catch (e) {
+      throw e;
+    }
+  }
+  async confirmBoardInvite(userId: string, boardId: string | null) {
+    try {
+      await prisma.$transaction(async (tx) => {
+        const boardMember = await tx.boardMember.findFirst({
+          where: {
+            AND: [
+              {
+                boardId,
+              },
+              {
+                user: {
+                  id: userId,
+                },
+              },
+            ],
+          },
+        });
+
+        await tx.boardMember.update({
+          where: {
+            id: boardMember?.id,
+          },
+          data: {
+            isPending: false,
+          },
+        });
+
+        const pendingInvitesResult = await tx.user.findUnique({
+          where: {
+            id: userId,
+          },
+          select: {
+            pendingInvites: true,
+          },
+        });
+
+        await tx.user.update({
+          where: {
+            id: userId,
+          },
+          data: {
+            pendingInvites: pendingInvitesResult?.pendingInvites.filter(
+              (item) => item !== boardId,
+            ),
+          },
+        });
+      });
+
+      return true;
+    } catch (e) {
+      throw e;
+    }
+  }
   getAllBoardsByUserQueryUtils(userId: string): unknown {
-    noop(userId);
+    // noop(userId);
     throw new Error('Method not implemented.');
   }
   getBoardMembers(boardId: string): Promise<TBoardMember[]> {
@@ -463,20 +614,10 @@ export class PostgresSqlDataBaseProvider implements PrismaDbProvider {
     noop(userId, board);
     throw new Error('Method not implemented.');
   }
-  declineBoardInvite(userId: string, boardId: string): Promise<boolean> {
-    noop(userId, boardId);
-    throw new Error('Method not implemented.');
-  }
-  getSafeNotificationById(id: string): Promise<INotification | null> {
-    noop(id);
-    throw new Error('Method not implemented.');
-  }
-  deleteNotification(id: string): Promise<boolean> {
-    noop(id);
-    throw new Error('Method not implemented.');
-  }
 }
 
 const postgresProvider = new PostgresSqlDataBaseProvider();
 
 export default postgresProvider;
+
+export { Notification as TNotification };

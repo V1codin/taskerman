@@ -15,7 +15,7 @@ import { useCallback } from 'react';
 import { api } from '@/utils/api/api';
 
 import type { MutableRefObject } from 'react';
-import type { INotification } from '@/libs/db/postgres/schemas/types';
+import type { TNotification } from '@/libs/db/postgres/schemas/types';
 
 type NotificationDropDownProps = {
   closeDropDown: () => void;
@@ -30,7 +30,7 @@ const NotificationDropDown: React.FC<NotificationDropDownProps> = ({
   const setToast = useSetAtom(getSetToastState);
 
   const decline = useCallback(
-    (note: INotification) => {
+    (note: TNotification) => {
       return async () => {
         const noteType = note.type;
 
@@ -79,7 +79,7 @@ const NotificationDropDown: React.FC<NotificationDropDownProps> = ({
     [setModal, setNotes, setToast],
   );
 
-  const accept = useCallback((note: INotification) => {
+  const accept = useCallback((note: TNotification) => {
     return async () => {
       try {
         const result = await api.delete('notification_confirm', {

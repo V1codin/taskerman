@@ -1,10 +1,10 @@
 import type {
   TUserBoardRoles,
-  INotification,
   TUser,
   TBoard,
   TBoardMember,
   TBoardPermissions,
+  TNotification,
 } from '@/libs/db/postgres/schemas/types';
 import type { SessionUser, TBoardNS, TNotificationNS, TUserNS } from './db';
 import type { NextApiRequest } from 'next';
@@ -118,10 +118,10 @@ export namespace ApiNS {
   }
   interface INotificationReturn extends Record<keyof TActions, unknown> {
     read: {
-      data: INotification[];
+      data: TNotification[];
     };
-    create: INotification;
-    update: INotification;
+    create: TNotification;
+    update: TNotification;
 
     delete: {
       removedNoteId: string;

@@ -57,12 +57,18 @@ type MembersProps = {
 };
 
 const Members: React.FC<MembersProps> = ({ boardMembers, ownerId }) => {
-  const [membersIndex, setMembersIndex] = useState(0);
+  const [membersIndex, setMembersIndex] = useState(
+    BOARD_MEMBERS_DISPLAY_SLICE_INDEX,
+  );
   const containerRef = useRef<HTMLElement>(null);
 
   const members = useMemo(() => {
     return boardMembers.filter((item) => item.isPending !== true);
   }, [boardMembers]);
+
+  const slicedMembers = useMemo(() => {
+    return members.slice(0, membersIndex);
+  }, [membersIndex, members]);
 
   useEffect(() => {
     const resize = () => {
@@ -88,7 +94,7 @@ const Members: React.FC<MembersProps> = ({ boardMembers, ownerId }) => {
   return (
     <section className={cls(defaultSectionClasses)} ref={containerRef}>
       <div className="relative flex items-center max-w-[240px]">
-        {members.slice(0, membersIndex).map(({ user }, index) => {
+        {slicedMembers.map(({ user }, index) => {
           if (!user) return null;
 
           return (
