@@ -6,21 +6,16 @@ on:
       - '*'
 
 jobs:
-  eslint:
+  code_check:
+    name: Code_check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
+      - uses: actions/checkout@v1
+      -uses: icrawl/action-tsc@v1
         with:
           node-version: 18
       - run: npm i
       - run: npm run _lint
- tsc:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v1
-    - name: install node v18
-      uses: actions/setup-node@v1
-      with:
-        node-version: 18
-      uses: icrawl/action-tsc@v1
+      - run: npm run _ts_check
