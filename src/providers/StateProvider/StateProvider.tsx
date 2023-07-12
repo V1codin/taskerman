@@ -9,12 +9,12 @@ import {
 
 import type { PropsWithChildren } from 'react';
 import type { SessionUser } from '@/types/db';
-import type { INotification, TBoard } from '@/libs/db/postgres/schemas/types';
+import type { TNotification, TBoard } from '@/libs/db/postgres/schemas/types';
 
 type StateProviderProps = {
   user: SessionUser | null;
   boards: TBoard[];
-  notifications: INotification[];
+  notifications: TNotification[];
 };
 
 const StateProvider: React.FC<PropsWithChildren<StateProviderProps>> = ({

@@ -21,7 +21,7 @@ export async function DELETE(req: Request) {
       });
     }
 
-    if (note.recipient.id !== issuerId) {
+    if (!note.recipient?.id || note.recipient.id !== issuerId) {
       throw new ServerResponseError({
         code: 403,
         message: 'Error: Unauthorized',
@@ -29,7 +29,6 @@ export async function DELETE(req: Request) {
     }
 
     const isRemoved = await notificationService.delete(id);
-
     if (!isRemoved) {
       throw new BadRequestError();
     }
@@ -37,7 +36,7 @@ export async function DELETE(req: Request) {
     if (note.action === 'board_invite') {
       await boardService.declineBoardInvite(
         note.recipient.id,
-        note.actionData.boardId,
+        note.actionData!.boardId!,
       );
     }
 

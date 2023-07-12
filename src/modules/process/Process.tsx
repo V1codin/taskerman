@@ -1,3 +1,4 @@
+// @ts-ignore
 import Spinner from '@/assets/pulse.svg';
 import cls from 'classnames';
 

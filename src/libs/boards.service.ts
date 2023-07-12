@@ -87,7 +87,7 @@ export class BoardsService {
     return this.db.declineBoardInvite(userId, boardId);
   }
 
-  confirmBoardInvite(userId: string, boardId: string) {
+  confirmBoardInvite(userId: string, boardId: string | null) {
     return this.db.confirmBoardInvite(userId, boardId);
   }
 

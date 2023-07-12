@@ -1,4 +1,11 @@
-import type { Prisma, Board, BoardMember, User, Session } from '@prisma/client';
+import type {
+  Prisma,
+  Board,
+  BoardMember,
+  User,
+  Session,
+  Notification,
+} from '@prisma/client';
 
 export type TUserBoardRoles = 'guest' | 'owner' | 'admin' | 'member';
 
@@ -56,14 +63,7 @@ export type TNotePriority = 'conflict' | 'warning' | 'notification';
 export type TNoteTypes = 'option' | 'info';
 export type TActions = 'board_invite';
 
-export interface INotification {
-  id: string;
-  type: TNoteTypes;
-  text: string;
-  recipient: TUser;
-  priority: TNotePriority;
-  action: TActions;
-  actionData: TNotificationActionData;
-}
+export type TNotification<T extends Prisma.NotificationArgs = unknown> =
+  Notification & Prisma.NotificationGetPayload<T>;
 
 export interface ISession extends Session {}

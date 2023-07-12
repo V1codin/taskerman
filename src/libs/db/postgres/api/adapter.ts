@@ -111,25 +111,28 @@ export const postgresAdapter = {
         });
       }
 
-      const createdUser = await prisma.user.create({
-        data: {
-          username: user.username,
-          displayName: user.displayName,
-          email: user.email,
-          nameAlias: `${user.displayName} ${user.email}`,
-        },
-      });
-
       const safePW = await encrypt.hash(user.password);
-      await prisma.password.create({
-        data: {
-          pw: safePW,
-          user: {
-            connect: {
-              id: createdUser.id,
+
+      await prisma.$transaction(async (tx) => {
+        const createdUser = await tx.user.create({
+          data: {
+            username: user.username,
+            displayName: user.displayName,
+            email: user.email,
+            nameAlias: `${user.displayName} ${user.email}`,
+          },
+        });
+
+        await tx.password.create({
+          data: {
+            pw: safePW,
+            user: {
+              connect: {
+                id: createdUser.id,
+              },
             },
           },
-        },
+        });
       });
 
       return {

@@ -9,6 +9,7 @@ import {
   DEFAULT_INVITED_MEMBER_ROLE,
 } from '@/utils/constants';
 
+import type { TNotificationNS } from '@/types/db';
 import type { TBoardMembersNS } from '@/types/api';
 import type { TBoardMember } from '@/libs/db/postgres/schemas/types';
 
@@ -90,7 +91,7 @@ export async function POST(req: Request) {
 
     // ? newMembers is already uniq so there is no doubled notification
     newMembers.forEach((member) => {
-      notificationService.create({
+      const note: TNotificationNS.TCreating<'board_invite'> = {
         type: 'option',
         action: 'board_invite',
         actionData: {
@@ -101,7 +102,9 @@ export async function POST(req: Request) {
         text:
           invitationText ||
           `You've been invited to board.<br> Name: <important>${board.title}</important><br> Owner: <important>${board.owner.displayName}</important>`,
-      });
+      };
+
+      notificationService.create(note);
     });
 
     return NextResponse.json(

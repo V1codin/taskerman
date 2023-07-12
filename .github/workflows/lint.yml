@@ -6,7 +6,8 @@ on:
       - '*'
 
 jobs:
-  eslint:
+  lint:
+    name: ESLint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -15,3 +16,13 @@ jobs:
           node-version: 18
       - run: npm i
       - run: npm run _lint
+  tsc:
+    name: Typescript Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - run: npm i -D
+      - run: npm run _ts_check

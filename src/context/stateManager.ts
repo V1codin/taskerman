@@ -6,7 +6,7 @@ import { EMPTY_TOAST, DEFAULT_MODAL_STATE } from '@/utils/constants';
 import type { ToastProps } from '@/types/helpers';
 import type { IModal, TProfileActiveSub } from '@/types/state';
 import type { SessionUser, TBoardNS } from '@/types/db';
-import type { INotification } from '@/libs/db/postgres/schemas/types';
+import type { TNotification } from '@/libs/db/postgres/schemas/types';
 import type { TBoard } from '@/libs/db/postgres/schemas/types';
 
 export const userStateAtom = atom<SessionUser | null>(null);
@@ -162,14 +162,14 @@ export const getSetConfirm: WritableAtom<
   },
 );
 
-export const notificationAtom = atom<INotification[]>([]);
+export const notificationAtom = atom<TNotification[]>([]);
 export const getSetNotificationsState: WritableAtom<
-  INotification[],
+  TNotification[],
   [
     update:
-      | INotification
-      | INotification[]
-      | ((prevValue: INotification[]) => INotification[]),
+      | TNotification
+      | TNotification[]
+      | ((prevValue: TNotification[]) => TNotification[]),
   ],
   void
 > = atom(
