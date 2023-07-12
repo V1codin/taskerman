@@ -583,7 +583,7 @@ export class PostgresSqlDataBaseProvider implements PrismaDbProvider {
     }
   }
   getAllBoardsByUserQueryUtils(userId: string): unknown {
-    // noop(userId);
+    noop(userId);
     throw new Error('Method not implemented.');
   }
   getBoardMembers(boardId: string): Promise<TBoardMember[]> {
