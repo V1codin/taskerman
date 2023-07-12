@@ -16,7 +16,6 @@ jobs:
       - run: npm i
       - run: npm run _lint
  tsc:
-    name: tsc
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
@@ -24,6 +23,4 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: 18
-    - run: npm i
-    - name: tsc
       uses: icrawl/action-tsc@v1
