@@ -24,4 +24,5 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
+      - run: npm i -D
       - run: npm run _ts_check
