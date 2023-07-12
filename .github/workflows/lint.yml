@@ -18,3 +18,5 @@ jobs:
       - run: npm run _lint
       - run: npm run _ts_check
       - uses: icrawl/action-tsc@v1
+        with:
+          node-version: 18
