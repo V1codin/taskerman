@@ -164,40 +164,36 @@ export type SessionUser = {
   username: string;
 };
 
+// ? generic types were for type mongo provider
+// ? for prisma those could be removed
 export interface DataBaseProvider<
-  ParticularDBType extends unknown,
-  TBoardQuery extends unknown,
-  TUserByName extends unknown,
-  TUserById extends unknown,
-  TUserIdByUserName extends unknown,
-  TPatchedUser extends unknown,
-  TUsersByAlias extends unknown,
-  TBoardBackgroundById extends unknown,
-  TBoardTitleById extends unknown,
-  TBoardDById extends unknown,
-  TBoardMembers extends unknown,
-  TUserBoards extends unknown,
-  TCreatedBoard extends unknown,
-  TDeletedBoard extends unknown,
-  TUnsubedUserFromBoard extends unknown,
-  TCreatedNotification extends unknown,
-  TNotificationsByUserId extends unknown,
-  TNotificationById extends unknown,
-  TDeletedNotification extends unknown,
-  TDeclinedInvite extends unknown,
-  TConfirmedInvite extends unknown,
-  TAddBoardMember extends unknown,
-  TAddBoardInvite extends unknown,
+  ParticularDBType extends unknown = unknown,
+  TUserByName extends unknown = unknown,
+  TUserById extends unknown = unknown,
+  TUserIdByUserName extends unknown = unknown,
+  TPatchedUser extends unknown = unknown,
+  TUsersByAlias extends unknown = unknown,
+  TBoardBackgroundById extends unknown = unknown,
+  TBoardTitleById extends unknown = unknown,
+  TBoardDById extends unknown = unknown,
+  TBoardMembers extends unknown = unknown,
+  TUserBoards extends unknown = unknown,
+  TCreatedBoard extends unknown = unknown,
+  TDeletedBoard extends unknown = unknown,
+  TUnsubedUserFromBoard extends unknown = unknown,
+  TCreatedNotification extends unknown = unknown,
+  TNotificationsByUserId extends unknown = unknown,
+  TNotificationById extends unknown = unknown,
+  TDeletedNotification extends unknown = unknown,
+  TDeclinedInvite extends unknown = unknown,
+  TConfirmedInvite extends unknown = unknown,
+  TAddBoardMember extends unknown = unknown,
+  TAddBoardInvite extends unknown = unknown,
 > {
-  getAllBoardsByUserQueryUtils(userId: string): TBoardQuery;
   isEqualUtils(
     str1: string | ParticularDBType,
     str2: string | ParticularDBType,
   ): boolean;
-  isValidUserForGettingBoardUtils(
-    userId: string,
-    boardId: string,
-  ): Promise<boolean>;
 
   getUserHashedPassword(username: string): Promise<string>;
   getUserByUserName(username: string): TUserByName;

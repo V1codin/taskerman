@@ -3,13 +3,7 @@ import { ServerResponseError } from '@/libs/error.service';
 
 import type { Notification } from 'prisma/prisma-client';
 import type { DataBaseProvider, TNotificationNS } from '@/types/db';
-import type {
-  TBoard,
-  TBoardMember,
-  TEditableUserProps,
-} from '../schemas/types';
-
-import { noop } from '@/utils/helpers';
+import type { TBoard, TEditableUserProps } from '../schemas/types';
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
@@ -23,34 +17,7 @@ export const prisma =
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
 
 // ? unknown types because prisma handles types itself
-interface PrismaDbProvider
-  extends DataBaseProvider<
-    string, //  ParticularDBType
-    unknown, //   TBoardQuery
-    unknown, //   TUserByName
-    unknown, //   TUserById
-    unknown, //   TUserIdByUserName
-    unknown, //   TPatchedUser
-    unknown, //   TUsersByAlias
-    Promise<string | null>, //   TBoardBackgroundById
-    Promise<string | null>, //   TBoardTitleById
-    unknown, //   TBoardDById
-    Promise<TBoardMember[]>, //   TBoardMembers
-    unknown, //   TUserBoards
-    // ? unknown because Boards.create is overloading function
-    // ? and ReturnType is not compatible
-    unknown, //   TCreatedBoard
-    unknown, //   TDeletedBoard
-    Promise<boolean>, //   TUnsubedUserFromBoard
-    Promise<boolean>, //   TCreatedNotification
-    unknown, //   TNotificationsByUserId
-    unknown, //   TNotificationById
-    Promise<boolean>, //   TDeletedNotification
-    Promise<boolean>, //   TDeclinedInvite
-    Promise<boolean>, //   TConfirmedInvite
-    unknown, //   TAddBoardMember
-    Promise<boolean> //   TAddBoardInvite
-  > {}
+interface PrismaDbProvider extends DataBaseProvider {}
 
 export class PostgresSqlDataBaseProvider implements PrismaDbProvider {
   constructor() {}
@@ -582,37 +549,88 @@ export class PostgresSqlDataBaseProvider implements PrismaDbProvider {
       throw e;
     }
   }
-  getAllBoardsByUserQueryUtils(userId: string): unknown {
-    noop(userId);
-    throw new Error('Method not implemented.');
+  async getBoardMembers(boardId: string) {
+    try {
+      const members = await prisma.boardMember.findMany({
+        where: {
+          boardId,
+        },
+      });
+      return members;
+    } catch (e) {
+      return [];
+    }
   }
-  getBoardMembers(boardId: string): Promise<TBoardMember[]> {
-    noop(boardId);
-    throw new Error('Method not implemented.');
+  async getUserById(userId: string) {
+    try {
+      const user = await prisma.user.findUnique({
+        where: {
+          id: userId,
+        },
+      });
+
+      return user;
+    } catch (e) {
+      return null;
+    }
   }
-  isValidUserForGettingBoardUtils(
-    userId: string,
-    boardId: string,
-  ): Promise<boolean> {
-    noop(userId, boardId);
-    throw new Error('Method not implemented.');
-  }
-  getUserById(userId: string): unknown {
-    noop(userId);
-    throw new Error('Method not implemented.');
-  }
-  getUserIdByUserName(username: string): unknown {
-    noop(username);
-    throw new Error('Method not implemented.');
-  }
-  patchUser(userId: string, patch: TEditableUserProps): unknown {
-    noop(userId, patch);
-    throw new Error('Method not implemented.');
+  async getUserIdByUserName(username: string) {
+    try {
+      const user = await prisma.user.findUnique({
+        where: {
+          username,
+        },
+        select: {
+          id: true,
+        },
+      });
+
+      return user?.id || null;
+    } catch (e) {
+      return null;
+    }
   }
 
-  unsubscribeFromBoard(userId: string, board: TBoard): Promise<boolean> {
-    noop(userId, board);
-    throw new Error('Method not implemented.');
+  async patchUser(userId: string, patch: TEditableUserProps) {
+    try {
+      const updatedUser = await prisma.user.update({
+        where: {
+          id: userId,
+        },
+        data: patch,
+      });
+
+      return updatedUser;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  async unsubscribeFromBoard(userId: string, board: TBoard) {
+    try {
+      const boardMemberId = await prisma.boardMember.findFirst({
+        where: {
+          AND: [
+            {
+              userId,
+            },
+            {
+              boardId: board.id,
+            },
+          ],
+        },
+      });
+
+      await prisma.boardMember.delete({
+        where: {
+          id: boardMemberId?.id,
+        },
+      });
+
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 }
 

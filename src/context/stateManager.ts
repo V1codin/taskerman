@@ -97,17 +97,9 @@ export const getSetBoardsState = atom<
 
       set(boardsStateAtom, update);
     } else if (typeof update === 'function') {
-      set(boardsStateAtom, () => {
-        const result = update(prev);
-
-        return result;
-      });
+      set(boardsStateAtom, update(prev));
     } else {
-      set(boardsStateAtom, () => {
-        const result = [...prev, update];
-
-        return result;
-      });
+      set(boardsStateAtom, [...prev, update]);
     }
   },
 );
@@ -182,17 +174,9 @@ export const getSetNotificationsState: WritableAtom<
 
       set(notificationAtom, update);
     } else if (typeof update === 'function') {
-      set(notificationAtom, () => {
-        const result = update(prev);
-
-        return result;
-      });
+      set(notificationAtom, update(prev));
     } else {
-      set(notificationAtom, () => {
-        const result = [...prev, update];
-
-        return result;
-      });
+      set(notificationAtom, [...prev, update]);
     }
   },
 );

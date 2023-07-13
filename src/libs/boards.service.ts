@@ -20,10 +20,6 @@ export class BoardsService {
     }
   }
 
-  isValidUser(userId: string, boardId: string) {
-    return this.db.isValidUserForGettingBoardUtils(userId, boardId);
-  }
-
   isUserBoardSubscriber(userId: string, board: TBoard) {
     return this.db.isUserBoardSubscriberUtils(userId, board);
   }
