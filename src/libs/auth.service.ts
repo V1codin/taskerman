@@ -31,15 +31,6 @@ export class AuthService {
     return dateToCheck < now;
   }
 
-  isValidUserForGettingBoard(
-    issuerId?: string,
-    boardId?: string,
-  ): Promise<boolean> {
-    if (!issuerId || !boardId) return Promise.resolve(false);
-
-    return this.db.isValidUserForGettingBoardUtils(issuerId, boardId);
-  }
-
   patchUser(userId: string, userProps: TEditableUserProps) {
     return this.db.patchUser(userId, userProps);
   }

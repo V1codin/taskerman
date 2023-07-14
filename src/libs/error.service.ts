@@ -43,3 +43,19 @@ export class BadRequestError extends ServerResponseError<400> {
     this.code = 400;
   }
 }
+
+export class DataBaseError extends Error {
+  code?: number;
+
+  constructor({ message, code }: { message: string; code?: number }) {
+    super(message);
+
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, ServerResponseError);
+    }
+
+    this.name = 'DataBaseError';
+    this.message = message;
+    this.code = code;
+  }
+}

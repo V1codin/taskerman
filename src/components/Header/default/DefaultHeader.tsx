@@ -11,6 +11,7 @@ const DefaultHeader: React.FC<DefaultHeaderProps> = () => {
   const [, setAuthState] = useAtom(getSetModal);
   const pathname = usePathname();
 
+  // TODO make redirect to /login or /signup page instead of opening modals
   const openModal = (e: React.MouseEvent<HTMLButtonElement>) => {
     setAuthState({
       isOpen: true,
@@ -21,7 +22,7 @@ const DefaultHeader: React.FC<DefaultHeaderProps> = () => {
     });
   };
 
-  if (pathname === '/login') return null;
+  if (pathname === '/login' || pathname === '/signup') return null;
 
   return (
     <div className="flex mr-20px">

@@ -8,9 +8,10 @@ import type { AdapterSession } from 'next-auth/adapters';
 import type { SessionUser } from '@/types/db';
 import type { MyAdapter } from '../../adapter';
 import type { AuthClient } from '@/types/state';
+import type { PrismaClient } from '@prisma/client';
 
 export const postgresAdapter = {
-  ...PrismaAdapter(prisma),
+  ...PrismaAdapter(prisma as PrismaClient),
   async _getSessionAndUser(sessionToken: string) {
     try {
       const result = await prisma.session.findUnique({
