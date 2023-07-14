@@ -22,7 +22,8 @@ const DefaultHeader: React.FC<DefaultHeaderProps> = () => {
     });
   };
 
-  if (pathname === '/login' || pathname === '/signup') return null;
+  if (pathname === '/login' || pathname === '/signup' || pathname === '/cv')
+    return null;
 
   return (
     <div className="flex mr-20px">

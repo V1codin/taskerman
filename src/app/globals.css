@@ -25,6 +25,8 @@
     'Roboto Mono', 'Oxygen Mono', 'Ubuntu Monospace', 'Source Code Pro',
     'Fira Mono', 'Droid Sans Mono', 'Courier New', monospace;
 
+  --color-accent-muted: #4184e466;
+
   --monokai: #272822;
   --black-aqua: #091921;
   --aqua-active: #133d52;
@@ -35,7 +37,9 @@
   --pink: #ff105e;
   --red: #c50040;
   --pale-green: #67b04b;
-  --bright-green: #55d725;
+  --bright-green: #72f088;
+  --bright-green-second: #55d725;
+
   --bright-blue: #42c5e4;
 
   --blue: #4343ff;
@@ -367,7 +371,7 @@ button:disabled {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--pale-blue);
+  background: var(--blue);
   border-radius: 10px;
 }
 

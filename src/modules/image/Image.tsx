@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { forwardRef } from 'react';
 
 export type ImageModuleProps = {
   src: string;
@@ -10,26 +11,23 @@ export type ImageModuleProps = {
   draggable?: boolean;
 };
 
-const ImageModule: React.FC<ImageModuleProps> = ({
-  alt,
-  src,
-  height,
-  width,
-  className,
-  title,
-  draggable,
-}) => {
-  return (
-    <Image
-      src={src}
-      alt={alt}
-      width={width}
-      height={height}
-      className={className}
-      title={title}
-      draggable={draggable}
-    />
-  );
-};
+const ImageModule = forwardRef<HTMLImageElement, ImageModuleProps>(
+  ({ alt, src, height, width, className, title, draggable }, ref) => {
+    return (
+      <Image
+        ref={ref}
+        src={src}
+        alt={alt}
+        width={width}
+        height={height}
+        className={className}
+        title={title}
+        draggable={draggable}
+      />
+    );
+  },
+);
+
+ImageModule.displayName = 'ImageModule';
 
 export default ImageModule;
