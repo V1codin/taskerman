@@ -6,27 +6,28 @@ import ButtonWithIcon from '@/modules/button/ButtonWithIcon';
 import ImageModule from '@/modules/image/Image';
 import Link from 'next/link';
 
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm, SubmitHandler } from 'react-hook-form';
+import { credentialsSignUpSchema } from '@/types/state';
+import { useRouter } from 'next/navigation';
 import {
   FormWrapper,
   defaultInputClass,
   defaultWarningClass,
 } from '@/modules/formWrapper/FormWrapper';
 import { useEffect, useState } from 'react';
-import { SubmitHandler, useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { useSetAtom } from 'jotai';
 import { getSetToastState } from '@/context/stateManager';
-import { signIn } from 'next-auth/react';
-import { userLoginSchema } from '@/types/state';
 import { debounce } from '@/utils/helpers';
-import { useRouter } from 'next/navigation';
+import { api } from '@/utils/api/api';
+import { signIn } from 'next-auth/react';
 
 import type { ToastProps } from '@/types/helpers';
 import type { AuthClient } from '@/types/state';
 
-type LoginFormProps = {};
+type SignUpFormProps = {};
 
-const LoginForm: React.FC<LoginFormProps> = () => {
+const SignUpForm: React.FC<SignUpFormProps> = () => {
   const {
     register,
     handleSubmit,
@@ -34,12 +35,13 @@ const LoginForm: React.FC<LoginFormProps> = () => {
     setFocus,
 
     formState: { errors },
-  } = useForm<AuthClient.TUserLogin>({
-    resolver: zodResolver(userLoginSchema),
+  } = useForm<AuthClient.TUserSignUp>({
+    resolver: zodResolver(credentialsSignUpSchema),
   });
-  const { refresh } = useRouter();
 
   const [loader, setLoader] = useState(false);
+
+  const { push } = useRouter();
 
   const setToast = useSetAtom(getSetToastState);
 
@@ -47,16 +49,12 @@ const LoginForm: React.FC<LoginFormProps> = () => {
     setFocus('username', { shouldSelect: true });
   }, [setFocus]);
 
-  const refreshData = () => {
-    refresh();
-  };
-
   const debouncedInputChange = debounce(
     (e: React.ChangeEvent<HTMLInputElement>) =>
-      trigger(e.target.name as keyof AuthClient.TUserLogin),
+      trigger(e.target.name as keyof AuthClient.TUserSignUp),
   );
 
-  const onSubmit: SubmitHandler<AuthClient.TUserLogin> = async (
+  const onSubmit: SubmitHandler<AuthClient.TUserSignUp> = async (
     userToSubmit,
     e,
   ) => {
@@ -65,17 +63,21 @@ const LoginForm: React.FC<LoginFormProps> = () => {
     try {
       setLoader(true);
 
-      const result = await signIn('credentials', {
-        username: userToSubmit.username,
-        password: userToSubmit.password,
-        redirect: false,
+      const result = await api.create('user', {
+        authType: 'credentials',
+        userData: userToSubmit,
       });
 
-      if (result?.error || !result) {
-        throw new Error('Wrong username or password');
+      if (!result) {
+        throw new Error('Wrong data');
       }
 
-      refreshData();
+      setToast({
+        message: result.message,
+        typeClass: 'notification',
+      });
+
+      push('/login');
     } catch (e) {
       setLoader(false);
       const newToast: ToastProps = {
@@ -103,7 +105,9 @@ const LoginForm: React.FC<LoginFormProps> = () => {
       submit={handleSubmit(onSubmit)}
       containerClassNames="w-[330px]"
     >
-      <h2 className="text-bright-green text-lg font-semibold">Login</h2>
+      <h2 className="text-bright-green text-lg font-semibold">
+        Sign up for your account
+      </h2>
       <input name="csrfToken" type="hidden" defaultValue={''} />
       <input
         type="text"
@@ -131,6 +135,50 @@ const LoginForm: React.FC<LoginFormProps> = () => {
       {errors.password && (
         <span className={defaultWarningClass}>{errors.password.message}</span>
       )}
+      <input
+        type="password"
+        id="confirmPassword"
+        className={defaultInputClass}
+        placeholder="Confirm password"
+        {...register('confirmPassword', {
+          required: true,
+          onChange: debouncedInputChange,
+        })}
+        aria-invalid={Boolean(errors.confirmPassword)}
+      />
+      {errors.confirmPassword && (
+        <span className={defaultWarningClass}>
+          {errors.confirmPassword.message}
+        </span>
+      )}
+      <input
+        type="email"
+        className={defaultInputClass}
+        placeholder="Enter Your Email"
+        {...register('email', {
+          required: true,
+          onChange: debouncedInputChange,
+        })}
+        aria-invalid={Boolean(errors.email)}
+      />
+      {errors.email && (
+        <span className={defaultWarningClass}>{errors.email.message}</span>
+      )}
+      <input
+        type="text"
+        className={defaultInputClass}
+        placeholder="Enter Your full name"
+        {...register('displayName', {
+          required: true,
+          onChange: debouncedInputChange,
+        })}
+        aria-invalid={Boolean(errors.displayName)}
+      />
+      {errors.displayName && (
+        <span className={defaultWarningClass}>
+          {errors.displayName.message}
+        </span>
+      )}
 
       <ButtonWithLoader
         isLoading={loader}
@@ -139,27 +187,27 @@ const LoginForm: React.FC<LoginFormProps> = () => {
           disabled: loader,
         }}
         classNames="font-bold w-full mt-4 h-11
-        rounded-md
-        bg-pale-green 
-        text-white 
-        hover:bg-pale-bright-green 
-        active:bg-green-500"
+            rounded-md
+            bg-pale-green 
+            text-white 
+            hover:bg-pale-bright-green 
+            active:bg-green-500"
       >
-        <span>Log in</span>
+        <span>Sign up</span>
       </ButtonWithLoader>
 
       <ButtonWithIcon
         classNames="w-full mt-4 h-11 justify-evenly
-        rounded-md
-        font-bold
-        bg-white
-        text-blue-second
-        hover:bg-blue-second
-        hover:text-white
-        focus:bg-blue-second
-        focus:text-white
-        active:bg-pale-bright-blue
-        "
+            rounded-md
+            font-bold
+            bg-white
+            text-blue-second
+            hover:bg-blue-second
+            hover:text-white
+            focus:bg-blue-second
+            focus:text-white
+            active:bg-pale-bright-blue
+            "
         attrs={{
           'data-oauthtype': 'google',
           type: 'button',
@@ -173,15 +221,13 @@ const LoginForm: React.FC<LoginFormProps> = () => {
         Continue with Google
       </ButtonWithIcon>
       <Link
-        href="/signup"
+        href="/login"
         className="mt-4 text-white font-light active:text-yellow hover:underline"
       >
-        Sign up for an account
+        Already have an account?
       </Link>
     </FormWrapper>
   );
 };
 
-LoginForm.displayName = 'LoginForm';
-
-export default LoginForm;
+export { SignUpForm };

@@ -1,18 +1,25 @@
 import { PrismaClient } from '@prisma/client';
-import { ServerResponseError } from '@/libs/error.service';
+import { DataBaseError, ServerResponseError } from '@/libs/error.service';
 
 import type { Notification } from 'prisma/prisma-client';
 import type { DataBaseProvider, TNotificationNS } from '@/types/db';
 import type { TBoard, TEditableUserProps } from '../schemas/types';
 
-const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined;
-};
-export const prisma =
-  globalForPrisma.prisma ??
-  new PrismaClient({
+const extendedPrismaClient = () => {
+  const prisma = new PrismaClient({
     log: [process.env.NODE_ENV === 'development' ? 'query' : 'info'],
   });
+
+  const extendedPrisma = prisma.$extends({});
+
+  return extendedPrisma;
+};
+export type ExtendedPrismaClient = ReturnType<typeof extendedPrismaClient>;
+
+const globalForPrisma = globalThis as unknown as {
+  prisma: ExtendedPrismaClient | undefined;
+};
+export const prisma = globalForPrisma.prisma ?? extendedPrismaClient();
 
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
 
@@ -247,6 +254,12 @@ export class PostgresSqlDataBaseProvider implements PrismaDbProvider {
         },
       });
 
+      if (!board) {
+        throw new DataBaseError({
+          message: 'Error: Document was not found',
+        });
+      }
+
       return board as TBoard<{
         include: {
           members: {
@@ -296,8 +309,6 @@ export class PostgresSqlDataBaseProvider implements PrismaDbProvider {
 
       return created;
     } catch (e) {
-      console.error('', e);
-
       return null;
     }
   }
