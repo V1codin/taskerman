@@ -4,8 +4,8 @@ type Props = {
 
 export default async function Layout({ children }: Props) {
   return (
-    <section className="max-w-[80%] mt-4 mx-[auto] p-3 border border-red">
+    <div className="absolute top-0 left-0 bg-[#000000a2] min-h-screen w-full h-[auto]">
       {children}
-    </section>
+    </div>
   );
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import './index.css';
+import './badge.css';
 
 import cls from 'classnames';
 

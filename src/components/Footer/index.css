@@ -1,0 +1,11 @@
+.cv:hover .cv_svg__main {
+  fill: var(--bright-blue) !important;
+}
+
+.linkedIn:hover rect {
+  fill: var(--blue) !important;
+}
+
+.scroll-top-btn:hover .scroll-top-svg > path:first-of-type {
+  fill: var(--bright-blue) !important;
+}

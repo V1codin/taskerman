@@ -1,36 +1,29 @@
-// @ts-ignore
-import tsIco from '@/assets/cv/badges/ts.svg?url';
-// @ts-ignore
-import vsCodeIco from '@/assets/cv/badges/vs_code.svg?url';
+import cls from 'classnames';
 
-import ImageModule from '@/modules/image/Image';
+import { JetBrains_Mono } from 'next/font/google';
+import { Info } from './Info';
+import { Tools } from './Tools';
 
-import { Section } from './Section';
+const inter = JetBrains_Mono({ subsets: ['latin'] });
 
 type CVComponentProps = {};
 
 const CVComponent: React.FC<CVComponentProps> = () => {
   return (
-    <>
-      <Section type="TS">
-        <ImageModule
-          className="rounded cursor-pointer h-7"
-          width={124}
-          height={28}
-          alt="ts"
-          src={tsIco}
-        />
-      </Section>
-      <Section type="VS_CODE" classNames="mt-1" innerClasses="max-w-max">
-        <ImageModule
-          className="rounded cursor-pointer h-7"
-          width={124}
-          height={28}
-          alt="vs_code"
-          src={vsCodeIco}
-        />
-      </Section>
-    </>
+    <section
+      className={cls(
+        'max-w-[80%] mt-16 mx-[auto] p-3 text-white pb-11',
+        inter.className,
+      )}
+    >
+      <h1 className="text-2xl text-center text-pale-bright-green">
+        Hello. My name is Kyrylo Orlovskyi
+      </h1>
+      <div className="grid grid-cols-2 items-start justify-between mt-4">
+        <Info />
+        <Tools />
+      </div>
+    </section>
   );
 };
 

@@ -10,6 +10,7 @@ import { cookies } from 'next/headers';
 import { authService } from '@/libs/auth.service';
 import { boardService } from '@/libs/boards.service';
 import { notificationService } from '@/libs/notifications.service';
+import { Footer } from '@/components/Footer/Footer';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -46,6 +47,7 @@ export default async function RootLayout({ children }: Props) {
           <Modal />
           <Toast />
           {children}
+          <Footer />
         </StateProvider>
       </body>
     </html>
