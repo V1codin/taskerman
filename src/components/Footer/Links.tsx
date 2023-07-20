@@ -1,14 +1,18 @@
 'use client';
 
-import Shevron from '@/assets/forward_arrow.svg';
-
 // ? for correct hover styling of svgs
 import './index.css';
 
-import cls from 'classnames';
-import GitLogo from '@/assets/github.svg';
-import CVLogo from '@/assets/cv.svg';
+// @ts-ignore
+import Shevron from '@/assets/forward_arrow.svg';
+// @ts-ignore
 import LinkedInLogo from '@/assets/linkedIn.svg';
+// @ts-ignore
+import GitLogo from '@/assets/github.svg';
+// @ts-ignore
+import CVLogo from '@/assets/cv.svg';
+
+import cls from 'classnames';
 import Link from 'next/link';
 import ButtonWithIcon from '@/modules/button/ButtonWithIcon';
 
