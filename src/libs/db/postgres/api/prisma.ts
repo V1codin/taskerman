@@ -2,13 +2,15 @@ import { PrismaClient } from '@prisma/client';
 import { DataBaseError, ServerResponseError } from '@/libs/error.service';
 
 import type { Notification } from 'prisma/prisma-client';
-import type { DataBaseProvider, TNotificationNS } from '@/types/db';
+import type { DataBaseProvider, TNotificationNS, TRecordNS } from '@/types/db';
 import type { TBoard, TEditableUserProps } from '../schemas/types';
 
 const extendedPrismaClient = () => {
+  /*
   const prisma = new PrismaClient({
     log: [process.env.NODE_ENV === 'development' ? 'query' : 'info'],
-  });
+  });*/
+  const prisma = new PrismaClient();
 
   const extendedPrisma = prisma.$extends({});
 
@@ -393,6 +395,10 @@ export class PostgresSqlDataBaseProvider implements PrismaDbProvider {
 
   async getSafeNotificationsByUserId(userId: string) {
     try {
+      if (!userId) {
+        return [];
+      }
+
       const notes = await prisma.notification.findMany({
         where: {
           recipient: {
@@ -641,6 +647,79 @@ export class PostgresSqlDataBaseProvider implements PrismaDbProvider {
       return true;
     } catch (e) {
       return false;
+    }
+  }
+
+  async patchBoardBackground(boardId: string, bg: string) {
+    try {
+      const updated = await prisma.board.update({
+        where: {
+          id: boardId,
+        },
+        data: {
+          bg,
+        },
+      });
+
+      return updated;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  async patchBoardTitle(boardId: string, title: string) {
+    try {
+      const updated = await prisma.board.update({
+        where: {
+          id: boardId,
+        },
+        data: {
+          title,
+        },
+      });
+
+      return updated;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  async getRecordsOfBoard(boardId: string) {
+    try {
+      const records = await prisma.record.findMany({
+        where: {
+          boardId: boardId,
+        },
+      });
+
+      return records;
+    } catch (e) {
+      return [];
+    }
+  }
+
+  async createRecord({ heading, userId, boardId }: TRecordNS.TCreating) {
+    try {
+      const result = await prisma.record.create({
+        data: {
+          heading,
+          user: {
+            connect: {
+              id: userId,
+            },
+          },
+          board: {
+            connect: {
+              id: boardId,
+            },
+          },
+        },
+      });
+
+      return result;
+    } catch (e) {
+      console.error('', e);
+      return null;
     }
   }
 }

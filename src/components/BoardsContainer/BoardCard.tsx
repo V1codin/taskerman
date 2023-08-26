@@ -50,7 +50,7 @@ const BoardCard: React.FC<BoardCardProps> = ({
       />
       <Link
         href={`/board/${id}`}
-        className="card__btn"
+        className="card_btn"
         title={`Go to the board ${title}`}
         prefetch={false}
       >

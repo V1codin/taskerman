@@ -57,13 +57,7 @@ const InviteMembers: React.FC<InviteMembersProps> = ({
           '!bg-aqua-active !shadow-none !border-pale-blue': dropDown,
         })}
       >
-        <ImageModule
-          width={28}
-          height={28}
-          alt="add icon"
-          src={addIcon}
-          className="w-7 h-7"
-        />
+        <ImageModule width={28} height={28} alt="add icon" src={addIcon} />
       </ButtonWithIcon>
       {dropDown && (
         <DropDownMenu closeDropDown={closeDropDown} currentMembers={members} />

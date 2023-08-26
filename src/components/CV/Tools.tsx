@@ -20,8 +20,9 @@ type ToolsProps = {};
 
 const Tools: React.FC<ToolsProps> = () => {
   return (
-    <section>
-      <Section type="TS">
+    <section className="tablet:mt-2">
+      <h2 className="info-heading">About me</h2>
+      <Section type="TS" classNames="tablet:mt-2">
         <Link
           href="https://gist.github.com/V1codin/b3f8dd9ec6b70438ab5b884a8b282dde"
           target="_blank"

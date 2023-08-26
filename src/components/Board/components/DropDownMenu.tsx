@@ -243,7 +243,7 @@ const DropDownMenu: React.FC<DropDownMenuProps> = ({ closeDropDown }) => {
                     displayName={item.displayName || ''}
                     avatarWidth={38}
                     avatarHeight={38}
-                    className="rounded-[50%] col-start-2 dropdown_members_avatar h-full max-w-[38px] bg-monokai"
+                    className="rounded-[50%] col-start-2 dropdown_members_avatar h-[38px] w-[38px] bg-monokai"
                   />
                   {isAlreadyMember || isPending ? (
                     <ImageModule

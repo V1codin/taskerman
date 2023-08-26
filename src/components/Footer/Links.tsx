@@ -16,7 +16,6 @@ import cls from 'classnames';
 import Link from 'next/link';
 import ButtonWithIcon from '@/modules/button/ButtonWithIcon';
 
-import { useMemo } from 'react';
 import { usePathname } from 'next/navigation';
 
 type LinksProps = {};
@@ -24,13 +23,7 @@ type LinksProps = {};
 const Links: React.FC<LinksProps> = () => {
   const path = usePathname();
 
-  const isCurrent = useMemo(() => {
-    if (path === '/cv') {
-      return true;
-    }
-
-    return false;
-  }, [path]);
+  const isCurrent = path === '/cv';
 
   const scrollToTop = () => {
     window.scrollTo({
@@ -73,6 +66,7 @@ const Links: React.FC<LinksProps> = () => {
         classNames="!p-0 w-6 h-6 scroll-top-btn"
         attrs={{
           onClick: scrollToTop,
+          title: 'Scroll to top',
         }}
       >
         <Shevron className="-rotate-90 scroll-top-svg" />

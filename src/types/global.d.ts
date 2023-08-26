@@ -19,7 +19,8 @@ declare global {
     | 'board_members'
     | 'notification'
     | 'notification_decline'
-    | 'notification_confirm';
+    | 'notification_confirm'
+    | 'record';
 
   type TSignUp = 'credentials' | 'google';
 

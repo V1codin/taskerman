@@ -6,7 +6,13 @@ import type {
   TBoardPermissions,
   TNotification,
 } from '@/libs/db/postgres/schemas/types';
-import type { SessionUser, TBoardNS, TNotificationNS, TUserNS } from './db';
+import type {
+  SessionUser,
+  TBoardNS,
+  TNotificationNS,
+  TRecordNS,
+  TUserNS,
+} from './db';
 import type { NextApiRequest } from 'next';
 
 export type TMethods = 'POST' | 'PUT' | 'DELETE' | 'GET' | 'PATCH';
@@ -48,6 +54,8 @@ export namespace ApiNS {
     ? TBoardNS.TGetting
     : T extends 'user'
     ? TUserNS.TGetting
+    : T extends 'record'
+    ? TRecordNS.TGetting
     : null;
 
   export type TCreateData<T extends TEntities> = T extends 'board'
@@ -74,7 +82,7 @@ export namespace ApiNS {
     ? TUserNS.TUpdating
     : null;
 
-  interface TBoardReturn extends Record<keyof TActions, unknown> {
+  interface IBoardReturn extends Record<keyof TActions, unknown> {
     read: {
       data: TBoard[];
     };
@@ -90,7 +98,23 @@ export namespace ApiNS {
     };
   }
 
-  interface TUserReturn extends Record<keyof TActions, unknown> {
+  interface IRecordReturn extends Record<keyof TActions, unknown> {
+    read: {
+      data: TBoard[];
+    };
+    create: {
+      data: TBoard;
+    };
+    delete: {
+      data: string;
+    };
+    update: {
+      // ! NOT IMPLEMENTED
+      data: null;
+    };
+  }
+
+  interface IUserReturn extends Record<keyof TActions, unknown> {
     read: {
       data: TUser[];
     };
@@ -104,7 +128,7 @@ export namespace ApiNS {
       data: null;
     };
   }
-  interface TBoardMembersReturn extends Record<keyof TActions, unknown> {
+  interface IBoardMembersReturn extends Record<keyof TActions, unknown> {
     read: {
       data: TBoardMember[];
     };
@@ -141,12 +165,13 @@ export namespace ApiNS {
   }
 
   export interface IReturnType extends Record<TEntities, unknown> {
-    board: TBoardReturn;
-    user: TUserReturn;
-    board_members: TBoardMembersReturn;
+    board: IBoardReturn;
+    user: IUserReturn;
+    board_members: IBoardMembersReturn;
     notification: INotificationReturn;
     notification_decline: INotificationOptionReturn;
     notification_confirm: INotificationOptionReturn;
+    record: IRecordReturn;
   }
 }
 
@@ -185,6 +210,7 @@ export namespace HttpNS {
     notification: TUrl;
     notification_decline: TUrl;
     notification_confirm: TUrl;
+    record: TUrl;
   }
 }
 

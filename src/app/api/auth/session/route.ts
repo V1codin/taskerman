@@ -40,7 +40,12 @@ const handler = async () => {
 
     // ? https://github.com/vercel/next.js/issues/49259
     // @ts-ignore
-    cookieStore.delete(AUTH_TOKEN_COOKIE_NAME);
+    cookieStore.set({
+      name: AUTH_TOKEN_COOKIE_NAME,
+      value: '',
+      expires: new Date(0),
+      path: '/',
+    });
 
     throw new ServerResponseError({
       code: 403,

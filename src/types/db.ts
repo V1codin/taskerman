@@ -34,14 +34,31 @@ export interface IDbCollections {
   users: TUser;
 }
 
+const idSchema = z.string().min(24);
+
+const boardIdSchema = z.object({
+  boardId: idSchema,
+});
+
+export const updateBoardSchema = z
+  .discriminatedUnion('type', [
+    z.object({
+      type: z.literal('update_bg'),
+      bg: z.string().min(4),
+    }),
+    z.object({
+      type: z.literal('update_header'),
+      title: z.string().min(1),
+    }),
+  ])
+  .and(boardIdSchema);
+
 export const creatingBoardSchema = z.object({
   bg: z.string(),
-  owner: z.string(),
+  owner: idSchema,
   title: z.string(),
 });
-export const deletingBoardSchema = z.object({
-  boardId: z.string(),
-});
+export const deletingBoardSchema = boardIdSchema;
 
 export const updateUserSchema = z
   .object({
@@ -57,11 +74,12 @@ export const updateUserSchema = z
     },
   );
 
-export const updatingBoardMembersSchema = z.object({
-  members: z.array(z.string().min(24)),
-  boardId: z.string().min(24),
-  type: z.string(),
-});
+export const updatingBoardMembersSchema = z
+  .object({
+    members: z.array(z.string().min(24)),
+    type: z.string(),
+  })
+  .and(boardIdSchema);
 
 const notePriority = z.enum(notePriorityEnum);
 const noteActions = z.enum(noteActionsEnum);
@@ -81,12 +99,7 @@ export const creatingNotificationSchema = z.object({
 });
 
 export namespace TBoardNS {
-  type UpdateAvailableProps = Pick<TBoard, 'bg' | 'title'>;
-  export type TUpdating = RequireAtLeastOne<
-    UpdateAvailableProps,
-    'bg' | 'title'
-  >;
-
+  export type TUpdating = TypeOf<typeof updateBoardSchema>;
   export type TDeleting = TypeOf<typeof deletingBoardSchema>;
   export type TCreating = TypeOf<typeof creatingBoardSchema>;
   export type TGetting =
@@ -163,6 +176,21 @@ export type SessionUser = {
   email: string;
   username: string;
 };
+
+export const createRecordSchema = z
+  .object({
+    heading: z.string().min(1).max(32),
+    userId: idSchema,
+  })
+  .and(boardIdSchema);
+
+export namespace TRecordNS {
+  export type TGetting = {
+    boardId: string;
+  };
+
+  export type TCreating = TypeOf<typeof createRecordSchema>;
+}
 
 // ? generic types were for type mongo provider
 // ? for prisma those could be removed

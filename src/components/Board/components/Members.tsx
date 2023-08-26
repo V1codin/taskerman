@@ -116,7 +116,9 @@ const Members: React.FC<MembersProps> = ({ boardMembers, ownerId }) => {
                   imageURL={user.imageURL || ''}
                   displayName={user.displayName || ''}
                   username={user.username}
-                  className={cls('w-[inherit] h-[inherit] max-w-[unset]')}
+                  className={cls(
+                    'w-[inherit] h-[inherit] max-w-[unset] absolute',
+                  )}
                 />
                 {user.id === ownerId && (
                   <ImageModule
@@ -160,4 +162,4 @@ const Members: React.FC<MembersProps> = ({ boardMembers, ownerId }) => {
   );
 };
 
-export default Members;
+export { Members };

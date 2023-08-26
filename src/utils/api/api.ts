@@ -271,6 +271,15 @@ const http = new HttpService(
       PATCH: API_NOTIFICATION_CONFIRM_URL,
       DELETE: API_NOTIFICATION_CONFIRM_URL,
     },
+    record: {
+      GET: {
+        single: '',
+      },
+      DELETE: '',
+      PATCH: '',
+      POST: '',
+      PUT: '',
+    },
   },
   fetcher,
 );

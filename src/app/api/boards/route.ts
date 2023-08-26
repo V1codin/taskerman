@@ -3,7 +3,8 @@ import { authService } from '@/libs/auth.service';
 import { NextResponse } from 'next/server';
 import { boardService } from '@/libs/boards.service';
 import { BadRequestError, ServerResponseError } from '@/libs/error.service';
-import { creatingBoardSchema } from '@/types/db';
+import { creatingBoardSchema, updateBoardSchema } from '@/types/db';
+import { BOARD_MEMBER_ROLES_PERMISSIONS } from '@/utils/constants';
 
 import type { TBoardNS } from '@/types/db';
 
@@ -166,6 +167,72 @@ export async function DELETE(req: Request) {
 
     return NextResponse.json(
       { data: boardId },
+      {
+        status: 200,
+      },
+    );
+  } catch (e) {
+    if (e instanceof ServerResponseError) {
+      return NextResponse.json(
+        {
+          message: e.message,
+          code: e.code,
+        },
+        {
+          status: e.code,
+        },
+      );
+    }
+
+    return NextResponse.json(
+      {
+        message: 'Error: Server does not response',
+        code: 500,
+      },
+      {
+        status: 500,
+      },
+    );
+  }
+}
+
+export async function PATCH(req: Request) {
+  try {
+    const token = authService.getTokenByReaquestHeaders(req.headers);
+    const issuerId = await authService.getUserIdByRequest(token);
+
+    const rawBody = await req.json();
+
+    const parsedBody = updateBoardSchema.safeParse(rawBody);
+    if (!parsedBody.success) {
+      throw new BadRequestError();
+    }
+
+    const toUpdate = rawBody as TBoardNS.TUpdating;
+    const { type, boardId } = toUpdate;
+
+    const userRole = await boardService.getUserRole(boardId, issuerId);
+
+    if (!userRole) {
+      throw new ServerResponseError({
+        code: 403,
+        message: 'Error: Unauthorized',
+      });
+    }
+
+    const isValidUserRole = BOARD_MEMBER_ROLES_PERMISSIONS[userRole][type];
+
+    if (!isValidUserRole) {
+      throw new ServerResponseError({
+        code: 403,
+        message: 'Error: You have no permission to perform this action',
+      });
+    }
+
+    const result = await boardService.patchBoard(toUpdate);
+
+    return NextResponse.json(
+      { data: result },
       {
         status: 200,
       },

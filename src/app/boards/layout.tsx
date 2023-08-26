@@ -1,6 +1,6 @@
 import cls from 'classnames';
 
-const defaultContainerClasses = `flex flex-wrap mx-auto my-0 bg-none mobile:block`;
+const defaultContainerClasses = `flex flex-wrap mx-auto my-0 bg-none mobile:block tablet:justify-center`;
 
 export const metadata = {
   title: 'Tasker Boards',

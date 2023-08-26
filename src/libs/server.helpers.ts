@@ -2,6 +2,9 @@ import { credentialsSignUpSchema } from '@/types/state';
 import { randomUUID } from 'crypto';
 
 import type { TAuthProviderProfiles } from 'next-auth';
+import { authService } from './auth.service';
+import { boardService } from './boards.service';
+import { notificationService } from './notifications.service';
 
 export const isLink = (str: string = '') => {
   return /^(http|https):\/\/[^ "]+/g.test(str);
@@ -82,4 +85,18 @@ export const validateNewUserBySchema = (type: TSignUp, body: unknown) => {
 
 export const fromDate = (time: number, date = Date.now()) => {
   return new Date(date + time * 1000);
+};
+
+export const getUserBoardsAndNotesFromDb = async (
+  sessionToken: string | undefined,
+) => {
+  const sessionUser = await authService.getSessionUser(sessionToken);
+
+  const boards = await boardService.getSafeUserBoards(sessionUser?.id || '');
+
+  const notifications = await notificationService.getNotificationsByUserId(
+    sessionUser?.id || '',
+  );
+
+  return { sessionUser, boards, notifications };
 };

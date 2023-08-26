@@ -2,11 +2,6 @@ import cls from 'classnames';
 
 import { useBackGround } from '@/hooks/useBackGround';
 import { boardService } from '@/libs/boards.service';
-import { dbConnect } from '@/libs/db/connect';
-import { cookies } from 'next/headers';
-import { authService } from '@/libs/auth.service';
-import { AUTH_TOKEN_COOKIE_NAME } from '@/utils/constants';
-import { redirect } from 'next/navigation';
 
 import type { Metadata } from 'next';
 
@@ -28,17 +23,6 @@ export default async function RootLayout({
 }: Props) {
   // ? checking in the layout because
   // ? of not displaying board background if there is no session
-  await dbConnect();
-  const cookieStorage = cookies();
-
-  const sessionToken = cookieStorage.get(AUTH_TOKEN_COOKIE_NAME);
-  const sessionUser = await authService.getSessionUser(
-    sessionToken?.value || '',
-  );
-
-  if (!sessionUser) {
-    redirect('/login');
-  }
 
   const bg = await boardService.getBoardBackgroundById(boardId);
 
@@ -47,12 +31,14 @@ export default async function RootLayout({
   return (
     <div
       className={cls('p-4', {
-        'w-[calc(100vw - var(--scrollbar-width))]': bg,
-        'h-screen': bg,
+        'w-screen': bg,
+        'h-[calc(100vh_-_var(--header-height))]': bg,
       })}
       style={style}
     >
-      <section className="py-0 px-5 relative">{children}</section>
+      <section className="py-0 px-6 relative overflow-y-scroll h-full">
+        {children}
+      </section>
     </div>
   );
 }

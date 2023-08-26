@@ -1,6 +1,3 @@
-// ? for correct hover styling of svgs
-import './index.css';
-
 type InfoProps = {};
 
 const Info: React.FC<InfoProps> = () => {

@@ -9,6 +9,7 @@ export default function Error({
   error: Error;
   reset: () => void;
 }) {
+  console.log('check');
   useEffect(() => {
     console.error(error);
   }, [error]);

@@ -11,7 +11,7 @@ const defaultIconClassNames = `group-hover:scale-125 group-active:scale-150`;
 type SaveButtonProps = {
   classNames?: string;
   iconClassNames?: string;
-  click: () => void;
+  click: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
 };
 
 const SaveButton: React.FC<SaveButtonProps> = ({
@@ -26,6 +26,7 @@ const SaveButton: React.FC<SaveButtonProps> = ({
         name: 'save',
         title: 'Save',
         onClick: click,
+        type: 'submit',
       }}
     >
       <ImageModule

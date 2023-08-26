@@ -12,6 +12,9 @@ module.exports = {
         mobile: {
           max: '576px',
         },
+        tablet: {
+          max: '726px',
+        },
         laptop: {
           max: '976px',
         },
@@ -20,6 +23,7 @@ module.exports = {
         },
       },
       colors: {
+        current: 'currentColor',
         overlay: '#3a3a3ab3',
         'dark-grey': '#333030',
         monokai: '#272822',

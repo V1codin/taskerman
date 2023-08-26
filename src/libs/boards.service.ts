@@ -12,6 +12,8 @@ export class BoardsService {
 
   async getSafeUserBoards(userId: string | ParticularDBType) {
     try {
+      if (!userId) return [];
+
       const boards = await this.db.getUserBoards(userId);
 
       return boards;
@@ -92,6 +94,17 @@ export class BoardsService {
     members: Record<keyof Pick<TBoardMember, 'role' | 'user'>, string>[],
   ) {
     return this.db.addBoardInviteToUser(boardId, members);
+  }
+
+  patchBoard(props: TBoardNS.TUpdating) {
+    const { type, boardId } = props;
+    if (type === 'update_bg') {
+      return this.db.patchBoardBackground(boardId, props.bg);
+    } else if (type === 'update_header') {
+      return this.db.patchBoardTitle(boardId, props.title);
+    }
+
+    return null;
   }
 }
 

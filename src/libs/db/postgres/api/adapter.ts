@@ -12,7 +12,9 @@ import type { PrismaClient } from '@prisma/client';
 
 export const postgresAdapter = {
   ...PrismaAdapter(prisma as PrismaClient),
-  async _getSessionAndUser(sessionToken: string) {
+  async _getSessionAndUser(sessionToken: string | undefined) {
+    if (!sessionToken) return null;
+
     try {
       const result = await prisma.session.findUnique({
         where: {

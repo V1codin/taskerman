@@ -29,6 +29,17 @@ enum NotificationAction {
   board_invite
 }
 
+enum RecordTypes {
+  text
+}
+
+enum RecordStatus {
+  IN_PROGRESS
+  DONE
+  TO_DO
+  STUCK
+}
+
 model User {
   id        String   @id @default(cuid()) @map("_id")
   createdAt DateTime @default(now())
@@ -44,11 +55,12 @@ model User {
   subs   BoardMember[]
 
   password Password?
-  session  Session?
+  session  Session[]
 
   pendingInvites String[]
 
   notifications Notification[]
+  records       Record[]
 
   @@unique([username, email])
   @@map("users")
@@ -66,6 +78,7 @@ model Board {
   owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
 
   members BoardMember[] @relation("members")
+  records Record[]
 
   @@map("boards")
 }
@@ -107,7 +120,7 @@ model Session {
   id String @id @default(cuid()) @map("_id")
 
   userId  User   @relation(fields: [user_Id], references: [id], onDelete: Cascade)
-  user_Id String @unique
+  user_Id String
 
   expires DateTime @db.Date
 
@@ -139,4 +152,24 @@ model Notification {
   notificationActionDataId String?
 
   @@map("notifications")
+}
+
+model Record {
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  id String @id @default(cuid()) @map("_id")
+
+  type    RecordTypes  @default(text)
+  heading String       @db.VarChar(32)
+  text    String[]
+  status  RecordStatus @default(IN_PROGRESS)
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @unique
+
+  board   Board  @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  boardId String
+
+  @@map("records")
 }

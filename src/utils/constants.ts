@@ -80,7 +80,7 @@ export const API_SIGNUP_URL = '/api/auth/user';
 export const API_USER_UPDATE_URL = '/api/auth/user';
 
 // TODO server handle the routes
-export const API_BOARD_UPDATE_URL = '/api/update_board';
+export const API_BOARD_UPDATE_URL = '/api/boards';
 export const API_USER_DELETE_URL = '/api/auth/user';
 // ? get user for getting board member's info for example
 export const API_USER_GET_URL = '/api/auth/user';
@@ -131,14 +131,22 @@ export const BOARD_MEMBER_ROLES_PERMISSIONS: Record<
 > = {
   guest: {
     invite_members: false,
+    update_header: false,
+    update_bg: false,
   },
   owner: {
     invite_members: true,
+    update_header: true,
+    update_bg: true,
   },
   admin: {
     invite_members: true,
+    update_header: true,
+    update_bg: true,
   },
   member: {
     invite_members: true,
+    update_header: false,
+    update_bg: false,
   },
 };

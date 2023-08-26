@@ -2,26 +2,28 @@ import SaveButton from '@/modules/button/SaveButton';
 import EditButton from '@/modules/button/EditButton';
 import Input from '@/modules/input/Input';
 
-import { useCallback, useMemo, useRef, useState } from 'react';
-import { BOARD_TITLE_SLICE_INDEX } from '@/utils/constants';
+import { useCallback, useRef, useState } from 'react';
 import { ChangeEvent } from 'react';
 import { useOuterClick } from '@/hooks/useOuterClick';
 import { useFocus } from '@/hooks/useFocus';
+import { api } from '@/utils/api/api';
+import { getSetToastState } from '@/context/stateManager';
+import { useSetAtom } from 'jotai';
+import { ServerResponseError } from '@/libs/error.service';
 
 type HeadingProps = {
   boardTitle: string;
+  boardId: string;
 };
 
-const Heading: React.FC<HeadingProps> = ({ boardTitle }) => {
+const Heading: React.FC<HeadingProps> = ({ boardTitle, boardId }) => {
   const containerRef = useRef<HTMLElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const setToast = useSetAtom(getSetToastState);
   const [title, setTitle] = useState(boardTitle);
   const prevTitle = useRef(title);
   const [isEditHeading, setIsEditHeading] = useState(false);
-  const slicedTitle = useMemo(() => {
-    return title.slice(0, BOARD_TITLE_SLICE_INDEX);
-  }, [title]);
 
   useFocus(inputRef, isEditHeading);
 
@@ -30,9 +32,28 @@ const Heading: React.FC<HeadingProps> = ({ boardTitle }) => {
     setIsEditHeading(false);
   });
 
-  const saveHeading = () => {
-    setIsEditHeading(false);
-    prevTitle.current = title;
+  const saveHeading = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+  ) => {
+    e.preventDefault();
+    try {
+      await api.update('board', {
+        type: 'update_header',
+        boardId,
+        title,
+      });
+
+      setIsEditHeading(false);
+      prevTitle.current = title;
+    } catch (e) {
+      if (e instanceof ServerResponseError) {
+        setToast({
+          message: e.message,
+          typeClass: 'warning',
+          timeout: 3500,
+        });
+      }
+    }
   };
 
   const editHeading = useCallback(() => {
@@ -67,16 +88,18 @@ const Heading: React.FC<HeadingProps> = ({ boardTitle }) => {
         />
       ) : (
         <h2
-          className="max-h-11 text-3xl px-3 py-1 max-w-[40vw] overflow-hidden mobile:text-lg"
+          className="line-clamp-1 text-ellipsis text-3xl px-3 py-1 tablet:max-w-[40vw] max-w-[320px] overflow-hidden mobile:text-lg"
           title={title}
         >
-          {slicedTitle}
+          {title}
         </h2>
       )}
       {isEditHeading ? (
         <SaveButton
           click={saveHeading}
-          classNames="active:bg-pale-green rounded-tr-md rounded-br-md mobile:justify-center"
+          classNames="active:bg-pale-green rounded-tr-md rounded-br-md 
+          mobile:justify-center border-l-0
+          border-b-bright-green border-r-bright-green border-t-bright-green"
         />
       ) : (
         <EditButton click={editHeading} />
@@ -85,4 +108,4 @@ const Heading: React.FC<HeadingProps> = ({ boardTitle }) => {
   );
 };
 
-export default Heading;
+export { Heading };

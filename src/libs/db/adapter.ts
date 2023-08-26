@@ -29,7 +29,7 @@ import type { AuthClient } from '@/types/state';
 type Session = { user: SessionUser; session: AdapterSession };
 
 export type MyAdapter = Adapter & {
-  _getSessionAndUser(sessionToken: string): Promise<Session | null>;
+  _getSessionAndUser(sessionToken: string | undefined): Promise<Session | null>;
   _createSession(session: {
     sessionToken: string;
     userId: string;
@@ -47,6 +47,7 @@ export type MyAdapter = Adapter & {
 export const dbAdapter = postgresAdapter;
 
 export const getAuthOptions = (method?: TMethods | string): NextAuthOptions => {
+  const cookieStore = cookies();
   return {
     session: {
       maxAge: getAgeInSec({ days: SESSION_MAX_AGE_DAYS }),
@@ -56,7 +57,6 @@ export const getAuthOptions = (method?: TMethods | string): NextAuthOptions => {
       // @ts-ignore
       encode: async function ({ token, secret, maxAge }) {
         if (method === 'POST') {
-          const cookieStore = cookies();
           const cookie = cookieStore.get(AUTH_TOKEN_COOKIE_NAME);
 
           if (cookie) return cookie;
@@ -84,7 +84,7 @@ export const getAuthOptions = (method?: TMethods | string): NextAuthOptions => {
       sessionToken: {
         name: AUTH_TOKEN_COOKIE_NAME,
         options: {
-          httpOnly: !isDev(),
+          httpOnly: true,
           sameSite: 'lax',
           path: '/',
           secure: !isDev(),
@@ -108,19 +108,21 @@ export const getAuthOptions = (method?: TMethods | string): NextAuthOptions => {
                 expires: sessionExpiry,
               });
 
-              const cookieStore = cookies();
-
               // ? https://github.com/vercel/next.js/issues/49259
               // ? NEXTJS Doc: .set() is only available in a Server Action or Route Handler.
               // ? This is gonna be executed in Route Handler
               // @ts-ignore
-              cookieStore.set(AUTH_TOKEN_COOKIE_NAME, sessionToken, {
+              cookieStore.set({
+                name: AUTH_TOKEN_COOKIE_NAME,
+                value: sessionToken,
                 expires: sessionExpiry,
-                httpOnly: !isDev(),
+                httpOnly: true,
                 sameSite: 'lax',
                 path: '/',
                 secure: !isDev(),
               });
+
+              return true;
             } catch (e) {
               console.error('creating session error', e);
 
@@ -129,7 +131,7 @@ export const getAuthOptions = (method?: TMethods | string): NextAuthOptions => {
           }
         }
 
-        return true;
+        return false;
       },
       async jwt({ token, user }) {
         const castedUser = user as SessionUser;
@@ -194,7 +196,6 @@ export const getAuthOptions = (method?: TMethods | string): NextAuthOptions => {
             const user = await authService.authorizeWithCredentials(
               credentials!,
             );
-
             return user;
           } catch (e) {
             return null;

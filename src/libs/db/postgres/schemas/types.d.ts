@@ -5,6 +5,7 @@ import type {
   User,
   Session,
   Notification,
+  Record as TRecord_Data,
 } from '@prisma/client';
 
 export type TUserBoardRoles = 'guest' | 'owner' | 'admin' | 'member';
@@ -35,6 +36,8 @@ export type TBoardMember<
 
 export type TBoardPermissions = {
   invite_members: boolean;
+  update_header: boolean;
+  update_bg: boolean;
 };
 
 export type PopulatedMembersAndOwner = {
@@ -50,6 +53,9 @@ export type PopulatedMembersAndOwner = {
 
 export type TBoard<T extends Prisma.BoardArgs = PopulatedMembersAndOwner> =
   Board & Prisma.BoardGetPayload<T>;
+
+export type TRecord<T extends Prisma.RecordArgs> = TRecord_Data &
+  Prisma.RecordGetPayload<T>;
 
 export type TEditableUserProps =
   | Required<Pick<TUser, 'displayName'>>
